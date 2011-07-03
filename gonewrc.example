@@ -1,0 +1,8 @@
+[variables]
+name: Bryan Matsuo
+email: bmatsuo@soe.ucsc.edu
+
+[general]
+repo: git
+host: github
+hostuser: bmatsuo
