@@ -22,7 +22,7 @@ const (
 func parseArgs() Project {
     var (
         usage = "gonew [options] TYPE NAME"
-        printUsageHead = func () { fmt.Fprint(os.Stderr, usage, "\n\n") }
+        printUsageHead = func () { fmt.Fprint(os.Stderr, "\n", usage, "\n\n") }
         name   string
         ptype  string
         repo   string
