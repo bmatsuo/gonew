@@ -13,8 +13,8 @@ The gonew configuration file is stored at ~/.gonewrc. It is generated the
 first time you run gonew. Command line options can be used to override
 some details of the configuration file.
 
-Dependencies
-============
+Prerequisites
+=============
 
 You must have Go installed (http://golang.org/) and the $GOROOT
 environment variable must be set to the Go source root directory.
