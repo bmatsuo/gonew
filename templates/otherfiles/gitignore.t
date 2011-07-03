@@ -3,4 +3,3 @@
 _obj
 _test
 _testmain.go
-gonew
