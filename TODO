@@ -1,7 +1,9 @@
-Add more repository types
+Add more repository types.
 
-Add command line option: remote repo url
+Add command line option: remote repo url.
 
 Make individual files ("lib").
 
-Add license templates (Apache, GNU LGPLv3, GNU GPLv3, MIT, ...)
+Add license templates (Apache, GNU LGPLv3, GNU GPLv3, MIT, ...).
+
+Custom template directory.
