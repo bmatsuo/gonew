@@ -7,6 +7,7 @@ package main
 import (
     "os"
     "fmt"
+    "log"
     "bytes"
     "bufio"
     "path/filepath"
@@ -62,6 +63,31 @@ func ReadConfig() os.Error {
     //...
     default:
         AppConfig.Host = NilRepoHost
+    }
+    return nil
+}
+
+func TouchConfig() os.Error {
+    stat, err := os.Stat(ConfigFilename)
+    var patherr *os.PathError
+    switch err.(type) {
+    case nil:
+        patherr = nil
+    case *os.PathError:
+        patherr = err.(*os.PathError)
+    }
+    if patherr != nil && patherr.Error != os.ENOENT {
+        fmt.Fprintf(os.Stderr, "Error stat'ing ~/.gonewrc. %v", patherr)
+        return patherr
+    } else if stat == nil || (patherr != nil && patherr.Error == os.ENOENT) {
+        if DEBUG {
+            log.Print("Config not found. Prompting user for info.")
+        }
+        return MakeConfig()
+    } else {
+        if DEBUG {
+            log.Print("~/.gonewrc found.")
+        }
     }
     return nil
 }

@@ -18,25 +18,25 @@ const (
     DEBUG = true
 	DEBUG_LEVEL = 0
 )
+var (
+    usage = "gonew [options] TYPE NAME"
+    printUsageHead = func () { fmt.Fprint(os.Stderr, "\n", usage, "\n\n") }
+    name   string
+    ptype  string
+    repo   string
+    host   string
+    target string
+    help   bool
+)
 
-func parseArgs() Project {
-    var (
-        usage = "gonew [options] TYPE NAME"
-        printUsageHead = func () { fmt.Fprint(os.Stderr, "\n", usage, "\n\n") }
-        name   string
-        ptype  string
-        repo   string
-        host   string
-        target string
-        help   bool
-    )
+func setupFlags() *flag.FlagSet {
     var fs = flag.NewFlagSet("gonew", flag.ExitOnError)
     fs.StringVar(&repo,
-        "repo", "git", "Repository type (used only if host not given).")
+        "repo", "git", "Repository type (e.g. 'git').")
     fs.StringVar(&host,
-        "host", "", "Remote repository remote host if any.")
+        "host", "", "Remote repository remote host if any (e.g. 'github').")
     fs.StringVar(&target,
-        "target", "", "Binary name for 'cmd' projects. Default based on name.")
+        "target", "", "Makefile target. Default based on NAME.")
     fs.BoolVar(&help,
         "help", false, "Show this message.")
     var usageTemp = fs.Usage
@@ -44,9 +44,15 @@ func parseArgs() Project {
         printUsageHead()
         usageTemp()
     }
+    return fs
+}
+
+func parseArgs() Project {
+    var fs = setupFlags()
     fs.Parse(os.Args[1:])
     if help {
         fs.Usage()
+        os.Exit(0)
     }
     var narg  = fs.NArg()
     if narg < 1 {
@@ -102,8 +108,13 @@ func parseArgs() Project {
 }
 
 func main() {
-	ReadConfig()
     var project = parseArgs()
+    var errTouch = TouchConfig()
+    if errTouch != nil {
+        fmt.Print(errTouch.String())
+        os.Exit(1)
+    }
+	ReadConfig()
     fmt.Printf("%v\n", pretty.Formatter(project))
     var errCreate = project.Create()
     if errCreate != nil {
