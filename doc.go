@@ -10,21 +10,26 @@ some details of the configuration file.
 
 Usage:
 
-    gonew [options] TYPE NAME
+    gonew [options] cmd NAME
+    gonew [options] pkg NAME
+    gonew [options] lib NAME PKG
 
 Arguments:
 
-    TYPE
-            The type of the new project ("pkg" and "cmd" supported).
-
     NAME
             The name of the new project/repo.
+
+    PKG
+            The package a library (.go file) belongs to.
 
 Options:
 
     -host=""
             Repository host if any (currently, "github" is the only
             supported host).
+
+    -user=""
+            Username for the repo host (necessary for "github").
 
     -repo="git"
             Repository type (currently, "git" is the only supported

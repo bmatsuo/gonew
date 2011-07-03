@@ -41,7 +41,7 @@ func setupFlags() *flag.FlagSet {
     fs.StringVar(&host,
         "host", "", "Repository host if any (e.g. 'github').")
     fs.StringVar(&user,
-        "user", "", "Repo host username. (UNIMPLEMENTED use ~/.gonewrc)")
+        "user", "", "Repo host username.")
     fs.StringVar(&target,
         "target", "", "Makefile target. Default based on NAME.")
     fs.BoolVar(&help,
