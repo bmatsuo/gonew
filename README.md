@@ -1,6 +1,6 @@
 *gonew version 0.0_1*
 
-    Command gonew generates new Go project directories.
+Gonew generates new Go project directories.
 
 About gonew
 ===========
