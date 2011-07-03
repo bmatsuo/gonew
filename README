@@ -1,0 +1,26 @@
+gonew version 0.0_1
+=======================================================================
+
+ABOUT gonew
+DEPENDENCIES
+
+    You must have Go installed (http://golang.org/) and the $GOROOT
+    environment variable must be set to the Go source root directory.
+
+INSTALLATION
+
+    The following command will install gonew into the path
+    specified in the environment variable $GOBIN. When $GOBIN has
+    not been specified, gonew will be installed in the $GOROOT
+    hierarchy at $GOROOT/bin.
+
+        gomake install
+
+AUTHOR
+
+    Bryan Matsuo <bmatsuo@soe.ucsc.edu>
+
+COPYRIGHT & LICENSE
+
+    (C) Bryan Matsuo 
+    TODO - add licensing information!
