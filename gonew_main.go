@@ -111,14 +111,14 @@ func main() {
     var project = parseArgs()
     var errTouch = TouchConfig()
     if errTouch != nil {
-        fmt.Print(errTouch.String())
+        fmt.Print(errTouch.String(), "\n")
         os.Exit(1)
     }
 	ReadConfig()
     fmt.Printf("%v\n", pretty.Formatter(project))
     var errCreate = project.Create()
     if errCreate != nil {
-        fmt.Fprintf(os.Stderr, errCreate.String())
+        fmt.Fprint(os.Stderr, errCreate.String(), "\n")
         os.Exit(1)
     }
 }
