@@ -34,7 +34,7 @@ func setupFlags() *flag.FlagSet {
     fs.StringVar(&repo,
         "repo", "git", "Repository type (e.g. 'git').")
     fs.StringVar(&host,
-        "host", "", "Remote repository remote host if any (e.g. 'github').")
+        "host", "", "Repository host if any (e.g. 'github').")
     fs.StringVar(&target,
         "target", "", "Makefile target. Default based on NAME.")
     fs.BoolVar(&help,
