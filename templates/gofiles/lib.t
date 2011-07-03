@@ -1,3 +1,4 @@
+package {{gotarget}}
 /*
  *  Filename:    {{file}}
  *  Package:     {{gotarget}}
@@ -5,8 +6,5 @@
  *  Created:     {{date}}
  *  Description: {{desc}}
  */
-
-// Package {{gotarget}} does ....
-package {{gotarget}}
 import (
 )

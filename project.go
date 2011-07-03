@@ -7,8 +7,10 @@ package main
 import (
     "os"
     "log"
+    "exec"
     "path/filepath"
-    //"io/ioutil"
+    "io/ioutil"
+    "time"
     "github.com/hoisie/mustache.go"
 )
 
@@ -81,12 +83,21 @@ func (p Project) MakefileTemplatePath() string {
     return filepath.Join(GetTemplateRoot(), "makefiles", p.Type.String() + ".t")
 }
 func (p Project) CreateMakefile(dict map[string]string) os.Error {
-    log.Print("Creating Makefile")
-    var templatePath = p.MakefileTemplatePath()
-    log.Printf("    template: %s", templatePath)
-    var template = mustache.RenderFile(templatePath, dict)
-    log.Print("\n", template, "\n")
-    return nil
+    var (
+        templatePath = p.MakefileTemplatePath()
+        template = mustache.RenderFile(templatePath, dict, map[string]string{"file":"Makefile"})
+    )
+	if DEBUG {
+		log.Print("Creating Makefile")
+		log.Printf("    template: %s", templatePath)
+        if DEBUG_LEVEL > 0 {
+		    log.Print("\n", template, "\n")
+        }
+	}
+    var templout = make([]byte, len(template))
+    copy(templout, template)
+    var errWrite = ioutil.WriteFile("Makefile", templout, FilePermissions)
+    return errWrite
 }
 
 func (p Project) MainFilename() string {
@@ -104,13 +115,20 @@ func (p Project) MainTemplatePath() string {
 }
 func (p Project) CreateMainFile(dict map[string]string) os.Error {
     var mainfile = p.MainFilename()
-    log.Printf("Creating main file %s", mainfile)
     var templatePath = p.MainTemplatePath()
-    log.Printf("    template: %s", templatePath)
-    var template = mustache.RenderFile(templatePath, dict)
-    log.Print(dict)
-    log.Print("\n", template, "\n")
-    return nil
+    var template = mustache.RenderFile(templatePath, dict, map[string]string{"file":mainfile})
+    if DEBUG {
+        log.Printf("Creating main file %s", mainfile)
+        log.Printf("    template: %s", templatePath)
+        if DEBUG_LEVEL > 0 {
+            log.Print(dict)
+            log.Print("\n", template, "\n")
+        }
+    }
+    var templout = make([]byte, len(template))
+    copy(templout, template)
+    var errWrite = ioutil.WriteFile(mainfile, templout, FilePermissions)
+    return errWrite
 }
 
 func (p Project) TestTemplatePath() string {
@@ -127,13 +145,22 @@ func (p Project) TestFilename() string {
 }
 
 func (p Project) CreateTestFile(dict map[string]string) os.Error {
-    var testfile = p.TestFilename()
-    log.Printf("Creating main file %s", testfile)
-    var templatePath = p.TestTemplatePath()
-    log.Printf("    template: %s", templatePath)
-    var template = mustache.RenderFile(templatePath, dict)
-    log.Print("\n", template, "\n")
-    return nil
+    var (
+        testfile = p.TestFilename()
+        templatePath = p.TestTemplatePath()
+        template = mustache.RenderFile(templatePath, dict, map[string]string{"file":testfile})
+    )
+    if DEBUG {
+        log.Printf("Creating main file %s", testfile)
+        log.Printf("    template: %s", templatePath)
+        if DEBUG_LEVEL > 0 {
+            log.Print("\n", template, "\n")
+        }
+    }
+    var templout = make([]byte, len(template))
+    copy(templout, template)
+    var errWrite = ioutil.WriteFile(testfile, templout, FilePermissions)
+    return errWrite
 }
 
 func (p Project) ReadmeTemplatePath() string {
@@ -145,12 +172,26 @@ func (p Project) ReadmeTemplatePath() string {
     return filepath.Join(root, "README", p.Type.String() + ".t")
 }
 func (p Project) CreateReadme(dict map[string]string) os.Error {
-    log.Print("Creating README")
-    var templatePath = p.ReadmeTemplatePath()
-    log.Printf("    template: %s", templatePath)
-    var template = mustache.RenderFile(templatePath, dict)
-    log.Print("\n", template, "\n")
-    return nil
+    var (
+        templatePath = p.ReadmeTemplatePath()
+        readme = "README"
+        useMarkdown = p.Host == GitHubHost
+    )
+    if useMarkdown {
+        readme += ".md"
+    }
+    var template = mustache.RenderFile(templatePath, dict, map[string]string{"file":readme})
+    if DEBUG {
+        log.Print("Creating README")
+        log.Printf("    template: %s", templatePath)
+        if DEBUG_LEVEL > 0 {
+            log.Print("\n", template, "\n")
+        }
+    }
+    var templout = make([]byte, len(template))
+    copy(templout, template)
+    var errWrite = ioutil.WriteFile(readme, templout, FilePermissions)
+    return errWrite
 }
 
 func (p Project) OtherTemplatePaths() []string {
@@ -166,47 +207,85 @@ func (p Project) OtherTemplatePaths() []string {
     return others
 }
 func (p Project) CreateOtherFiles(dict map[string]string) os.Error {
-    log.Printf("Creating any other necessary files")
+    if DEBUG {
+        log.Printf("Creating any other necessary files")
+    }
     var templatePaths = p.OtherTemplatePaths()
     if templatePaths == nil {
         return nil
     }
     for _, path := range templatePaths {
-        log.Printf("    template: %s", path)
         var template = mustache.RenderFile(path, dict)
-        log.Print("\n", template, "\n")
+        if DEBUG {
+            log.Printf("    template: %s", path)
+            if DEBUG_LEVEL > 0 {
+                log.Print("\n", template, "\n")
+            }
+            var templout = make([]byte, len(template))
+            copy(templout, template)
+            var errWrite = ioutil.WriteFile(path, templout, FilePermissions)
+            if errWrite != nil {
+                return errWrite
+            }
+        }
     }
     return nil
 }
 
-// TODO fix this method.
+func (p Project) InitializeRepo(commit bool) os.Error {
+    switch p.Repo {
+    case GitType:
+        var (
+            initcmd = exec.Command("git", "init")
+            addcmd = exec.Command("git", "add", ".")
+            commitcmd = exec.Command("git", "commit",
+                    "-a", "-m", "Empty project generated by gonew.")
+        )
+        errInit := initcmd.Run()
+        if errInit != nil {
+            return errInit
+        }
+        errAdd := addcmd.Run()
+        if errAdd != nil {
+            return errAdd
+        }
+        if commit {
+            errCommit := commitcmd.Run()
+            if errCommit != nil {
+                return errCommit
+            }
+        }
+    }
+    return nil
+}
+
+// fix this method.
 func (p Project) HostString() string {
     switch p.Repo {
     case GitType:
-        return "github.com/bmatsuo/"
+        return "github.com/" + AppConfig.HostUser
     }
     return "<INSERT REPO HOST HERE>"
 }
 
-// TODO fix this method.
 func (p Project) YearString() string {
-    return "2011"
+    return time.LocalTime().Format("2006")
 }
 
-// TODO fix this method.
+// fix the formatting of this method.
 func (p Project) DateString() string {
-    return "Today..."
+    return time.LocalTime().String()
 }
 
 func (p Project) GenerateDictionary() map[string]string {
-    var td = make(map[string]string, 6)
+    var td = make(map[string]string, 9)
     td["project"]   = p.Name
-    td["name"]   = "Bryan Matsuo"
-    td["email"]  = "bmatsuo@soe.ucsc.edu"
+    td["name"]   = AppConfig.Name
+    td["email"]  = AppConfig.Email
     td["gotarget"] = p.Target
     td["main"]   = p.MainFilename()
     td["type"]   = p.Type.String()
-    td["host"]   = p.HostString()
+    td["repo"]   = p.HostString()
     td["year"]   = p.YearString()
     td["date"]   = p.DateString()
     return td
@@ -214,19 +293,17 @@ func (p Project) GenerateDictionary() map[string]string {
 
 func (p Project) Create() os.Error {
     var dict = p.GenerateDictionary()
-    var errMkdir, errChdir, errChdirBack os.Error
+    var errMkdir, errChdir, errRepo, errChdirBack os.Error
     var errMake, errMain, errTest, errReadme, errOther os.Error
 
-    if !DEBUG {
-        // Make the directory and change the working directory.
-        errMkdir = os.Mkdir(p.Name, DirPermissions)
-        if errMkdir != nil {
-            return errMkdir
-        }
-        errChdir = os.Chdir(p.Name)
-        if errChdir != nil {
-            return errChdir
-        }
+    // Make the directory and change the working directory.
+    errMkdir = os.Mkdir(p.Name, DirPermissions)
+    if errMkdir != nil {
+        return errMkdir
+    }
+    errChdir = os.Chdir(p.Name)
+    if errChdir != nil {
+        return errChdir
     }
 
     // Create the project files.
@@ -250,11 +327,12 @@ func (p Project) Create() os.Error {
     if errOther != nil {
         return errOther
     }
-
-    if !DEBUG {
-        // Change the working directory back.
-        errChdirBack = os.Chdir("..")
-        return errChdirBack
+    errRepo = p.InitializeRepo(true)
+    if errRepo != nil {
+        return errRepo
     }
-    return nil
+
+    // Change the working directory back.
+    errChdirBack = os.Chdir("..")
+    return errChdirBack
 }

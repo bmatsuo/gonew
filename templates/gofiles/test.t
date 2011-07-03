@@ -1,3 +1,4 @@
+package main
 /*
  *  Filename:    {{file}}
  *  Author:      {{name}} <{{email}}>
@@ -5,9 +6,6 @@
  *  Description: {{desc}}
  *  Usage:       gotest
  */
-
-// Command {{gotarget}} does ...
-package main
 import (
     "testing"
 )

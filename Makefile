@@ -9,6 +9,7 @@ include $(GOROOT)/src/Make.inc
 
 TARG=gonew
 GOFILES=\
+		config.go\
 		project.go\
 		gonew_main.go\
 

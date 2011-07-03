@@ -15,6 +15,7 @@ import (
 
 const (
     DEBUG = true
+	DEBUG_LEVEL = 0
 )
 
 func parseArgs() Project {
@@ -57,9 +58,14 @@ func parseArgs() Project {
     }
     ptype = fs.Arg(0)
     name = fs.Arg(1)
+
+    if target == "" {
+        target = DefaultTarget(name)
+    }
+
     var project = Project{
             Name:name, Target:target, Type: NilProjectType,
-            Host:NilRepoHost, Repo:NilRepoType}
+            Host:AppConfig.Host, Repo:AppConfig.Repo}
     switch ptype {
     case "cmd":
         project.Type = CmdType
@@ -95,6 +101,7 @@ func parseArgs() Project {
 }
 
 func main() {
+	ReadConfig()
     var project = parseArgs()
     fmt.Printf("%v\n", pretty.Formatter(project))
     var errCreate = project.Create()
