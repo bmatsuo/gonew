@@ -111,7 +111,13 @@ func (p Project) MainFilename() string {
 }
 
 func (p Project) MainTemplatePath() string {
-    return filepath.Join(GetTemplateRoot(), "gofiles", "pkg.t")
+    switch p.Type {
+    case CmdType:
+        return filepath.Join(GetTemplateRoot(), "gofiles", "cmd.t")
+    case PkgType:
+        return filepath.Join(GetTemplateRoot(), "gofiles", "pkg.t")
+    }
+    return ""
 }
 func (p Project) CreateMainFile(dict map[string]string) os.Error {
     var mainfile = p.MainFilename()
@@ -191,6 +197,32 @@ func (p Project) CreateReadme(dict map[string]string) os.Error {
     var templout = make([]byte, len(template))
     copy(templout, template)
     var errWrite = ioutil.WriteFile(readme, templout, FilePermissions)
+    return errWrite
+}
+
+func (p Project) DocTemplatePath() string {
+    var root = GetTemplateRoot()
+    return filepath.Join(root, "gofiles", "doc.t")
+}
+func (p Project) CreateDocFile(dict map[string]string) os.Error {
+    if p.Type == PkgType {
+        return nil
+    }
+    var (
+        templatePath = p.DocTemplatePath()
+        doc = "doc.go"
+    )
+    var template = mustache.RenderFile(templatePath, dict, map[string]string{"file":doc})
+    if DEBUG {
+        log.Print("Creating documentation")
+        log.Printf("    template: %s", templatePath)
+        if DEBUG_LEVEL > 0 {
+            log.Print("\n", template, "\n")
+        }
+    }
+    var templout = make([]byte, len(template))
+    copy(templout, template)
+    var errWrite = ioutil.WriteFile(doc, templout, FilePermissions)
     return errWrite
 }
 
@@ -294,7 +326,7 @@ func (p Project) GenerateDictionary() map[string]string {
 func (p Project) Create() os.Error {
     var dict = p.GenerateDictionary()
     var errMkdir, errChdir, errRepo, errChdirBack os.Error
-    var errMake, errMain, errTest, errReadme, errOther os.Error
+    var errMake, errMain, errDoc, errTest, errReadme, errOther os.Error
 
     // Make the directory and change the working directory.
     errMkdir = os.Mkdir(p.Name, DirPermissions)
@@ -314,6 +346,10 @@ func (p Project) Create() os.Error {
     errMain = p.CreateMainFile(dict)
     if errMain != nil {
         return errMain
+    }
+    errDoc = p.CreateDocFile(dict)
+    if errDoc != nil {
+        return errDoc
     }
     errTest = p.CreateTestFile(dict)
     if errTest != nil {

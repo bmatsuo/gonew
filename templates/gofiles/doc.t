@@ -7,11 +7,11 @@
  */
 
 /*
-{{target}} does...
+{{gotarget}} does...
 
 Usage:
 
-    {{target}} [options] ARGUMENT ...
+    {{gotarget}} [options] ARGUMENT ...
 
 Arguments:
 
