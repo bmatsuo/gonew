@@ -61,6 +61,7 @@ func DefaultTarget(pname string) string {
 type Project struct {
     Name   string
     Target string
+    User   string
     Type   ProjectType
     Host   RepoHost
     Repo   RepoType
@@ -310,12 +311,12 @@ func (p Project) HostString() string {
     return "<INSERT REPO HOST HERE>"
 }
 
-func (p Project) YearString() string {
+func YearString() string {
     return time.LocalTime().Format("2006")
 }
 
 // fix the formatting of this method.
-func (p Project) DateString() string {
+func DateString() string {
     return time.LocalTime().String()
 }
 
@@ -328,8 +329,8 @@ func (p Project) GenerateDictionary() map[string]string {
     td["main"]   = p.MainFilename()
     td["type"]   = p.Type.String()
     td["repo"]   = p.HostString()
-    td["year"]   = p.YearString()
-    td["date"]   = p.DateString()
+    td["year"]   = YearString()
+    td["date"]   = DateString()
     return td
 }
 
