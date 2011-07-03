@@ -15,7 +15,7 @@ import (
 )
 
 const (
-    DEBUG = true
+    DEBUG = false
 	DEBUG_LEVEL = 0
 )
 var (
@@ -115,7 +115,9 @@ func main() {
         os.Exit(1)
     }
 	ReadConfig()
-    fmt.Printf("%v\n", pretty.Formatter(project))
+    if DEBUG {
+        fmt.Printf("%v\n", pretty.Formatter(project))
+    }
     var errCreate = project.Create()
     if errCreate != nil {
         fmt.Fprint(os.Stderr, errCreate.String(), "\n")

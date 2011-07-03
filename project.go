@@ -89,9 +89,11 @@ func (p Project) CreateMakefile(dict map[string]string) os.Error {
     )
 	if DEBUG {
 		log.Print("Creating Makefile")
-		log.Printf("    template: %s", templatePath)
         if DEBUG_LEVEL > 0 {
-		    log.Print("\n", template, "\n")
+		    log.Printf("    template: %s", templatePath)
+            if DEBUG_LEVEL > 1 {
+		        log.Print("\n", template, "\n")
+            }
         }
 	}
     var templout = make([]byte, len(template))
@@ -125,10 +127,12 @@ func (p Project) CreateMainFile(dict map[string]string) os.Error {
     var template = mustache.RenderFile(templatePath, dict, map[string]string{"file":mainfile})
     if DEBUG {
         log.Printf("Creating main file %s", mainfile)
-        log.Printf("    template: %s", templatePath)
         if DEBUG_LEVEL > 0 {
-            log.Print(dict)
-            log.Print("\n", template, "\n")
+            log.Printf("    template: %s", templatePath)
+            if DEBUG_LEVEL > 1 {
+                log.Print(dict)
+                log.Print("\n", template, "\n")
+            }
         }
     }
     var templout = make([]byte, len(template))
@@ -158,9 +162,11 @@ func (p Project) CreateTestFile(dict map[string]string) os.Error {
     )
     if DEBUG {
         log.Printf("Creating main file %s", testfile)
-        log.Printf("    template: %s", templatePath)
         if DEBUG_LEVEL > 0 {
-            log.Print("\n", template, "\n")
+            log.Printf("    template: %s", templatePath)
+            if DEBUG_LEVEL > 1 {
+                log.Print("\n", template, "\n")
+            }
         }
     }
     var templout = make([]byte, len(template))
@@ -189,9 +195,11 @@ func (p Project) CreateReadme(dict map[string]string) os.Error {
     var template = mustache.RenderFile(templatePath, dict, map[string]string{"file":readme})
     if DEBUG {
         log.Print("Creating README")
-        log.Printf("    template: %s", templatePath)
         if DEBUG_LEVEL > 0 {
-            log.Print("\n", template, "\n")
+            log.Printf("    template: %s", templatePath)
+            if DEBUG_LEVEL > 1 {
+                log.Print("\n", template, "\n")
+            }
         }
     }
     var templout = make([]byte, len(template))
@@ -215,9 +223,11 @@ func (p Project) CreateDocFile(dict map[string]string) os.Error {
     var template = mustache.RenderFile(templatePath, dict, map[string]string{"file":doc})
     if DEBUG {
         log.Print("Creating documentation")
-        log.Printf("    template: %s", templatePath)
         if DEBUG_LEVEL > 0 {
-            log.Print("\n", template, "\n")
+            log.Printf("    template: %s", templatePath)
+            if DEBUG_LEVEL > 1 {
+                log.Print("\n", template, "\n")
+            }
         }
     }
     var templout = make([]byte, len(template))
@@ -248,17 +258,17 @@ func (p Project) CreateOtherFiles(dict map[string]string) os.Error {
     }
     for _, path := range templatePaths {
         var template = mustache.RenderFile(path, dict)
-        if DEBUG {
+        if DEBUG && DEBUG_LEVEL > 1 {
             log.Printf("    template: %s", path)
             if DEBUG_LEVEL > 0 {
                 log.Print("\n", template, "\n")
             }
-            var templout = make([]byte, len(template))
-            copy(templout, template)
-            var errWrite = ioutil.WriteFile(path, templout, FilePermissions)
-            if errWrite != nil {
-                return errWrite
-            }
+        }
+        var templout = make([]byte, len(template))
+        copy(templout, template)
+        var errWrite = ioutil.WriteFile(path, templout, FilePermissions)
+        if errWrite != nil {
+            return errWrite
         }
     }
     return nil
