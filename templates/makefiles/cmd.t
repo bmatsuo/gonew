@@ -13,3 +13,5 @@ GOFILES=\
 
 include $(GOROOT)/src/Make.cmd
 
+test:
+	gotest
