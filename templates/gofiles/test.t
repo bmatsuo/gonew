@@ -6,7 +6,7 @@
  *  Usage:       gotest
  */
 
-// Command {{target}} does ...
+// Command {{gotarget}} does ...
 package main
 import (
     "testing"

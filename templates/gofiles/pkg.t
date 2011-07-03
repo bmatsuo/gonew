@@ -5,7 +5,7 @@
  *  Description: {{desc}}
  */
 
-// Package {{target}} does ....
-package {{target}}
+// Package {{gotarget}} does ....
+package {{gotarget}}
 import (
 )

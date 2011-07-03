@@ -17,7 +17,7 @@ USAGE
 
     Run {{project}} with the command
 
-        {{target}} [options]
+        {{gotarget}} [options]
 
 INSTALLATION
 -------------

@@ -8,7 +8,8 @@ import (
     "os"
     "log"
     "path/filepath"
-    "io/ioutil"
+    //"io/ioutil"
+    "github.com/hoisie/mustache.go"
 )
 
 var (
@@ -79,15 +80,11 @@ func GetTemplateRoot() string {
 func (p Project) MakefileTemplatePath() string {
     return filepath.Join(GetTemplateRoot(), "makefiles", p.Type.String() + ".t")
 }
-func (p Project) CreateMakefile() os.Error {
+func (p Project) CreateMakefile(dict map[string]string) os.Error {
     log.Print("Creating Makefile")
     var templatePath = p.MakefileTemplatePath()
     log.Printf("    template: %s", templatePath)
-    b, err := ioutil.ReadFile(templatePath)
-    if err != nil {
-        return err
-    }
-    var template = string(b)
+    var template = mustache.RenderFile(templatePath, dict)
     log.Print("\n", template, "\n")
     return nil
 }
@@ -105,16 +102,13 @@ func (p Project) MainFilename() string {
 func (p Project) MainTemplatePath() string {
     return filepath.Join(GetTemplateRoot(), "gofiles", "pkg.t")
 }
-func (p Project) CreateMainFile() os.Error {
+func (p Project) CreateMainFile(dict map[string]string) os.Error {
     var mainfile = p.MainFilename()
     log.Printf("Creating main file %s", mainfile)
     var templatePath = p.MainTemplatePath()
     log.Printf("    template: %s", templatePath)
-    b, err := ioutil.ReadFile(templatePath)
-    if err != nil {
-        return err
-    }
-    var template = string(b)
+    var template = mustache.RenderFile(templatePath, dict)
+    log.Print(dict)
     log.Print("\n", template, "\n")
     return nil
 }
@@ -132,16 +126,12 @@ func (p Project) TestFilename() string {
     return p.Name + "_test.go"
 }
 
-func (p Project) CreateTestFile() os.Error {
+func (p Project) CreateTestFile(dict map[string]string) os.Error {
     var testfile = p.TestFilename()
     log.Printf("Creating main file %s", testfile)
     var templatePath = p.TestTemplatePath()
     log.Printf("    template: %s", templatePath)
-    b, err := ioutil.ReadFile(templatePath)
-    if err != nil {
-        return err
-    }
-    var template = string(b)
+    var template = mustache.RenderFile(templatePath, dict)
     log.Print("\n", template, "\n")
     return nil
 }
@@ -154,15 +144,11 @@ func (p Project) ReadmeTemplatePath() string {
     }
     return filepath.Join(root, "README", p.Type.String() + ".t")
 }
-func (p Project) CreateReadme() os.Error {
+func (p Project) CreateReadme(dict map[string]string) os.Error {
     log.Print("Creating README")
     var templatePath = p.ReadmeTemplatePath()
     log.Printf("    template: %s", templatePath)
-    b, err := ioutil.ReadFile(templatePath)
-    if err != nil {
-        return err
-    }
-    var template = string(b)
+    var template = mustache.RenderFile(templatePath, dict)
     log.Print("\n", template, "\n")
     return nil
 }
@@ -179,7 +165,7 @@ func (p Project) OtherTemplatePaths() []string {
     }
     return others
 }
-func (p Project) CreateOtherFiles() os.Error {
+func (p Project) CreateOtherFiles(dict map[string]string) os.Error {
     log.Printf("Creating any other necessary files")
     var templatePaths = p.OtherTemplatePaths()
     if templatePaths == nil {
@@ -187,11 +173,7 @@ func (p Project) CreateOtherFiles() os.Error {
     }
     for _, path := range templatePaths {
         log.Printf("    template: %s", path)
-        b, err := ioutil.ReadFile(path)
-        if err != nil {
-            return err
-        }
-        var template = string(b)
+        var template = mustache.RenderFile(path, dict)
         log.Print("\n", template, "\n")
     }
     return nil
@@ -218,8 +200,10 @@ func (p Project) DateString() string {
 
 func (p Project) GenerateDictionary() map[string]string {
     var td = make(map[string]string, 6)
-    td["name"]   = p.Name
-    td["target"] = p.Target
+    td["project"]   = p.Name
+    td["name"]   = "Bryan Matsuo"
+    td["email"]  = "bmatsuo@soe.ucsc.edu"
+    td["gotarget"] = p.Target
     td["main"]   = p.MainFilename()
     td["type"]   = p.Type.String()
     td["host"]   = p.HostString()
@@ -229,7 +213,7 @@ func (p Project) GenerateDictionary() map[string]string {
 }
 
 func (p Project) Create() os.Error {
-    //var dict = p.GenerateDictionary()
+    var dict = p.GenerateDictionary()
     var errMkdir, errChdir, errChdirBack os.Error
     var errMake, errMain, errTest, errReadme, errOther os.Error
 
@@ -246,23 +230,23 @@ func (p Project) Create() os.Error {
     }
 
     // Create the project files.
-    errMake = p.CreateMakefile()
+    errMake = p.CreateMakefile(dict)
     if errMake != nil {
         return errMake
     }
-    errMain = p.CreateMainFile()
+    errMain = p.CreateMainFile(dict)
     if errMain != nil {
         return errMain
     }
-    errTest = p.CreateTestFile()
+    errTest = p.CreateTestFile(dict)
     if errTest != nil {
         return errTest
     }
-    errReadme = p.CreateReadme()
+    errReadme = p.CreateReadme(dict)
     if errReadme != nil {
         return errReadme
     }
-    errOther = p.CreateOtherFiles()
+    errOther = p.CreateOtherFiles(dict)
     if errOther != nil {
         return errOther
     }
