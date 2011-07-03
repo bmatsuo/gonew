@@ -1,8 +1,8 @@
 /*
-Command gonew generates new Go project directories.
-Its produced project directories contain stub files and initialized
-repositories (only git/github supported now). It can be used to create new
-packages and commands.
+Command gonew generates new Go project directories. Its produced project
+directories contain stub files and initialized repositories (only
+git/github supported now). It can be used to create new packages and
+commands.
 
 The gonew configuration file is stored at ~/.gonewrc. It is generated the
 first time you run gonew. Command line options can be used to override
