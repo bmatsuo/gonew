@@ -69,17 +69,17 @@ type File struct {
 }
 
 func (f File) Create() os.Error {
-    var dict = map[string]string{
-        "file":f.Name,
-        "name":AppConfig.Name,
-        "email":AppConfig.Email,
-        "date":DateString(),
-        "year":YearString(),
-        "gotarget":f.Pkg}
     var (
-        tpath = filepath.Join(GetTemplateRoot(), "templates", "gofiles", "lib.t")
-        template = mustache.RenderFile(tpath, dict)
         lib = f.Name + ".go"
+        dict = map[string]string{
+            "file":lib,
+            "name":AppConfig.Name,
+            "email":AppConfig.Email,
+            "date":DateString(),
+            "year":YearString(),
+            "gotarget":f.Pkg}
+        tpath = filepath.Join(GetTemplateRoot(), "gofiles", "lib.t")
+        template = mustache.RenderFile(tpath, dict)
     )
 	if DEBUG {
 		log.Printf("Creating library %s", lib)
