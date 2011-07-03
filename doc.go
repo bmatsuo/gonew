@@ -12,7 +12,7 @@ Usage:
 
     gonew [options] TYPE NAME
 
-Argument:
+Arguments:
 
     TYPE
             The type of the new project ("pkg" and "cmd" supported).
