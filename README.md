@@ -1,4 +1,4 @@
-*gonew version 0.0_1*
+*gonew version 0.0_3*
 
 Gonew generates new Go project directories.
 
@@ -28,8 +28,8 @@ Installation must be done with goinstall.
 
     goinstall github.com/bmatsuo/gonew
 
-Documentation
--------------
+General Documentation
+---------------------
 
 For information about command line options.
 
