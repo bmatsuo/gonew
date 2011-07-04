@@ -86,7 +86,7 @@ func (p Project) Create() os.Error {
     return errChdirBack
 }
 func (p Project) CreateFiles(dict map[string]string) os.Error {
-    var errMake, errMain, errDoc, errTest, errReadme, errOther os.Error
+    var errMake, errMain, errDoc, errLic, errTest, errReadme, errOther os.Error
     errMake = p.CreateMakefile(dict)
     if errMake != nil {
         return errMake
@@ -110,6 +110,10 @@ func (p Project) CreateFiles(dict map[string]string) os.Error {
     errOther = p.CreateOtherFiles(dict)
     if errOther != nil {
         return errOther
+    }
+    errLic = p.CreateLicense(dict)
+    if errLic != nil {
+        return errLic
     }
     return nil
 }
@@ -158,12 +162,26 @@ func (p Project) CreateMainFile(dict map[string]string) os.Error {
     return errAppend
 }
 func (p Project) CreateTestFile(dict map[string]string) os.Error {
-    var (
+    var(
         testfile = p.TestFilename()
-        templatePath = p.TestTemplatePath()
-		errWrite = WriteTemplate(testfile, "test file", dict, templatePath...)
+        ltemplateName = p.GofileLicenseHeadTemplateName()
+        templatePath  = p.TestTemplatePath()
+        errWrite, errAppend os.Error
     )
-    return errWrite
+    if ltemplateName == "" {
+        if DEBUG {
+            log.Print("No license template found for %s", p.License.String())
+        }
+        errWrite = WriteTemplate(testfile, "main file", dict, templatePath...)
+        return errWrite
+    }
+    var ltemplatePath = []string{"licenses", ltemplateName}
+    errWrite = WriteTemplate(testfile, "main file license", dict, ltemplatePath...)
+    if errWrite != nil {
+        return errWrite
+    }
+    errAppend = AppendTemplate(testfile, "main file contents", dict, templatePath...)
+    return errAppend
 }
 func (p Project) CreateReadme(dict map[string]string) os.Error {
     var (
@@ -171,6 +189,24 @@ func (p Project) CreateReadme(dict map[string]string) os.Error {
         readme = p.ReadmeFilename()
     )
 	var errWrite = WriteTemplate(readme, "README", dict, templatePath...)
+    if errWrite != nil {
+        return errWrite
+    }
+    if p.License == NilLicenseType {
+        return nil
+    }
+    var (
+        ltemplatePath = []string{"licenses", p.ReadmeLicenseTailTemplateName()}
+        errAppend = AppendTemplate(readme, "README license tail", dict, ltemplatePath...)
+    )
+    return errAppend
+}
+func (p Project) CreateLicense(dict map[string]string) os.Error {
+    var (
+        templatePath = []string{"licenses", p.LicenseTemplateName()}
+        license = "LICENSE"
+    )
+	var errWrite = WriteTemplate(license, "license", dict, templatePath...)
     return errWrite
 }
 func (p Project) CreateDocFile(dict map[string]string) os.Error {

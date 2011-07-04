@@ -28,14 +28,15 @@ gonew [options] lib NAME PKG
     VERBOSE = false
     DEBUG = false
 	DEBUG_LEVEL = -1
-    name   string
-    ptype  string
-    repo   string
-    host   string
-    user   string
-    target string
-	remote string
-    help   bool
+    name    string
+    ptype   string
+    repo    string
+    host    string
+    user    string
+    target  string
+    license string
+	remote  string
+    help    bool
 )
 
 func setupFlags() *flag.FlagSet {
@@ -50,6 +51,8 @@ func setupFlags() *flag.FlagSet {
 		"remote", "", "Remote repository url to initialize and push to.")
     fs.StringVar(&target,
         "target", "", "Makefile target. Default based on NAME.")
+    fs.StringVar(&license,
+        "license", "", "Project license (e.g. 'newbsd').")
     fs.BoolVar(&VERBOSE,
         "v", false, "Verbose output.")
     fs.IntVar(&DEBUG_LEVEL,
@@ -111,6 +114,7 @@ func parseArgs() Request {
             Host:AppConfig.Host, User:AppConfig.HostUser,
             Repo:AppConfig.Repo}
         produceProject = true
+        licObj  = NilLicenseType
         repoObj = NilRepoType
         hostObj = NilRepoHost
     )
@@ -121,6 +125,15 @@ func parseArgs() Request {
         project.Type = PkgType
     case "lib":
         produceProject = false
+    default:
+        fmt.Fprintf(os.Stderr, "Unknown TYPE %s\n", ptype)
+        os.Exit(1)
+    }
+    switch license {
+    case "":
+        break
+    case "newbsd":
+        licObj = NewBSD
     default:
         fmt.Fprintf(os.Stderr, "Unknown TYPE %s\n", ptype)
         os.Exit(1)
@@ -149,6 +162,9 @@ func parseArgs() Request {
         if user != "" {
             project.User = user
         }
+        if licObj != NilLicenseType {
+            project.License = licObj
+        }
         if hostObj != NilRepoHost {
             project.Host = hostObj
         }
@@ -165,6 +181,9 @@ func parseArgs() Request {
         file.Pkg = fs.Arg(2)
         if user != "" {
             file.User = user
+        }
+        if licObj != NilLicenseType {
+            file.License = licObj
         }
         if hostObj != NilRepoHost {
             file.Host = hostObj
