@@ -40,5 +40,6 @@ Author
 Copyright & License
 ===================
 
-    (C) {{year}} {{name}}
+Copyright (c) {{year}}, {{name}}.
+All rights reserved.
 

@@ -39,5 +39,6 @@ AUTHOR
 
 COPYRIGHT & LICENSE
 
-    (C) {{year}} {{name}}
+    Copyright (c) {{year}}, {{name}}.
+    All rights reserved.
 
