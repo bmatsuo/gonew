@@ -18,7 +18,7 @@ type RepoType int
 const(
     NilRepoType RepoType = iota
     GitType
-    // MercurialType
+    MercurialType
     // ...
 )
 

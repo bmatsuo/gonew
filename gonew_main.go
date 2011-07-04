@@ -148,6 +148,8 @@ func parseArgs() Request {
         break
     case "git":
         repoObj = GitType
+    case "mercurial":
+        repoObj = MercurialType
     default:
         fmt.Fprintf(os.Stderr, "Unknown REPO %s\n", repo)
         os.Exit(1)
@@ -158,6 +160,11 @@ func parseArgs() Request {
     case "github":
         hostObj = GitHubHost
         repoObj = GitType
+    /*
+    case "googlecode":
+        hostObj = GoogleCodeType
+        repoObj = MercurialType
+    */
     default:
         fmt.Fprintf(os.Stderr, "Unknown HOST %s\n", host)
         os.Exit(1)
