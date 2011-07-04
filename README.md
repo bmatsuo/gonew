@@ -6,7 +6,8 @@ About gonew
 ===========
 
 The idea behind gonew is to quickly and easily generate new Go projects
-and repositories that can be installed immediately via Goinstall.
+and repositories that can be installed immediately via Goinstall. The
+inspiration behind gonew is the h2xs application for Perl.
 
 Project directories produced by gonew contain stub files and initialized
 repositories (only git/github supported now). Gonew can be used to create
