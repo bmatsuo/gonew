@@ -135,12 +135,23 @@ func (p Project) CreateMakefile(dict map[string]string) os.Error {
     return errWrite
 }
 func (p Project) CreateMainFile(dict map[string]string) os.Error {
-    var (
+    var(
         mainfile = p.MainFilename()
-        templatePath = p.MainTemplatePath()
-        errWrite = WriteTemplate(mainfile, "main file", dict, templatePath...)
+        ltemplateName = p.GofileLicenseHeadTemplateName()
+        templatePath  = p.MainTemplatePath()
+        errWrite, errAppend os.Error
     )
-    return errWrite
+    if ltemplateName == "" {
+        errWrite = WriteTemplate(mainfile, "main file", dict, templatePath...)
+        return errWrite
+    }
+    var ltemplatePath = []string{"licenses", ltemplateName}
+    errWrite = WriteTemplate(mainfile, "main file license", dict, ltemplatePath...)
+    if errWrite != nil {
+        return errWrite
+    }
+    errAppend = AppendTemplate(mainfile, "main file", dict, ltemplatePath...)
+    return errAppend
 }
 func (p Project) CreateTestFile(dict map[string]string) os.Error {
     var (
@@ -229,6 +240,30 @@ func (p Project) ReadmeFilename() string {
     return "README"
 }
 
+func (p Project) LicenseTemplateName() string {
+    var lstring = p.License.String()
+    if lstring == "" {
+        return ""
+    }
+    return lstring + ".t"
+}
+func (p Project) GofileLicenseHeadTemplateName() string {
+    var lstring = p.License.String()
+    if lstring == "" {
+        return ""
+    }
+    return lstring + ".gohead.t"
+}
+func (p Project) ReadmeLicenseTailTemplateName() string {
+    var lstring = p.License.String()
+    if lstring == "" {
+        return ""
+    }
+    if p.ReadmeIsMarkdown() {
+        return lstring + ".readme.md.t"
+    }
+    return lstring + ".readme.t"
+}
 func (p Project) MainTemplateName() string {
     switch p.Type {
     case PkgType:

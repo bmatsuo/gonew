@@ -26,6 +26,7 @@ type RemoteRepository interface {
     Push()             os.Error // Push changes to the remote host.
     Repo()             RepoType
     Host()             RepoHost
+    UseMarkdown()      bool
 }
 
 func VerifyRemote(remote RemoteRepository) {
@@ -50,6 +51,9 @@ func (github GitHubRepository) Repo() RepoType {
 }
 func (github GitHubRepository) Host() RepoHost {
     return GitHubHost
+}
+func (github GitHubRepository) UseMarkdown() bool {
+    return true
 }
 func (github GitHubRepository) Init(origin string) os.Error {
     VerifyRemote(github)

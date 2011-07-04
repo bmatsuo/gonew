@@ -87,7 +87,7 @@ func AppendTemplate(filename, desc string, dict map[string]string, relpath...str
             log.Print("\n", template, "\n")
         }
     }
-    var fout, errOpen = os.Open(filename)
+    var fout, errOpen = os.OpenFile(filename, os.O_WRONLY|os.O_APPEND, FilePermissions)
     if errOpen != nil {
         return errOpen
     }
