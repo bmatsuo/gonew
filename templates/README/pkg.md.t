@@ -1,25 +1,25 @@
 *{{project}} version 0.0_1*
 
-ABOUT {{project}}
+About {{project}}
 =============
 
     {{desc}}
 
-DEPENDENCIES
+Dependencies
 =============
 
     You must have Go installed (http://golang.org/). 
 
-DOCUMENTATION
+Documentation
 =============
-INSTALLATION
+Installation
 -------------
 
     Use goinstall to install {{project}}
 
         goinstall {{repo}}
 
-GENERAL DOCUMENTATION
+General Documentation
 ---------------------
 
     Use godoc to vew the documentation for {{project}}
@@ -32,12 +32,12 @@ GENERAL DOCUMENTATION
 
     and view the url localhost:6060/pkg/{{repo}}/
 
-AUTHOR
+Author
 ======
 
     {{name}} <{{email}}>
 
-COPYRIGHT & LICENSE
+Copyright & License
 ===================
 
     (C) {{year}} {{name}}
