@@ -26,7 +26,10 @@ func WriteTemplate(filename, desc string, dict map[string]string, path...string)
     if DEBUG_LEVEL > 0 {
         log.Printf("template: %s", tpath)
         if DEBUG_LEVEL > 1 {
-            log.Print("\n", template, "\n")
+            log.Printf("context:\n%v", dict)
+            if DEBUG_LEVEL > 2 {
+                log.Print("\n", template, "\n")
+            }
         }
     }
     var templout = make([]byte, len(template))
