@@ -8,7 +8,7 @@ package main
 import (
     "os"
     //"io"
-    "log"
+    //"log"
     "fmt"
     "flag"
     //"bufio"
@@ -18,13 +18,16 @@ import (
     "github.com/kr/pretty.go"
 )
 
-const (
-    DEBUG = true
-	DEBUG_LEVEL = 0
-)
 var (
-    usage = "gonew [options] TYPE NAME"
-    printUsageHead = func () { fmt.Fprint(os.Stderr, "\n", usage, "\n\n") }
+    usage = `
+gonew [options] cmd NAME
+gonew [options] pkg NAME
+gonew [options] lib NAME PKG
+`
+    printUsageHead = func () { fmt.Fprint(os.Stderr, usage, "\n") }
+    VERBOSE = false
+    DEBUG = false
+	DEBUG_LEVEL = -1
     name   string
     ptype  string
     repo   string
@@ -44,6 +47,10 @@ func setupFlags() *flag.FlagSet {
         "user", "", "Repo host username.")
     fs.StringVar(&target,
         "target", "", "Makefile target. Default based on NAME.")
+    fs.BoolVar(&VERBOSE,
+        "v", false, "Verbose output.")
+    fs.IntVar(&DEBUG_LEVEL,
+        "debug", -1, "Change the amout of debug output.")
     fs.BoolVar(&help,
         "help", false, "Show this message.")
     var usageTemp = fs.Usage
@@ -68,6 +75,9 @@ var RequestedProject Project
 func parseArgs() Request {
     var fs = setupFlags()
     fs.Parse(os.Args[1:])
+    if DEBUG_LEVEL >= 0 {
+        DEBUG = true
+    }
     if help {
         fs.Usage()
         os.Exit(0)
@@ -99,7 +109,6 @@ func parseArgs() Request {
         repoObj = NilRepoType
         hostObj = NilRepoHost
     )
-    log.Printf("%v", file)
     switch ptype {
     case "cmd":
         project.Type = CmdType
@@ -176,6 +185,8 @@ func main() {
     case ProjectRequest:
         if DEBUG {
             fmt.Printf("Project requested %v\n", pretty.Formatter(RequestedProject))
+        } else if VERBOSE {
+            fmt.Printf("Generating project %s\n", RequestedProject.Name)
         }
         var errCreate = RequestedProject.Create()
         if errCreate != nil {
@@ -185,6 +196,8 @@ func main() {
     case LibraryRequest:
         if DEBUG {
             fmt.Printf("Library requested %v\n", pretty.Formatter(RequestedFile))
+        } else if VERBOSE {
+            fmt.Printf("Generating library %s\n", RequestedFile.Name + ".go")
         }
         var errCreate = RequestedFile.Create()
         if errCreate != nil {
