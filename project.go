@@ -274,7 +274,7 @@ func (p Project) TestTemplatePath() []string {
     return []string{"testfiles", p.TestTemplateName()}
 }
 func (p Project) ReadmeTemplatePath() []string {
-    return []string{"README", p.ReadmeTemplateName() + ".t"}
+    return []string{"README", p.ReadmeTemplateName()}
 }
 func (p Project) DocTemplatePath() []string {
     return []string{"gofiles", "doc.t"}
