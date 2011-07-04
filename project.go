@@ -15,22 +15,6 @@ var (
     FilePermissions uint32 = 0644
 )
 
-type RepoType int
-const(
-    NilRepoType RepoType = iota
-    GitType
-    // MercurialType
-    // ...
-)
-
-type RepoHost int
-const (
-    NilRepoHost RepoHost = iota
-    GitHubHost
-    //GoogleHost
-    //...
-)
-
 type ProjectType int
 const (
     NilProjectType ProjectType = iota

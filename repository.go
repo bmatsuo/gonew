@@ -11,6 +11,14 @@ import (
     "exec"
 )
 
+type RepoType int
+const(
+    NilRepoType RepoType = iota
+    GitType
+    // MercurialType
+    // ...
+)
+
 type Repository interface {
     Initialize(commit bool) os.Error // Initialize the working directory as a new repository.
     Add(paths...string)     os.Error // Add a set of paths to the repository.
