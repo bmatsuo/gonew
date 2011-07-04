@@ -7,6 +7,7 @@ package main
 import (
     "os"
     "fmt"
+    "log"
     "time"
 )
 
@@ -142,6 +143,9 @@ func (p Project) CreateMainFile(dict map[string]string) os.Error {
         errWrite, errAppend os.Error
     )
     if ltemplateName == "" {
+        if DEBUG {
+            log.Print("No license template found for %s", p.License.String())
+        }
         errWrite = WriteTemplate(mainfile, "main file", dict, templatePath...)
         return errWrite
     }
@@ -150,7 +154,7 @@ func (p Project) CreateMainFile(dict map[string]string) os.Error {
     if errWrite != nil {
         return errWrite
     }
-    errAppend = AppendTemplate(mainfile, "main file", dict, ltemplatePath...)
+    errAppend = AppendTemplate(mainfile, "main file contents", dict, templatePath...)
     return errAppend
 }
 func (p Project) CreateTestFile(dict map[string]string) os.Error {
@@ -241,21 +245,21 @@ func (p Project) ReadmeFilename() string {
 }
 
 func (p Project) LicenseTemplateName() string {
-    var lstring = p.License.String()
+    var lstring = p.License.TemplateNamePrefix()
     if lstring == "" {
         return ""
     }
     return lstring + ".t"
 }
 func (p Project) GofileLicenseHeadTemplateName() string {
-    var lstring = p.License.String()
+    var lstring = p.License.TemplateNamePrefix()
     if lstring == "" {
         return ""
     }
     return lstring + ".gohead.t"
 }
 func (p Project) ReadmeLicenseTailTemplateName() string {
-    var lstring = p.License.String()
+    var lstring = p.License.TemplateNamePrefix()
     if lstring == "" {
         return ""
     }

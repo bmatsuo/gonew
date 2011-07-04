@@ -103,11 +103,11 @@ func parseArgs() Request {
 
     var (
         file = File{
-            Name:name, Pkg: "main", Repo:AppConfig.Repo, License:NilLicenseType,
+            Name:name, Pkg: "main", Repo:AppConfig.Repo, License:AppConfig.License,
             User:AppConfig.HostUser, Host:AppConfig.Host}
         project = Project{
             Name:name, Target:target, Type: NilProjectType,
-            License:NilLicenseType, Remote:remote,
+            License:AppConfig.License, Remote:remote,
             Host:AppConfig.Host, User:AppConfig.HostUser,
             Repo:AppConfig.Repo}
         produceProject = true

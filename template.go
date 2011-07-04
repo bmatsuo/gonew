@@ -69,7 +69,7 @@ func ParseTemplate(filename string, dict map[string]string, relpath []string) st
 func WriteTemplate(filename, desc string, dict map[string]string, relpath...string) os.Error {
     var template = ParseTemplate(filename, dict, relpath)
 	if DEBUG || VERBOSE {
-		fmt.Printf("Creating %s %s", desc, filename)
+		fmt.Printf("Creating %s %s\n", desc, filename)
         if DEBUG && DEBUG_LEVEL > 2 {
             log.Print("\n", template, "\n")
         }
@@ -82,7 +82,7 @@ func WriteTemplate(filename, desc string, dict map[string]string, relpath...stri
 func AppendTemplate(filename, desc string, dict map[string]string, relpath...string) os.Error {
     var template = ParseTemplate(filename, dict, relpath)
 	if DEBUG || VERBOSE {
-		fmt.Printf("Creating %s %s", desc, filename)
+		fmt.Printf("Appending %s %s\n", desc, filename)
         if DEBUG && DEBUG_LEVEL > 2 {
             log.Print("\n", template, "\n")
         }
