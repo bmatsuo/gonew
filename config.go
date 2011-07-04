@@ -80,7 +80,7 @@ func TouchConfig() os.Error {
         fmt.Fprintf(os.Stderr, "Error stat'ing ~/.gonewrc. %v", patherr)
         return patherr
     } else if stat == nil || (patherr != nil && patherr.Error == os.ENOENT) {
-        if DEBUG {
+        if DEBUG || VERBOSE {
             log.Print("Config not found. Prompting user for info.")
         }
         return MakeConfig()

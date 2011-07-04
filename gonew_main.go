@@ -179,6 +179,9 @@ func main() {
         fmt.Print(errTouch.String(), "\n")
         os.Exit(1)
     }
+    if DEBUG || VERBOSE {
+        fmt.Print("Parsing config file.\n")
+    }
 	ReadConfig()
     var request = parseArgs()
     switch request {
@@ -197,7 +200,8 @@ func main() {
         if DEBUG {
             fmt.Printf("Library requested %v\n", pretty.Formatter(RequestedFile))
         } else if VERBOSE {
-            fmt.Printf("Generating library %s\n", RequestedFile.Name + ".go")
+            fmt.Printf("Generating library %s (package %s)\n",
+                    RequestedFile.Name + ".go", RequestedFile.Pkg)
         }
         var errCreate = RequestedFile.Create()
         if errCreate != nil {
