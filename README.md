@@ -5,7 +5,7 @@ Gonew generates new Go project directories.
 About gonew
 ===========
 
-Note: There is Mercurial support in Gonew, but no googlecode support.
+Note: There is Mercurial support in Gonew, but no Google Code support.
 I don't know the best practices concerning mercurial. If you can help.
 Read the "Help out" section and contact me.
 
