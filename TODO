@@ -1,6 +1,8 @@
-Add more repository types.
-
 Cgo support
+
+Add more repository hosts (googlecode, ...).
+
+[ADDED mercurial] Add more repository types (svn, ...).
 
 [ADDED newbsd] Add license templates (Apache, GNU LGPLv3, GNU GPLv3, MIT, ...).
 
