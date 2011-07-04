@@ -1,3 +1,4 @@
+syntax: glob
 *.o
 *.a
 *.[865vq]
