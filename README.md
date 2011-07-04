@@ -5,17 +5,18 @@ Gonew generates new Go project directories.
 About gonew
 ===========
 
+Note: There is Mercurial support in Gonew, but no googlecode support.
+I don't know the best practices concerning mercurial. If you can help.
+Read the "Help out" section and contact me.
+
 The idea behind gonew is to quickly and easily generate new Go projects
 and repositories that can be installed immediately via Goinstall. The
 inspiration behind gonew is the h2xs application for Perl.
 
-Project directories produced by gonew contain stub files and initialized
-repositories (only git/github supported now). Gonew can be used to create
-both new packages and new commands.
-
-Gonew has a configuration file stored at ~/.gonewrc. It is generated the
-first time you run gonew. Command line options can be used to override
-some details of the configuration file.
+A Project directory produced by gonew contains stub files and an
+initialized repository. Git repositories can be automatically pushed to
+new github repositories. Gonew can be used to create both new packages
+and new commands.
 
 Prerequisites
 =============
