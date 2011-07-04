@@ -24,7 +24,7 @@ func VerifyFlags() {
 }
 func ParseFlags() {
     var fs = SetupFlags()
-    ps.Parse(os.Args[1:])
+    fs.Parse(os.Args[1:])
 }
 
 func main() {
