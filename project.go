@@ -191,12 +191,12 @@ func (p Project) CreateDocFile(dict map[string]string) os.Error {
     return errWrite
 }
 
-func (p Project) OtherTemplatePaths() []string {
+func (p Project) OtherTemplatePaths() [][]string {
     var root = GetTemplateRoot()
-    var others = make([]string, 0, 1)
+    var others = make([][]string, 0, 1)
     switch p.Repo {
     case GitType:
-        others = append(others, filepath.Join(root, "otherfiles", "gitignore.t"))
+        others = append(others, []string{".gitignore", root, "otherfiles", "gitignore.t"})
     }
     if len(others) == 0 {
         return nil
@@ -204,24 +204,12 @@ func (p Project) OtherTemplatePaths() []string {
     return others
 }
 func (p Project) CreateOtherFiles(dict map[string]string) os.Error {
-    if DEBUG || VERBOSE {
-        fmt.Printf("Creating any other necessary files\n")
-    }
     var templatePaths = p.OtherTemplatePaths()
     if templatePaths == nil {
         return nil
     }
     for _, path := range templatePaths {
-        var template = mustache.RenderFile(path, dict)
-        if DEBUG && DEBUG_LEVEL > 0 {
-            log.Printf("template: %s", path)
-            if DEBUG_LEVEL > 1 {
-                log.Print("\n", template, "\n")
-            }
-        }
-        var templout = make([]byte, len(template))
-        copy(templout, template)
-        var errWrite = ioutil.WriteFile(path, templout, FilePermissions)
+        var errWrite = WriteTemplate(path[0], "other file", dict, path[1:]...)
         if errWrite != nil {
             return errWrite
         }
