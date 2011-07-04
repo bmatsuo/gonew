@@ -1,5 +1,5 @@
-*.[865]
-[865].out
+*.[865vq]
+[865vq].out
 _obj
 _test
 _testmain.go
