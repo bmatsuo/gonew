@@ -24,9 +24,26 @@ Documentation
 Install
 -------
 
-Installation must be done with goinstall.
+Installation *must* be done with goinstall. Otherwise, the templates will
+not be found.
 
     goinstall github.com/bmatsuo/gonew
+
+Examples
+--------
+
+Create a new package project
+
+    gonew -target=mp3lib pkg go-mp3lib
+
+Create a new library and test file belonging to a given package.
+
+    gonew lib decode mp3lib
+
+Create a new command line utility, and initialize an empty (newly
+created) github repository with the local project repository.
+
+    gonew -remote=git@github.com:bmatsuo/goplay.git cmd goplay
 
 General Documentation
 ---------------------
