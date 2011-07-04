@@ -1,4 +1,4 @@
-*gonew version 0.0_4*
+*gonew version 0.0_6*
 
 Gonew generates new Go project directories.
 
@@ -38,6 +38,17 @@ For information about command line options.
 For more detailed information
 
     godoc github.com/bmatsuo/gonew
+
+Help out
+========
+
+I only use git for version control and have never seriously used
+mercurial, svn, ... If you can help write handlers for repos and hosts
+of those kind, please let me know. Your help would be greatly
+appericiated.
+
+If you have any suggestions regarding the contents of the gonew templates
+please make an issue on github (https://github.com/bmatsuo/gonew/issues).
 
 Author
 ======
