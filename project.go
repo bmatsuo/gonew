@@ -11,6 +11,8 @@ import (
 )
 
 var (
+    NoUserNameError        = os.NewError("Missing remote repository username.")
+    NoRemoteError          = os.NewError("Missing remote repository url")
     DirPermissions  uint32 = 0755
     FilePermissions uint32 = 0644
 )
@@ -42,6 +44,7 @@ type Project struct {
     Name   string
     Target string
     User   string
+    Remote string
     Type   ProjectType
     Host   RepoHost
     Repo   RepoType
@@ -49,8 +52,7 @@ type Project struct {
 
 func (p Project) Create() os.Error {
     var dict = p.GenerateDictionary()
-    var errMkdir, errChdir, errRepo, errChdirBack os.Error
-    var errMake, errMain, errDoc, errTest, errReadme, errOther os.Error
+    var errMkdir, errChdir, errFiles, errRepo, errChdirBack os.Error
 
     // Make the directory and change the working directory.
     if DEBUG || VERBOSE {
@@ -67,8 +69,22 @@ func (p Project) Create() os.Error {
     if errChdir != nil {
         return errChdir
     }
-
-    // Create the project files.
+    errFiles = p.CreateFiles(dict)
+    if errFiles != nil {
+        return errFiles
+    }
+    errRepo = p.InitializeRepo(true, true, true)
+    if errRepo != nil {
+        return errRepo
+    }
+    if DEBUG || VERBOSE {
+        fmt.Print("Leaving project directory.\n")
+    }
+    errChdirBack = os.Chdir("..")
+    return errChdirBack
+}
+func (p Project) CreateFiles(dict map[string]string) os.Error {
+    var errMake, errMain, errDoc, errTest, errReadme, errOther os.Error
     errMake = p.CreateMakefile(dict)
     if errMake != nil {
         return errMake
@@ -93,17 +109,7 @@ func (p Project) Create() os.Error {
     if errOther != nil {
         return errOther
     }
-    errRepo = p.InitializeRepo(true, true)
-    if errRepo != nil {
-        return errRepo
-    }
-
-    // Change the working directory back.
-    if DEBUG || VERBOSE {
-        fmt.Print("Leaving project directory.\n")
-    }
-    errChdirBack = os.Chdir("..")
-    return errChdirBack
+    return nil
 }
 
 func (p Project) GenerateDictionary() map[string]string {
@@ -175,38 +181,34 @@ func (p Project) CreateOtherFiles(dict map[string]string) os.Error {
     }
     return nil
 }
-func (p Project) InitializeRepo(add, commit bool) os.Error {
+func (p Project) InitializeRepo(add, commit, push bool) os.Error {
     switch p.Repo {
     case GitType:
 		var git = GitRepository{}
 		git.Initialize(add, commit)
     }
+    switch p.Host {
+    case GitHubHost:
+        var origin = p.Remote
+        if origin == "" {
+            return nil
+        }
+        var github = GitHubRepository{p}
+        var errGHInit = github.Init(origin)
+        if errGHInit != nil {
+            return errGHInit
+        }
+        if push {
+            var errPush = github.Push()
+            if errPush != nil {
+                return errPush
+            }
+        }
+        return nil
+    }
     return nil
 }
 
-// fix this method.
-func (p Project) HostString() string {
-    switch p.Repo {
-    case GitType:
-        return "github.com/" + AppConfig.HostUser
-    }
-    return "<INSERT REPO HOST HERE>"
-}
-func YearString() string {
-    return time.LocalTime().Format("2006")
-}
-// fix the formatting of this method.
-func DateString() string {
-    return time.LocalTime().String()
-}
-
-func (p Project) ReadmeFilename() string {
-    var useMarkdown = p.Host == GitHubHost
-    if useMarkdown {
-        return "README.md"
-    }
-    return "README"
-}
 func (p Project) MainFilename() string {
     return p.Name + ".go"
 }
@@ -219,28 +221,64 @@ func (p Project) TestFilename() string {
     }
     return p.Name + "_test.go"
 }
+func (p Project) ReadmeFilename() string {
+    if p.ReadmeIsMarkdown() {
+        return "README.md"
+    }
+    return "README"
+}
+
+func (p Project) MainTemplateName() string {
+    switch p.Type {
+    case PkgType:
+        return "pkg.t"
+    case CmdType:
+        return "cmd.t"
+    }
+    return ""
+}
+func (p Project) TestTemplateName() string {
+    switch p.Type {
+    case PkgType:
+        return "pkg.t"
+    case CmdType:
+        return "cmd.t"
+    }
+    return ""
+}
+func (p Project) ReadmeTemplateName() string {
+    switch p.Type {
+    case PkgType:
+        if p.ReadmeIsMarkdown() {
+            return "pkg.md.t"
+        } else {
+            return "pkg.t"
+        }
+    case CmdType:
+        if p.ReadmeIsMarkdown() {
+            return "cmd.md.t"
+        } else {
+            return "cmd.t"
+        }
+    }
+    return ""
+}
+
 func (p Project) MakefileTemplatePath() []string {
     return []string{"makefiles", p.Type.String() + ".t"}
 }
-
 func (p Project) MainTemplatePath() []string {
-    switch p.Type {
-    case CmdType:
-        return []string{"gofiles", "cmd.t"}
-    case PkgType:
-        return []string{"gofiles", "pkg.t"}
-    }
-    return []string{""}
+    return []string{"gofiles", p.MainTemplateName()}
 }
-
+func (p Project) TestTemplatePath() []string {
+    return []string{"testfiles", p.TestTemplateName()}
+}
 func (p Project) ReadmeTemplatePath() []string {
-    return []string{"README", p.ReadmeFilename() + ".t"}
+    return []string{"README", p.ReadmeTemplateName() + ".t"}
 }
-
 func (p Project) DocTemplatePath() []string {
     return []string{"gofiles", "doc.t"}
 }
-
 func (p Project) OtherTemplatePaths() [][]string {
     var others = make([][]string, 0, 1)
     switch p.Repo {
@@ -252,10 +290,23 @@ func (p Project) OtherTemplatePaths() [][]string {
     }
     return others
 }
-func (p Project) TestTemplatePath() []string {
-    if p.Type == CmdType {
-        return []string{"testfiles", "cmd.t"}
-    }
-    return []string{"testfiles", "pkg.t"}
-}
 
+func (p Project) HostString() string {
+    switch p.Host {
+    case GitHubHost:
+        if p.User == "" {
+            return ""
+        }
+        return "github.com/" + p.User
+    }
+    return "<INSERT REPO HOST HERE>"
+}
+func YearString() string {
+    return time.LocalTime().Format("2006")
+}
+func DateString() string {
+    return time.LocalTime().String()
+}
+func (p Project) ReadmeIsMarkdown() bool {
+    return p.Host == GitHubHost
+}

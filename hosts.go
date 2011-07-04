@@ -16,7 +16,7 @@ type RepoHost int
 const (
     NilRepoHost RepoHost = iota
     GitHubHost
-    //GoogleHost
+    //GoogleCodeHost
     //...
 )
 

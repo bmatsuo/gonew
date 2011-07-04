@@ -34,6 +34,7 @@ gonew [options] lib NAME PKG
     host   string
     user   string
     target string
+	remote string
     help   bool
 )
 
@@ -45,6 +46,8 @@ func setupFlags() *flag.FlagSet {
         "host", "", "Repository host if any (e.g. 'github').")
     fs.StringVar(&user,
         "user", "", "Repo host username.")
+	fs.StringVar(&remote,
+		"remote", "", "Remote repository url to initialize and push to.")
     fs.StringVar(&target,
         "target", "", "Makefile target. Default based on NAME.")
     fs.BoolVar(&VERBOSE,
@@ -99,12 +102,12 @@ func parseArgs() Request {
     }
 
     var (
-        file = File{Name:name, Pkg: "main", Repo:AppConfig.Repo,
+		file = File{Name:name, Pkg: "main", Repo:AppConfig.Repo,
             User:AppConfig.HostUser, Host:AppConfig.Host}
         project = Project{
-                Name:name, Target:target, Type: NilProjectType,
-                Host:AppConfig.Host, User:AppConfig.HostUser,
-                Repo:AppConfig.Repo}
+			Name:name, Target:target, Type: NilProjectType, Remote:remote,
+            Host:AppConfig.Host, User:AppConfig.HostUser,
+            Repo:AppConfig.Repo}
         produceProject = true
         repoObj = NilRepoType
         hostObj = NilRepoHost
