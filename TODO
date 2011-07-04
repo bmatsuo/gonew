@@ -7,3 +7,5 @@ Add command line option: remote repo url.
 Add license templates (Apache, GNU LGPLv3, GNU GPLv3, MIT, ...).
 
 Custom template directory.
+
+Cgo support
