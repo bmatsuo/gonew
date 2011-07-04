@@ -22,6 +22,7 @@ import (
 var ConfigFilename = filepath.Join(os.Getenv("HOME"), ".gonewrc")
 
 type GonewConfig struct {
+    MakeTest bool
     Name     string
     Email    string
     HostUser string
@@ -30,11 +31,10 @@ type GonewConfig struct {
     Repo     RepoType
     Host     RepoHost
 }
-
-var AppConfig GonewConfig
+var AppConfig GonewConfig = GonewConfig{
+        true, "", "", "", "", NilLicenseType, NilRepoType, NilRepoHost}
 
 func ReadConfig() os.Error {
-    AppConfig = GonewConfig{"", "", "", "", NilLicenseType, NilRepoType, NilRepoHost}
     conf, err := config.ReadDefault(ConfigFilename)
     if err != nil {
         return err

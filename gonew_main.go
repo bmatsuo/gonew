@@ -56,6 +56,8 @@ func setupFlags() *flag.FlagSet {
         "target", "", "Makefile target. Default based on NAME.")
     fs.StringVar(&license,
         "license", "", "Project license (e.g. 'newbsd').")
+    fs.BoolVar(&(AppConfig.MakeTest),
+        "test", AppConfig.MakeTest, "Produce test files with Go files.")
     fs.BoolVar(&VERBOSE,
         "v", false, "Verbose output.")
     fs.IntVar(&DEBUG_LEVEL,
@@ -106,7 +108,6 @@ func parseArgs() Request {
     if target == "" {
         target = DefaultTarget(name)
     }
-
     var (
         file = File{
             Name:name, Pkg: "main",

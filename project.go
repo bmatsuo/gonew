@@ -165,6 +165,12 @@ func (p Project) CreateMainFile(dict map[string]string) os.Error {
     return errAppend
 }
 func (p Project) CreateTestFile(dict map[string]string) os.Error {
+    if !AppConfig.MakeTest {
+        if DEBUG || VERBOSE {
+            fmt.Printf("Skipping test file generation.")
+        }
+        return nil
+    }
     var(
         testfile = p.TestFilename()
         ltemplateName = p.GofileLicenseHeadTemplateName()
