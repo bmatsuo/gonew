@@ -1,15 +1,15 @@
 Add more repository types.
 
-[DONE] Add command line option: remote repo url.
-
-[DONE] Make individual files ("lib").
-
-Add license templates (Apache, GNU LGPLv3, GNU GPLv3, MIT, ...).
+Add option -test to avoid emitting test files.
 
 Custom template directory.
 
 Cgo support
 
-[DONE] Generate tests for individual "lib" files.
+[DONE] Add command line option: remote repo url.
 
-Add option -test to avoid emitting test files.
+[DONE] Make individual files ("lib").
+
+[ADDED newbsd] Add license templates (Apache, GNU LGPLv3, GNU GPLv3, MIT, ...).
+
+[DONE] Generate tests for individual "lib" files.
