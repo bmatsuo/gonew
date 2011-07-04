@@ -8,10 +8,6 @@ package main
  */
 import (
     "os"
-    "log"
-    "io/ioutil"
-    "path/filepath"
-    "github.com/hoisie/mustache.go"
 )
 
 type File struct {
@@ -22,7 +18,7 @@ type File struct {
     Host RepoHost
 }
 
-func (f File) Create() os.Error {
+func (f File) GenerateDictionary() map[string]string {
     var (
         lib = f.Name + ".go"
         dict = map[string]string{
@@ -32,20 +28,19 @@ func (f File) Create() os.Error {
             "date":DateString(),
             "year":YearString(),
             "gotarget":f.Pkg}
-        tpath = filepath.Join(GetTemplateRoot(), "gofiles", "lib.t")
-        template = mustache.RenderFile(tpath, dict)
     )
-	if DEBUG {
-		log.Printf("Creating library %s", lib)
-        if DEBUG_LEVEL > 0 {
-		    log.Printf("    template: %s", tpath)
-            if DEBUG_LEVEL > 1 {
-		        log.Print("\n", template, "\n")
-            }
-        }
-	}
-    var templout = make([]byte, len(template))
-    copy(templout, template)
-    var errWrite = ioutil.WriteFile(lib, templout, FilePermissions)
-    return errWrite
+    return dict
+}
+
+func (f File) Create() os.Error {
+    var (
+        dict = f.GenerateDictionary()
+        errWrite = WriteTemplate(dict["file"], "library", dict,
+            GetTemplateRoot(), "gofiles", "lib.t")
+    )
+    if errWrite != nil {
+        return errWrite
+    }
+    // TODO: check the new file into git under certain conditions...
+    return nil
 }

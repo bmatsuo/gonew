@@ -114,37 +114,26 @@ func (p Project) MainFilename() string {
     */
 }
 
-func (p Project) MainTemplatePath() string {
+func (p Project) MainTemplatePath() []string {
     switch p.Type {
     case CmdType:
-        return filepath.Join(GetTemplateRoot(), "gofiles", "cmd.t")
+        return []string{GetTemplateRoot(), "gofiles", "cmd.t"}
     case PkgType:
-        return filepath.Join(GetTemplateRoot(), "gofiles", "pkg.t")
+        return []string{GetTemplateRoot(), "gofiles", "pkg.t"}
     }
-    return ""
+    return []string{""}
 }
 func (p Project) CreateMainFile(dict map[string]string) os.Error {
-    var mainfile = p.MainFilename()
-    var templatePath = p.MainTemplatePath()
-    var template = mustache.RenderFile(templatePath, dict, map[string]string{"file":mainfile})
-    if DEBUG || VERBOSE {
-        fmt.Printf("Creating main file %s\n", mainfile)
-    }
-    if DEBUG && DEBUG_LEVEL > 0 {
-        log.Printf("template: %s", templatePath)
-        if DEBUG_LEVEL > 1 {
-            log.Print(dict)
-            log.Print("\n", template, "\n")
-        }
-    }
-    var templout = make([]byte, len(template))
-    copy(templout, template)
-    var errWrite = ioutil.WriteFile(mainfile, templout, FilePermissions)
+    var (
+        mainfile = p.MainFilename()
+        templatePath = p.MainTemplatePath()
+        errWrite = WriteTemplate(mainfile, "main file", dict, templatePath...)
+    )
     return errWrite
 }
 
-func (p Project) TestTemplatePath() string {
-    return filepath.Join(GetTemplateRoot(), "gofiles", "test.t")
+func (p Project) TestTemplatePath() []string {
+    return []string{GetTemplateRoot(), "gofiles", "test.t"}
 }
 func (p Project) TestFilename() string {
     switch p.Type {
@@ -160,30 +149,18 @@ func (p Project) CreateTestFile(dict map[string]string) os.Error {
     var (
         testfile = p.TestFilename()
         templatePath = p.TestTemplatePath()
-        template = mustache.RenderFile(templatePath, dict, map[string]string{"file":testfile})
+		errWrite = WriteTemplate(testfile, "test file", dict, templatePath...)
     )
-    if DEBUG || VERBOSE {
-        fmt.Printf("Creating main file %s\n", testfile)
-    }
-    if DEBUG && DEBUG_LEVEL > 0 {
-        log.Printf("template: %s", templatePath)
-        if DEBUG_LEVEL > 1 {
-            log.Print("\n", template, "\n")
-        }
-    }
-    var templout = make([]byte, len(template))
-    copy(templout, template)
-    var errWrite = ioutil.WriteFile(testfile, templout, FilePermissions)
     return errWrite
 }
 
-func (p Project) ReadmeTemplatePath() string {
+func (p Project) ReadmeTemplatePath() []string {
     var root = GetTemplateRoot()
     var useMarkdown = p.Host == GitHubHost
     if useMarkdown {
-        return filepath.Join(root, "README", p.Type.String() + ".md.t")
+        return []string{root, "README", p.Type.String() + ".md.t"}
     }
-    return filepath.Join(root, "README", p.Type.String() + ".t")
+    return []string{root, "README", p.Type.String() + ".t"}
 }
 func (p Project) CreateReadme(dict map[string]string) os.Error {
     var (
@@ -194,47 +171,23 @@ func (p Project) CreateReadme(dict map[string]string) os.Error {
     if useMarkdown {
         readme += ".md"
     }
-    var template = mustache.RenderFile(templatePath, dict, map[string]string{"file":readme})
-    if DEBUG || VERBOSE {
-        fmt.Print("Creating README.\n")
-    }
-    if DEBUG && DEBUG_LEVEL > 0 {
-        log.Printf("template: %s", templatePath)
-        if DEBUG_LEVEL > 1 {
-            log.Print("\n", template, "\n")
-        }
-    }
-    var templout = make([]byte, len(template))
-    copy(templout, template)
-    var errWrite = ioutil.WriteFile(readme, templout, FilePermissions)
+	var errWrite = WriteTemplate(readme, "README", dict, templatePath...)
     return errWrite
 }
 
-func (p Project) DocTemplatePath() string {
+func (p Project) DocTemplatePath() []string {
     var root = GetTemplateRoot()
-    return filepath.Join(root, "gofiles", "doc.t")
+    return []string{root, "gofiles", "doc.t"}
 }
 func (p Project) CreateDocFile(dict map[string]string) os.Error {
     if p.Type == PkgType {
         return nil
     }
-    var (
+	var (
+		doc = "doc.go"
         templatePath = p.DocTemplatePath()
-        doc = "doc.go"
-    )
-    var template = mustache.RenderFile(templatePath, dict, map[string]string{"file":doc})
-    if DEBUG || VERBOSE {
-        fmt.Print("Creating documentation files.\n")
-    }
-    if DEBUG && DEBUG_LEVEL > 0 {
-        log.Printf("template: %s", templatePath)
-        if DEBUG_LEVEL > 1 {
-            log.Print("\n", template, "\n")
-        }
-    }
-    var templout = make([]byte, len(template))
-    copy(templout, template)
-    var errWrite = ioutil.WriteFile(doc, templout, FilePermissions)
+		errWrite = WriteTemplate(doc, "documentation files", dict, templatePath...)
+	)
     return errWrite
 }
 
