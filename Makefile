@@ -11,6 +11,7 @@ TARG=gonew
 GOFILES=\
 		config.go\
 		template.go\
+		repository.go\
 		file.go\
 		project.go\
 		gonew_main.go\
