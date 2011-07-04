@@ -6,13 +6,8 @@ package main
 */
 import (
     "os"
-    "log"
     "fmt"
-    //"exec"
-    "path/filepath"
-    "io/ioutil"
     "time"
-    "github.com/hoisie/mustache.go"
 )
 
 var (
@@ -66,199 +61,6 @@ type Project struct {
     Type   ProjectType
     Host   RepoHost
     Repo   RepoType
-}
-
-func GetGoroot() string {
-    goroot, err := os.Getenverror("GOROOT")
-    if err != nil {
-        panic("goroot")
-    }
-    return goroot
-}
-func GetTemplateRoot() string {
-    var goroot = GetGoroot()
-    return filepath.Join(goroot, "src", "pkg",
-            "github.com", "bmatsuo", "gonew", "templates")
-}
-
-func (p Project) MakefileTemplatePath() string {
-    return filepath.Join(GetTemplateRoot(), "makefiles", p.Type.String() + ".t")
-}
-func (p Project) CreateMakefile(dict map[string]string) os.Error {
-    var (
-        templatePath = p.MakefileTemplatePath()
-        template = mustache.RenderFile(templatePath, dict, map[string]string{"file":"Makefile"})
-    )
-	if DEBUG || VERBOSE {
-		fmt.Print("Creating Makefile\n")
-    }
-    if DEBUG && DEBUG_LEVEL > 0 {
-        log.Printf("template: %s", templatePath)
-        if DEBUG_LEVEL > 1 {
-	     log.Print("\n", template, "\n")
-        }
-    }
-    var templout = make([]byte, len(template))
-    copy(templout, template)
-    var errWrite = ioutil.WriteFile("Makefile", templout, FilePermissions)
-    return errWrite
-}
-
-func (p Project) MainFilename() string {
-    return p.Name + ".go"
-    /*
-    switch p.Type {
-    case CmdType:
-    case PkgType:
-    }
-    */
-}
-
-func (p Project) MainTemplatePath() []string {
-    switch p.Type {
-    case CmdType:
-        return []string{GetTemplateRoot(), "gofiles", "cmd.t"}
-    case PkgType:
-        return []string{GetTemplateRoot(), "gofiles", "pkg.t"}
-    }
-    return []string{""}
-}
-func (p Project) CreateMainFile(dict map[string]string) os.Error {
-    var (
-        mainfile = p.MainFilename()
-        templatePath = p.MainTemplatePath()
-        errWrite = WriteTemplate(mainfile, "main file", dict, templatePath...)
-    )
-    return errWrite
-}
-
-func (p Project) TestTemplatePath() []string {
-    if p.Type == CmdType {
-        return []string{GetTemplateRoot(), "testfiles", "cmd.t"}
-    }
-    return []string{GetTemplateRoot(), "testfiles", "pkg.t"}
-}
-func (p Project) TestFilename() string {
-    switch p.Type {
-    case CmdType:
-        return "main_test.go"
-    case PkgType:
-        return p.Name + "_test.go"
-    }
-    return p.Name + "_test.go"
-}
-
-func (p Project) CreateTestFile(dict map[string]string) os.Error {
-    var (
-        testfile = p.TestFilename()
-        templatePath = p.TestTemplatePath()
-		errWrite = WriteTemplate(testfile, "test file", dict, templatePath...)
-    )
-    return errWrite
-}
-
-func (p Project) ReadmeTemplatePath() []string {
-    var root = GetTemplateRoot()
-    var useMarkdown = p.Host == GitHubHost
-    if useMarkdown {
-        return []string{root, "README", p.Type.String() + ".md.t"}
-    }
-    return []string{root, "README", p.Type.String() + ".t"}
-}
-func (p Project) CreateReadme(dict map[string]string) os.Error {
-    var (
-        templatePath = p.ReadmeTemplatePath()
-        readme = "README"
-        useMarkdown = p.Host == GitHubHost
-    )
-    if useMarkdown {
-        readme += ".md"
-    }
-	var errWrite = WriteTemplate(readme, "README", dict, templatePath...)
-    return errWrite
-}
-
-func (p Project) DocTemplatePath() []string {
-    var root = GetTemplateRoot()
-    return []string{root, "gofiles", "doc.t"}
-}
-func (p Project) CreateDocFile(dict map[string]string) os.Error {
-    if p.Type == PkgType {
-        return nil
-    }
-	var (
-		doc = "doc.go"
-        templatePath = p.DocTemplatePath()
-		errWrite = WriteTemplate(doc, "documentation files", dict, templatePath...)
-	)
-    return errWrite
-}
-
-func (p Project) OtherTemplatePaths() [][]string {
-    var root = GetTemplateRoot()
-    var others = make([][]string, 0, 1)
-    switch p.Repo {
-    case GitType:
-        others = append(others, []string{".gitignore", root, "otherfiles", "gitignore.t"})
-    }
-    if len(others) == 0 {
-        return nil
-    }
-    return others
-}
-func (p Project) CreateOtherFiles(dict map[string]string) os.Error {
-    var templatePaths = p.OtherTemplatePaths()
-    if templatePaths == nil {
-        return nil
-    }
-    for _, path := range templatePaths {
-        var errWrite = WriteTemplate(path[0], "other file", dict, path[1:]...)
-        if errWrite != nil {
-            return errWrite
-        }
-    }
-    return nil
-}
-
-func (p Project) InitializeRepo(add, commit bool) os.Error {
-    switch p.Repo {
-    case GitType:
-		var git = GitRepository{}
-		git.Initialize(add, commit)
-    }
-    return nil
-}
-
-// fix this method.
-func (p Project) HostString() string {
-    switch p.Repo {
-    case GitType:
-        return "github.com/" + AppConfig.HostUser
-    }
-    return "<INSERT REPO HOST HERE>"
-}
-
-func YearString() string {
-    return time.LocalTime().Format("2006")
-}
-
-// fix the formatting of this method.
-func DateString() string {
-    return time.LocalTime().String()
-}
-
-func (p Project) GenerateDictionary() map[string]string {
-    var td = make(map[string]string, 9)
-    td["project"]   = p.Name
-    td["name"]   = AppConfig.Name
-    td["email"]  = AppConfig.Email
-    td["gotarget"] = p.Target
-    td["main"]   = p.MainFilename()
-    td["type"]   = p.Type.String()
-    td["repo"]   = p.HostString()
-    td["year"]   = YearString()
-    td["date"]   = DateString()
-    return td
 }
 
 func (p Project) Create() os.Error {
@@ -319,3 +121,157 @@ func (p Project) Create() os.Error {
     errChdirBack = os.Chdir("..")
     return errChdirBack
 }
+
+func (p Project) GenerateDictionary() map[string]string {
+    var td = make(map[string]string, 9)
+    td["project"]   = p.Name
+    td["name"]   = AppConfig.Name
+    td["email"]  = AppConfig.Email
+    td["gotarget"] = p.Target
+    td["main"]   = p.MainFilename()
+    td["type"]   = p.Type.String()
+    td["repo"]   = p.HostString()
+    td["year"]   = YearString()
+    td["date"]   = DateString()
+    return td
+}
+
+func (p Project) CreateMakefile(dict map[string]string) os.Error {
+    var (
+        templatePath = p.MakefileTemplatePath()
+        errWrite = WriteTemplate("Makefile", "makefile", dict, templatePath...)
+    )
+    return errWrite
+}
+func (p Project) CreateMainFile(dict map[string]string) os.Error {
+    var (
+        mainfile = p.MainFilename()
+        templatePath = p.MainTemplatePath()
+        errWrite = WriteTemplate(mainfile, "main file", dict, templatePath...)
+    )
+    return errWrite
+}
+func (p Project) CreateTestFile(dict map[string]string) os.Error {
+    var (
+        testfile = p.TestFilename()
+        templatePath = p.TestTemplatePath()
+		errWrite = WriteTemplate(testfile, "test file", dict, templatePath...)
+    )
+    return errWrite
+}
+func (p Project) CreateReadme(dict map[string]string) os.Error {
+    var (
+        templatePath = p.ReadmeTemplatePath()
+        readme = p.ReadmeFilename()
+    )
+	var errWrite = WriteTemplate(readme, "README", dict, templatePath...)
+    return errWrite
+}
+func (p Project) CreateDocFile(dict map[string]string) os.Error {
+    if p.Type == PkgType {
+        return nil
+    }
+	var (
+		doc = "doc.go"
+        templatePath = p.DocTemplatePath()
+		errWrite = WriteTemplate(doc, "documentation files", dict, templatePath...)
+	)
+    return errWrite
+}
+func (p Project) CreateOtherFiles(dict map[string]string) os.Error {
+    var templatePaths = p.OtherTemplatePaths()
+    if templatePaths == nil {
+        return nil
+    }
+    for _, path := range templatePaths {
+        var errWrite = WriteTemplate(path[0], "other file", dict, path[1:]...)
+        if errWrite != nil {
+            return errWrite
+        }
+    }
+    return nil
+}
+func (p Project) InitializeRepo(add, commit bool) os.Error {
+    switch p.Repo {
+    case GitType:
+		var git = GitRepository{}
+		git.Initialize(add, commit)
+    }
+    return nil
+}
+
+// fix this method.
+func (p Project) HostString() string {
+    switch p.Repo {
+    case GitType:
+        return "github.com/" + AppConfig.HostUser
+    }
+    return "<INSERT REPO HOST HERE>"
+}
+func YearString() string {
+    return time.LocalTime().Format("2006")
+}
+// fix the formatting of this method.
+func DateString() string {
+    return time.LocalTime().String()
+}
+
+func (p Project) ReadmeFilename() string {
+    var useMarkdown = p.Host == GitHubHost
+    if useMarkdown {
+        return "README.md"
+    }
+    return "README"
+}
+func (p Project) MainFilename() string {
+    return p.Name + ".go"
+}
+func (p Project) TestFilename() string {
+    switch p.Type {
+    case CmdType:
+        return "main_test.go"
+    case PkgType:
+        return p.Name + "_test.go"
+    }
+    return p.Name + "_test.go"
+}
+func (p Project) MakefileTemplatePath() []string {
+    return []string{"makefiles", p.Type.String() + ".t"}
+}
+
+func (p Project) MainTemplatePath() []string {
+    switch p.Type {
+    case CmdType:
+        return []string{"gofiles", "cmd.t"}
+    case PkgType:
+        return []string{"gofiles", "pkg.t"}
+    }
+    return []string{""}
+}
+
+func (p Project) ReadmeTemplatePath() []string {
+    return []string{"README", p.ReadmeFilename() + ".t"}
+}
+
+func (p Project) DocTemplatePath() []string {
+    return []string{"gofiles", "doc.t"}
+}
+
+func (p Project) OtherTemplatePaths() [][]string {
+    var others = make([][]string, 0, 1)
+    switch p.Repo {
+    case GitType:
+        others = append(others, []string{".gitignore", "otherfiles", "gitignore.t"})
+    }
+    if len(others) == 0 {
+        return nil
+    }
+    return others
+}
+func (p Project) TestTemplatePath() []string {
+    if p.Type == CmdType {
+        return []string{"testfiles", "cmd.t"}
+    }
+    return []string{"testfiles", "pkg.t"}
+}
+

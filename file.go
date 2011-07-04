@@ -36,7 +36,7 @@ func (f File) Create() os.Error {
     var (
         dict = f.GenerateDictionary()
         errWrite = WriteTemplate(dict["file"], "library", dict,
-            GetTemplateRoot(), "gofiles", "lib.t")
+                "gofiles", "lib.t")
     )
     if errWrite != nil {
         return errWrite
