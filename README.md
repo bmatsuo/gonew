@@ -42,10 +42,10 @@ For more detailed information
 Help out
 ========
 
-I only use git for version control and have never seriously used
-mercurial, svn, ... If you can help write handlers for repos and hosts
-of those kind, please let me know. Your help would be greatly
-appericiated.
+I only use git/github for version control and have never seriously used
+mercurial, svn, etc. or any of their web-based hosts. If you can help
+write handlers for repos and hosts of those kind, please let me know.
+Your help would be greatly appericiated.
 
 If you have any suggestions regarding the contents of the gonew templates
 please make an issue on github (https://github.com/bmatsuo/gonew/issues).
