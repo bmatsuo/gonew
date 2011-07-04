@@ -79,6 +79,28 @@ func WriteTemplate(filename, desc string, dict map[string]string, relpath...stri
     var errWrite = ioutil.WriteFile(filename, templout, FilePermissions)
     return errWrite
 }
+func AppendTemplate(filename, desc string, dict map[string]string, relpath...string) os.Error {
+    var template = ParseTemplate(filename, dict, relpath)
+	if DEBUG || VERBOSE {
+		fmt.Printf("Creating %s %s", desc, filename)
+        if DEBUG && DEBUG_LEVEL > 2 {
+            log.Print("\n", template, "\n")
+        }
+    }
+    var fout, errOpen = os.Open(filename)
+    if errOpen != nil {
+        return errOpen
+    }
+    var _, errAppend = fout.WriteString(template)
+    if errAppend != nil {
+        return errAppend
+    }
+    var errClose = fout.Close()
+    if errClose != nil {
+        return errClose
+    }
+    return nil
+}
 
 /* Some functions for tests and debugging. */
 func getDebugTemplateRoot() []string {
