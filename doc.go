@@ -24,21 +24,36 @@ Arguments:
 
 Options:
 
-    -host=""
-            Repository host if any (currently, "github" is the only
-            supported host).
-
-    -user=""
-            Username for the repo host (necessary for "github").
+    -target=""
+            Makefile target. The executable name in case the argument
+            TYPE is "cmd", package name in case of "pkg". The default
+            value based on the argument NAME.
 
     -repo="git"
             Repository type (currently, "git" is the only supported
             repository type).
 
-    -target=""
-            Makefile target. The executable name in case the argument
-            TYPE is "cmd", package name in case of "pkg". The default
-            value based on the argument NAME.
+    -remote=""
+            When passed a url to a remote repository, attempt to
+            initialize the remote repository to the new project's
+            repository. The url passed in must agree with the host
+            specified in the config file (or by -host).
+
+    -host=""
+            Repository host if any (currently, "github" is the only
+            supported host). The value supplied must agree with the
+            value of -repo.
+
+    -user=""
+            Username for the repo host (necessary for "github").
+
+    -v
+            Print verbose output to the stdout (this intersects with
+            some -debug output).
+
+    -debug=-1
+            When set to a non-negative value, debugging output will be
+            printed.
 
     -help
             Print a usage message
@@ -58,5 +73,12 @@ If you wish to write/edit the configuration file. An example configuration
 file can be found at the path
 
     $GOROOT/src/pkg/github.com/bmatsuo/gonew/gonewrc.example
+
+Examples:
+
+    gonew -target=mp3lib pkg go-mp3lib
+    gonew lib decode mp3lib
+    gonew -remote=git@github.com:bmatsuo/goplay.git cmd goplay
+
 */
 package documentation
