@@ -17,7 +17,7 @@ type Options struct {
 var opt = Options{}
 func SetupFlags() *flag.FlagSet {
     var fs = flag.NewFlagSet("{{gotarget}}", flag.ExitOnError)
-    fs.BoolVar(&(opt.verbose), "v", "Verbose program output.")
+    fs.BoolVar(&(opt.verbose), "v", false, "Verbose program output.")
     return fs
 }
 func VerifyFlags() {
