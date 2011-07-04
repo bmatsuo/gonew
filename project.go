@@ -175,15 +175,15 @@ func (p Project) CreateTestFile(dict map[string]string) os.Error {
         if DEBUG {
             log.Print("No license template found for %s", p.License.String())
         }
-        errWrite = WriteTemplate(testfile, "main file", dict, templatePath...)
+        errWrite = WriteTemplate(testfile, "test file", dict, templatePath...)
         return errWrite
     }
     var ltemplatePath = []string{"licenses", ltemplateName}
-    errWrite = WriteTemplate(testfile, "main file license", dict, ltemplatePath...)
+    errWrite = WriteTemplate(testfile, "test file license", dict, ltemplatePath...)
     if errWrite != nil {
         return errWrite
     }
-    errAppend = AppendTemplate(testfile, "main file contents", dict, templatePath...)
+    errAppend = AppendTemplate(testfile, "test file contents", dict, templatePath...)
     return errAppend
 }
 func (p Project) CreateReadme(dict map[string]string) os.Error {
