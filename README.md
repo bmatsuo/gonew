@@ -5,11 +5,14 @@ Gonew generates new Go project directories.
 About gonew
 ===========
 
-Project directories produced by gonew contain stub files and initialized
-repositories (only git/github supported now). It can be used to create new
-packages and commands.
+The idea behind gonew is to quickly and easily generate new Go projects
+and repositories that can be installed immediately via Goinstall.
 
-The gonew configuration file is stored at ~/.gonewrc. It is generated the
+Project directories produced by gonew contain stub files and initialized
+repositories (only git/github supported now). It can be used to create 
+both new packages and new commands.
+
+Gonew has a configuration file stored at ~/.gonewrc. It is generated the
 first time you run gonew. Command line options can be used to override
 some details of the configuration file.
 
