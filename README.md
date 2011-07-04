@@ -62,6 +62,10 @@ For more detailed information
 Help out
 ========
 
+If you have experience using licenses other than new BSD and LGPL and
+want to help add support for them into Gonew, get in touch with me and
+we can quickly get that done.
+
 I only use git/github for version control and have never seriously used
 mercurial, svn, etc. or any of their web-based hosts. If you can help
 write handlers for repos and hosts of those kind, please let me know.
