@@ -6,3 +6,4 @@ email: bmatsuo@soe.ucsc.edu
 repo: git
 host: github
 hostuser: bmatsuo
+license: newbsd

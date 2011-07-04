@@ -41,13 +41,14 @@ func DefaultTarget(pname string) string {
 }
 
 type Project struct {
-    Name   string
-    Target string
-    User   string
-    Remote string
-    Type   ProjectType
-    Host   RepoHost
-    Repo   RepoType
+    Name    string
+    Target  string
+    User    string
+    Remote  string
+    License LicenseType
+    Type    ProjectType
+    Host    RepoHost
+    Repo    RepoType
 }
 
 func (p Project) Create() os.Error {

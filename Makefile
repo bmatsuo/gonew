@@ -13,6 +13,7 @@ GOFILES=\
 		template.go\
 		repository.go\
 		hosts.go\
+		license.go\
 		file.go\
 		project.go\
 		gonew_main.go\

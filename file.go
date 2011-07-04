@@ -11,17 +11,19 @@ import (
 )
 
 type File struct {
-    Name   string
-    User   string
-    Pkg    string
-    Repo   RepoType
-    Host   RepoHost
+    Name    string
+    User    string
+    Pkg     string
+	License LicenseType
+    Repo    RepoType
+    Host    RepoHost
 }
 type TestFile struct {
-    Name   string
-    Pkg    string
-    Repo   RepoType
-    Host   RepoHost
+    Name    string
+    Pkg     string
+    License LicenseType
+    Repo    RepoType
+    Host    RepoHost
 }
 
 func (t TestFile) GenerateDictionary() map[string]string {
