@@ -133,7 +133,10 @@ func (p Project) CreateMainFile(dict map[string]string) os.Error {
 }
 
 func (p Project) TestTemplatePath() []string {
-    return []string{GetTemplateRoot(), "gofiles", "test.t"}
+    if p.Type == CmdType {
+        return []string{GetTemplateRoot(), "testfiles", "cmd.t"}
+    }
+    return []string{GetTemplateRoot(), "testfiles", "pkg.t"}
 }
 func (p Project) TestFilename() string {
     switch p.Type {
