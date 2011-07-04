@@ -12,12 +12,12 @@ import (
 )
 
 type Options struct {
-    verbose string
+    verbose bool
 }
 var opt = Options{}
 func SetupFlags() *flag.FlagSet {
     var fs = flag.NewFlagSet("{{gotarget}}", flag.ExitOnError)
-    fs.BoolVar(&opt.verbose, "v", "Verbose program output.")
+    fs.BoolVar(&(opt.verbose), "v", "Verbose program output.")
     return fs
 }
 func VerifyFlags() {

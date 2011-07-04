@@ -1,4 +1,4 @@
-package main
+package {{gotarget}}
 /*
  *  Filename:    {{file}}
  *  Author:      {{name}} <{{email}}>
