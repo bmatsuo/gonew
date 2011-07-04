@@ -59,6 +59,9 @@ func GetTemplatePath(relpath []string) string {
 }
 func GetAltTemplatePath(relpath []string) string {
     if AppConfig.AltRoot == "" {
+        if DEBUG {
+            log.Print("No alt root found.")
+        }
         return ""
     }
     var (
@@ -66,6 +69,9 @@ func GetAltTemplatePath(relpath []string) string {
         stat, errStat = os.Stat(altpath)
     )
     if stat == nil || errStat != nil {
+        if DEBUG {
+            log.Printf("Error stat'ing %s.", altpath)
+        }
         return ""
     }
     return altpath
@@ -117,6 +123,9 @@ func WriteTemplate(filename, desc string, dict map[string]string, relpath...stri
     var alttemplate, errParseAlt = ParseAltTemplate(filename, dict, relpath)
     if errParseAlt == nil {
         template = alttemplate
+        if DEBUG || VERBOSE {
+            fmt.Printf("Using alternate template %s\n", GetAltTemplatePath(relpath))
+        }
     } else {
         var stdtemplate, errParseStd = ParseTemplate(filename, dict, relpath)
         if errParseStd != nil {
@@ -140,6 +149,9 @@ func AppendTemplate(filename, desc string, dict map[string]string, relpath...str
     var alttemplate, errParseAlt = ParseAltTemplate(filename, dict, relpath)
     if errParseAlt == nil {
         template = alttemplate
+        if DEBUG || VERBOSE {
+            fmt.Printf("Using alternate template %s\n", GetAltTemplatePath(relpath))
+        }
     } else {
         var stdtemplate, errParseStd = ParseTemplate(filename, dict, relpath)
         if errParseStd != nil {
