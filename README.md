@@ -1,4 +1,4 @@
-*gonew version 0.0_8*
+*gonew version 0.0_10*
 
 Gonew generates new Go project directories.
 

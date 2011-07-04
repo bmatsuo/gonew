@@ -10,4 +10,6 @@ Custom template directory.
 
 Cgo support
 
-Generate tests for individual "lib" files.
+[DONE] Generate tests for individual "lib" files.
+
+Add option -test to avoid emitting test files.
