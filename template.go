@@ -18,6 +18,11 @@ import (
     "github.com/hoisie/mustache.go"
 )
 
+var (
+    NoTemplateError = os.NewError("Requested template does not exist")
+    ParseError      = os.NewError("Couldn't parse template")
+)
+
 //  The $GOROOT environment variable.
 func GetGoroot() string {
     goroot, err := os.Getenverror("GOROOT")
@@ -43,7 +48,27 @@ func GetTemplatePath(relpath []string) string {
     )
     copy(path, rootpath)
     copy(path[len(rootpath):], relpath)
-    return filepath.Join(path...)
+    var (
+        joined = filepath.Join(path...)
+        stat, errStat = os.Stat(joined)
+    )
+    if stat == nil || errStat != nil {
+        return ""
+    }
+    return joined
+}
+func GetAltTemplatePath(relpath []string) string {
+    if AppConfig.AltRoot == "" {
+        return ""
+    }
+    var (
+        altpath = GetRootedTemplatePath([]string{AppConfig.AltRoot}, relpath)
+        stat, errStat = os.Stat(altpath)
+    )
+    if stat == nil || errStat != nil {
+        return ""
+    }
+    return altpath
 }
 //  Get a full template path from a path slice relative to another path
 //  slice.
@@ -53,24 +78,52 @@ func GetRootedTemplatePath(rootpath []string, relpath []string) string {
     copy(path[len(rootpath):], relpath)
     return filepath.Join(path...)
 }
-//  Given a filename and dictionary context, create a context dict+("file"=>filename),
-//  and read a template specified by relpath. See GetTemplatePath().
-func ParseTemplate(filename string, dict map[string]string, relpath []string) string {
-    var tpath = GetTemplatePath(relpath)
+func ParseAltTemplate(filename string, dict map[string]string, relpath []string) (string, os.Error) {
+    var tpath = GetAltTemplatePath(relpath)
+    if tpath == "" {
+        return "", NoTemplateError
+    }
     if DEBUG && DEBUG_LEVEL > 0 {
         log.Printf("scanning: %s", tpath)
         if DEBUG_LEVEL > 1 {
             log.Printf("context:\n%v", dict)
         }
     }
-    return mustache.RenderFile(tpath, dict, map[string]string{"file":filename})
+    // TODO Stat the template to make sure it exists.
+    return mustache.RenderFile(tpath, dict, map[string]string{"file":filename}), nil
+}
+//  Given a filename and dictionary context, create a context dict+("file"=>filename),
+//  and read a template specified by relpath. See GetTemplatePath().
+func ParseTemplate(filename string, dict map[string]string, relpath []string) (string, os.Error) {
+    var tpath = GetTemplatePath(relpath)
+    if tpath == "" {
+        return "", NoTemplateError
+    }
+    if DEBUG && DEBUG_LEVEL > 0 {
+        log.Printf("scanning: %s", tpath)
+        if DEBUG_LEVEL > 1 {
+            log.Printf("context:\n%v", dict)
+        }
+    }
+    // TODO Stat the template to make sure it exists.
+    return mustache.RenderFile(tpath, dict, map[string]string{"file":filename}), nil
 }
 //  Given a filename, dictionary context, and the path to a template,
 //  write the parsed template to the specified filename. The context of
 //  the template will have a rule "file":filename which should override
 //  any previous "file" rule in dict.
 func WriteTemplate(filename, desc string, dict map[string]string, relpath...string) os.Error {
-    var template = ParseTemplate(filename, dict, relpath)
+    var template string
+    var alttemplate, errParseAlt = ParseAltTemplate(filename, dict, relpath)
+    if errParseAlt == nil {
+        template = alttemplate
+    } else {
+        var stdtemplate, errParseStd = ParseTemplate(filename, dict, relpath)
+        if errParseStd != nil {
+            return errParseStd
+        }
+        template = stdtemplate
+    }
 	if DEBUG || VERBOSE {
 		fmt.Printf("Creating %s %s\n", desc, filename)
         if DEBUG && DEBUG_LEVEL > 2 {
@@ -83,7 +136,17 @@ func WriteTemplate(filename, desc string, dict map[string]string, relpath...stri
     return errWrite
 }
 func AppendTemplate(filename, desc string, dict map[string]string, relpath...string) os.Error {
-    var template = ParseTemplate(filename, dict, relpath)
+    var template string
+    var alttemplate, errParseAlt = ParseAltTemplate(filename, dict, relpath)
+    if errParseAlt == nil {
+        template = alttemplate
+    } else {
+        var stdtemplate, errParseStd = ParseTemplate(filename, dict, relpath)
+        if errParseStd != nil {
+            return errParseStd
+        }
+        template = stdtemplate
+    }
 	if DEBUG || VERBOSE {
 		fmt.Printf("Appending %s %s\n", desc, filename)
         if DEBUG && DEBUG_LEVEL > 2 {
