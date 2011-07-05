@@ -274,16 +274,16 @@ func (p Project) InitializeRepo(add, commit, push bool) os.Error {
 }
 
 func (p Project) MainFilename() string {
-    return p.Name + ".go"
+    return p.Target + ".go"
 }
 func (p Project) TestFilename() string {
     switch p.Type {
     case CmdType:
         return "main_test.go"
     case PkgType:
-        return p.Name + "_test.go"
+        return p.Target + "_test.go"
     }
-    return p.Name + "_test.go"
+    return p.Target + "_test.go"
 }
 func (p Project) ReadmeFilename() string {
     if p.ReadmeIsMarkdown() {
