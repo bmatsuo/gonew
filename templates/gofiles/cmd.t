@@ -20,11 +20,12 @@ func SetupFlags() *flag.FlagSet {
     fs.BoolVar(&(opt.verbose), "v", false, "Verbose program output.")
     return fs
 }
-func VerifyFlags() {
+func VerifyFlags(fs *flag.FlagSet) {
 }
 func ParseFlags() {
     var fs = SetupFlags()
     fs.Parse(os.Args[1:])
+    VerifyFlags(fs)
 }
 
 func main() {
