@@ -129,7 +129,7 @@ func (p Project) GenerateDictionary() map[string]string {
     td["gotarget"] = p.Target
     td["main"]   = p.MainFilename()
     td["type"]   = p.Type.String()
-    td["repo"]   = p.HostString()
+    td["repo"]   = p.HostRepoString()
     td["year"]   = YearString()
     td["date"]   = DateString()
     return td
@@ -388,6 +388,16 @@ func (p Project) HostString() string {
             return ""
         }
         return "github.com/" + p.User
+    }
+    return "<INSERT REPO HOST HERE>"
+}
+func (p Project) HostRepoString() string {
+    switch p.Host {
+    case GitHubHost:
+        if p.User == "" {
+            return ""
+        }
+        return "github.com/" + p.User + "/" + p.Target
     }
     return "<INSERT REPO HOST HERE>"
 }
