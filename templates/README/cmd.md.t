@@ -37,7 +37,7 @@ Or alternatively, use a godoc http server
 
     godoc -http=:6060
 
-and view the url localhost:6060/pkg/{{repo}}/
+and view the url http://localhost:6060/pkg/{{repo}}/
 
 Author
 ======
