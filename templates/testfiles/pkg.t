@@ -10,5 +10,5 @@ import (
     "testing"
 )
 
-func TestDummy(T *testing.T) {
+func Test{test}(T *testing.T) {
 }
