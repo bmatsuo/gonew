@@ -108,7 +108,7 @@ func combinedData(dict, extra map[string]string) map[string]string {
     for k, v := range dict {
         combined[k] = v
     }
-    for k, v := range dict {
+    for k, v := range extra {
         combined[k] = v
     }
     return combined
