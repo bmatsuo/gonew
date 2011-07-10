@@ -1,10 +1,10 @@
 package main
 /*
- *  Filename:    {{file}}
- *  Author:      {{name}} <{{email}}>
- *  Created:     {{date}}
- *  Description: {{desc}}
- *  Usage:       {{gotarget}} [options] ARGUMENT ...
+ *  Filename:    {file}
+ *  Author:      {name} <{email}>
+ *  Created:     {date}
+ *  Description: {desc}
+ *  Usage:       {gotarget} [options] ARGUMENT ...
  */
 import (
     "os"
@@ -16,7 +16,7 @@ type Options struct {
 }
 var opt = Options{}
 func SetupFlags() *flag.FlagSet {
-    var fs = flag.NewFlagSet("{{gotarget}}", flag.ExitOnError)
+    var fs = flag.NewFlagSet("{gotarget}", flag.ExitOnError)
     fs.BoolVar(&(opt.verbose), "v", false, "Verbose program output.")
     return fs
 }

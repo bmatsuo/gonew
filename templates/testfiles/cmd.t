@@ -1,9 +1,9 @@
 package main
 /*
- *  Filename:    {{file}}
- *  Author:      {{name}} <{{email}}>
- *  Created:     {{date}}
- *  Description: {{desc}}
+ *  Filename:    {file}
+ *  Author:      {name} <{email}>
+ *  Created:     {date}
+ *  Description: {desc}
  *  Usage:       gotest
  */
 import (

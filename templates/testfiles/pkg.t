@@ -1,9 +1,9 @@
-package {{gotarget}}
+package {gotarget}
 /*
- *  Filename:    {{file}}
- *  Author:      {{name}} <{{email}}>
- *  Created:     {{date}}
- *  Description: {{desc}}
+ *  Filename:    {file}
+ *  Author:      {name} <{email}>
+ *  Created:     {date}
+ *  Description: {desc}
  *  Usage:       gotest
  */
 import (

@@ -1,15 +1,15 @@
-{{project}} version 0.0_1
+{project} version 0.0_1
 =======================================================================
 
-ABOUT {{project}}
+ABOUT {project}
 
-    {{desc}}
+    {desc}
 
 USAGE
 
-    Run {{project}} with the command
+    Run {project} with the command
 
-        {{gotarget}} [options]
+        {gotarget} [options]
 
 DEPENDENCIES
 
@@ -17,28 +17,28 @@ DEPENDENCIES
 
 INSTALLATION
 
-    Use goinstall to install {{project}}
+    Use goinstall to install {project}
 
-        goinstall {{repo}}
+        goinstall {repo}
 
 DOCUMENTATION
 
-    Use godoc to vew the documentation for {{project}}
+    Use godoc to vew the documentation for {project}
 
-        godoc {{repo}}
+        godoc {repo}
 
     Or alternatively, use a godoc http server
 
         godoc -http=:6060
 
-    and view the url localhost:6060/pkg/{{repo}}/
+    and view the url localhost:6060/pkg/{repo}/
 
 AUTHOR
 
-    {{name}} <{{email}}>
+    {name} <{email}>
 
 COPYRIGHT & LICENSE
 
-    Copyright (c) {{year}}, {{name}}.
+    Copyright (c) {year}, {name}.
     All rights reserved.
 

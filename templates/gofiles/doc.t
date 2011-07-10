@@ -1,17 +1,17 @@
 /*
- *  Filename:    {{file}}
- *  Author:      {{name}} <{{email}}>
- *  Created:     {{date}}
- *  Description: {{desc}}
+ *  Filename:    {file}
+ *  Author:      {name} <{email}>
+ *  Created:     {date}
+ *  Description: {desc}
  *  Usage:       gotest
  */
 
 /*
-{{gotarget}} does...
+{gotarget} does...
 
 Usage:
 
-    {{gotarget}} [options] ARGUMENT ...
+    {gotarget} [options] ARGUMENT ...
 
 Arguments:
 

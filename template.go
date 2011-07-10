@@ -13,10 +13,12 @@ import (
     "os"
     "fmt"
     "log"
+    "bytes"
     "strings"
     "io/ioutil"
     "path/filepath"
-    "github.com/hoisie/mustache.go"
+    "template"
+    //"github.com/hoisie/mustache.go"
 )
 
 var (
@@ -30,7 +32,7 @@ func TestName(filename string) string {
         test = test[:len(test)-4]
     }
     if strings.HasSuffix(test, "_test") {
-        test = test[:len(test-6)]
+        test = test[:len(test)-6]
     }
     return strings.Title(filename)
 }
@@ -122,12 +124,11 @@ func ParseAltTemplate(filename string, dict map[string]string, relpath []string)
             log.Printf("context:\n%v", dict)
         }
     }
-    // TODO Stat the template to make sure it exists.
-    //var template = template.MustParseFile(tpath, nil)
-    //var buff = bytes.NewBuffer(make([]byte, 0, 1<<20))
-    //var errTExec = template.Execute(buff, combinedData(dict, extraData(filename)))
-    //return buff.String(), errTExec
-    return mustache.RenderFile(tpath, dict, map[string]string{"file":filename, "test":TestName(filename)}), nil
+    var template = template.MustParseFile(tpath, nil)
+    var buff = bytes.NewBuffer(make([]byte, 0, 1<<20))
+    var errTExec = template.Execute(buff, combinedData(dict, extraData(filename)))
+    return buff.String(), errTExec
+    //return mustache.RenderFile(tpath, dict, map[string]string{"file":filename, "test":TestName(filename)}), nil
 }
 //  Given a filename and dictionary context, create a context dict+("file"=>filename),
 //  and read a template specified by relpath. See GetTemplatePath().
@@ -142,12 +143,11 @@ func ParseTemplate(filename string, dict map[string]string, relpath []string) (s
             log.Printf("context:\n%v", dict)
         }
     }
-    // TODO Stat the template to make sure it exists.
-    //var template = template.MustParseFile(tpath, nil)
-    //var buff = bytes.NewBuffer(make([]byte, 0, 1<<20))
-    //var errTExec = template.Execute(buff, combinedData(dict, extraData(filename)))
-    //return buff.String(), errTExec
-    return mustache.RenderFile(tpath, dict, map[string]string{"file":filename, "test":TestName(filename)}), nil
+    var template = template.MustParseFile(tpath, nil)
+    var buff = bytes.NewBuffer(make([]byte, 0, 1<<20))
+    var errTExec = template.Execute(buff, combinedData(dict, extraData(filename)))
+    return buff.String(), errTExec
+    //return mustache.RenderFile(tpath, dict, map[string]string{"file":filename, "test":TestName(filename)}), nil
 }
 //  Given a filename, dictionary context, and the path to a template,
 //  write the parsed template to the specified filename. The context of

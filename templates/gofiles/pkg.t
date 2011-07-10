@@ -1,12 +1,12 @@
 /*
- *  Filename:    {{file}}
- *  Package:     {{gotarget}}
- *  Author:      {{name}} <{{email}}>
- *  Created:     {{date}}
- *  Description: {{desc}}
+ *  Filename:    {file}
+ *  Package:     {gotarget}
+ *  Author:      {name} <{email}>
+ *  Created:     {date}
+ *  Description: {desc}
  */
 
-// Package {{gotarget}} does ....
-package {{gotarget}}
+// Package {gotarget} does ....
+package {gotarget}
 import (
 )

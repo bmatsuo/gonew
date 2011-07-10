@@ -7,9 +7,9 @@
 
 include $(GOROOT)/src/Make.inc
 
-TARG={{gotarget}}
+TARG={gotarget}
 GOFILES=\
-        {{main}}\
+        {main}\
 
 include $(GOROOT)/src/Make.cmd
 
