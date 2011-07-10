@@ -229,7 +229,7 @@ func (p Project) CreateOptionsFile(dict map[string]string) os.Error {
 	var (
 		doc = "options.go"
         templatePath = p.OptionsTemplatePath()
-		errWrite = WriteTemplate(doc, "documentation files", dict, templatePath...)
+		errWrite = WriteTemplate(doc, "option parsing file", dict, templatePath...)
 	)
     return errWrite
 }
@@ -240,7 +240,7 @@ func (p Project) CreateDocFile(dict map[string]string) os.Error {
 	var (
 		doc = "doc.go"
         templatePath = p.DocTemplatePath()
-		errWrite = WriteTemplate(doc, "documentation files", dict, templatePath...)
+		errWrite = WriteTemplate(doc, "documentation file", dict, templatePath...)
 	)
     return errWrite
 }
