@@ -34,7 +34,7 @@ func TestName(filename string) string {
     if strings.HasSuffix(test, "_test") {
         test = test[:len(test)-6]
     }
-    return strings.Title(filename)
+    return strings.Title(test)
 }
 
 
