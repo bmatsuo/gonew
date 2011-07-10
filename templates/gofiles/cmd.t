@@ -7,8 +7,6 @@ package main
  *  Usage:       {gotarget} [options] ARGUMENT ...
  */
 import (
-    "os"
-    "flag"
 )
 
 func main() {.meta-left}
