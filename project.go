@@ -89,7 +89,7 @@ func (p Project) Create() os.Error {
     return errChdirBack
 }
 func (p Project) CreateFiles(dict map[string]string) os.Error {
-    var errMake, errMain, errDoc, errLic, errTest, errReadme, errOther os.Error
+    var errMake, errMain, errOpt, errDoc, errLic, errTest, errReadme, errOther os.Error
     errMake = p.CreateMakefile(dict)
     if errMake != nil {
         return errMake
@@ -97,6 +97,10 @@ func (p Project) CreateFiles(dict map[string]string) os.Error {
     errMain = p.CreateMainFile(dict)
     if errMain != nil {
         return errMain
+    }
+    errOpt = p.CreateDocFile(dict)
+    if errOpt != nil {
+        return errOpt
     }
     errDoc = p.CreateDocFile(dict)
     if errDoc != nil {
@@ -216,6 +220,17 @@ func (p Project) CreateLicense(dict map[string]string) os.Error {
         license = "LICENSE"
     )
 	var errWrite = WriteTemplate(license, "license", dict, templatePath...)
+    return errWrite
+}
+func (p Project) CreateOptionsFile(dict map[string]string) os.Error {
+    if p.Type == PkgType {
+        return nil
+    }
+	var (
+		doc = "options.go"
+        templatePath = p.OptionsTemplatePath()
+		errWrite = WriteTemplate(doc, "documentation files", dict, templatePath...)
+	)
     return errWrite
 }
 func (p Project) CreateDocFile(dict map[string]string) os.Error {
@@ -363,6 +378,9 @@ func (p Project) TestTemplatePath() []string {
 }
 func (p Project) ReadmeTemplatePath() []string {
     return []string{"README", p.ReadmeTemplateName()}
+}
+func (p Project) OptionsTemplatePath() []string {
+    return []string{"gofiles", "options.t"}
 }
 func (p Project) DocTemplatePath() []string {
     return []string{"gofiles", "doc.t"}
