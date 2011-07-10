@@ -10,5 +10,5 @@ import (
     "testing"
 )
 
-func Test{test}(T *testing.T) {
-}
+func Test{test}(T *testing.T) {.meta-left}
+{.meta-right}

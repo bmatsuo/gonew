@@ -11,23 +11,27 @@ import (
     "flag"
 )
 
-type Options struct {
+type Options struct {.meta-left}
     verbose bool
-}
-var opt = Options{}
-func SetupFlags() *flag.FlagSet {
+{.meta-right}
+
+var opt = Options{.meta-left} {.meta-right}
+
+func SetupFlags() *flag.FlagSet {.meta-left}
     var fs = flag.NewFlagSet("{gotarget}", flag.ExitOnError)
     fs.BoolVar(&(opt.verbose), "v", false, "Verbose program output.")
     return fs
-}
-func VerifyFlags(fs *flag.FlagSet) {
-}
-func ParseFlags() {
+{.meta-right}
+
+func VerifyFlags(fs *flag.FlagSet) {.meta-left}
+{.meta-right}
+
+func ParseFlags() {.meta-left}
     var fs = SetupFlags()
     fs.Parse(os.Args[1:])
     VerifyFlags(fs)
-}
+{.meta-right}
 
-func main() {
+func main() {.meta-left}
     ParseFlags()
-}
+{.meta-right}
