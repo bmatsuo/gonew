@@ -98,7 +98,7 @@ func (p Project) CreateFiles(dict map[string]string) os.Error {
     if errMain != nil {
         return errMain
     }
-    errOpt = p.CreateDocFile(dict)
+    errOpt = p.CreateOptionsFile(dict)
     if errOpt != nil {
         return errOpt
     }
