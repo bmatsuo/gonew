@@ -13,6 +13,7 @@ import (
     "os"
     "fmt"
     "log"
+    "strings"
     "io/ioutil"
     "path/filepath"
     "github.com/hoisie/mustache.go"
@@ -22,6 +23,18 @@ var (
     NoTemplateError = os.NewError("Requested template does not exist")
     ParseError      = os.NewError("Couldn't parse template")
 )
+
+func TestName(filename string) string {
+    var test = filename
+    if strings.HasSuffix(test, ".go") {
+        test = test[:len(test)-4]
+    }
+    if strings.HasSuffix(test, "_test") {
+        test = test[:len(test-6)]
+    }
+    return strings.Title(filename)
+}
+
 
 //  The $GOROOT environment variable.
 func GetGoroot() string {
@@ -84,6 +97,20 @@ func GetRootedTemplatePath(rootpath []string, relpath []string) string {
     copy(path[len(rootpath):], relpath)
     return filepath.Join(path...)
 }
+func extraData(filename string) map[string]string {
+    return map[string]string{"file":filename, "test":TestName(filename)}
+}
+func combinedData(dict, extra map[string]string) map[string]string {
+    var numEntries = len(dict)+len(extra)
+    var combined = make(map[string]string, numEntries)
+    for k, v := range dict {
+        combined[k] = v
+    }
+    for k, v := range dict {
+        combined[k] = v
+    }
+    return combined
+}
 func ParseAltTemplate(filename string, dict map[string]string, relpath []string) (string, os.Error) {
     var tpath = GetAltTemplatePath(relpath)
     if tpath == "" {
@@ -96,7 +123,11 @@ func ParseAltTemplate(filename string, dict map[string]string, relpath []string)
         }
     }
     // TODO Stat the template to make sure it exists.
-    return mustache.RenderFile(tpath, dict, map[string]string{"file":filename}), nil
+    //var template = template.MustParseFile(tpath, nil)
+    //var buff = bytes.NewBuffer(make([]byte, 0, 1<<20))
+    //var errTExec = template.Execute(buff, combinedData(dict, extraData(filename)))
+    //return buff.String(), errTExec
+    return mustache.RenderFile(tpath, dict, map[string]string{"file":filename, "test":TestName(filename)}), nil
 }
 //  Given a filename and dictionary context, create a context dict+("file"=>filename),
 //  and read a template specified by relpath. See GetTemplatePath().
@@ -112,7 +143,11 @@ func ParseTemplate(filename string, dict map[string]string, relpath []string) (s
         }
     }
     // TODO Stat the template to make sure it exists.
-    return mustache.RenderFile(tpath, dict, map[string]string{"file":filename}), nil
+    //var template = template.MustParseFile(tpath, nil)
+    //var buff = bytes.NewBuffer(make([]byte, 0, 1<<20))
+    //var errTExec = template.Execute(buff, combinedData(dict, extraData(filename)))
+    //return buff.String(), errTExec
+    return mustache.RenderFile(tpath, dict, map[string]string{"file":filename, "test":TestName(filename)}), nil
 }
 //  Given a filename, dictionary context, and the path to a template,
 //  write the parsed template to the specified filename. The context of
