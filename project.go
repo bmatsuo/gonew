@@ -428,5 +428,5 @@ func DateString() string {
     return time.LocalTime().String()
 }
 func (p Project) ReadmeIsMarkdown() bool {
-    return p.Host == GitHubHost
+    return userepo && p.Host == GitHubHost
 }
