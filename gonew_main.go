@@ -7,7 +7,7 @@ package main
 *  Author: Bryan Matsuo [bmatsuo@soe.ucsc.edu] 
 *  Created: Sat Jul  2 19:17:53 PDT 2011
 *  Usage: gonew [options]
-*/
+ */
 import (
     "os"
     //"io"
@@ -22,25 +22,25 @@ import (
 )
 
 var (
-    usage = `
+    usage          = `
 gonew [options] cmd NAME
 gonew [options] pkg NAME
 gonew [options] lib NAME PKG
 `
-    printUsageHead = func () { fmt.Fprint(os.Stderr, usage, "\n") }
-    userepo = true
-    VERBOSE = false
-    DEBUG = false
-	DEBUG_LEVEL = -1
-    name    string
-    ptype   string
-    repo    string
-    host    string
-    user    string
-    target  string
-    license string
-	remote  string
-    help    bool
+    printUsageHead = func() { fmt.Fprint(os.Stderr, usage, "\n") }
+    userepo        = true
+    VERBOSE        = false
+    DEBUG          = false
+    DEBUG_LEVEL    = -1
+    name           string
+    ptype          string
+    repo           string
+    host           string
+    user           string
+    target         string
+    license        string
+    remote         string
+    help           bool
 )
 
 func setupFlags() *flag.FlagSet {
@@ -51,8 +51,8 @@ func setupFlags() *flag.FlagSet {
         "host", "", "Repository host if any (e.g. 'github').")
     fs.StringVar(&user,
         "user", "", "Repo host username.")
-	fs.StringVar(&remote,
-		"remote", "", "Remote repository url to initialize and push to.")
+    fs.StringVar(&remote,
+        "remote", "", "Remote repository url to initialize and push to.")
     fs.StringVar(&target,
         "target", "", "Makefile target. Default based on NAME.")
     fs.StringVar(&license,
@@ -67,7 +67,7 @@ func setupFlags() *flag.FlagSet {
     fs.BoolVar(&help,
         "help", false, "Show this message.")
     var usageTemp = fs.Usage
-    fs.Usage = func () {
+    fs.Usage = func() {
         printUsageHead()
         usageTemp()
     }
@@ -75,6 +75,7 @@ func setupFlags() *flag.FlagSet {
 }
 
 type Request int
+
 const (
     NilRequest Request = iota
     ProjectRequest
@@ -82,7 +83,7 @@ const (
 )
 
 
-var RequestedFile   File
+var RequestedFile File
 var RequestedProject Project
 
 func parseArgs() Request {
@@ -95,7 +96,7 @@ func parseArgs() Request {
         fs.Usage()
         os.Exit(0)
     }
-    var narg  = fs.NArg()
+    var narg = fs.NArg()
     if narg < 1 {
         fmt.Fprint(os.Stderr, "missing TYPE argument")
         os.Exit(1)
@@ -112,18 +113,18 @@ func parseArgs() Request {
     }
     var (
         file = File{
-            Name:name, Pkg: "main",
-            Repo:AppConfig.Repo, License:AppConfig.License,
-            User:AppConfig.HostUser, Host:AppConfig.Host}
+            Name: name, Pkg: "main",
+            Repo: AppConfig.Repo, License: AppConfig.License,
+            User: AppConfig.HostUser, Host: AppConfig.Host}
         project = Project{
-            Name:name, Target:target,
-            Type: NilProjectType, License:AppConfig.License, Remote:remote,
-            Host:AppConfig.Host, User:AppConfig.HostUser,
-            Repo:AppConfig.Repo}
+            Name: name, Target: target,
+            Type: NilProjectType, License: AppConfig.License, Remote: remote,
+            Host: AppConfig.Host, User: AppConfig.HostUser,
+            Repo: AppConfig.Repo}
         produceProject = true
-        licObj  = NilLicenseType
-        repoObj = NilRepoType
-        hostObj = NilRepoHost
+        licObj         = NilLicenseType
+        repoObj        = NilRepoType
+        hostObj        = NilRepoHost
     )
     switch ptype {
     case "cmd":
@@ -163,9 +164,9 @@ func parseArgs() Request {
         hostObj = GitHubHost
         repoObj = GitType
     /*
-    case "googlecode":
-        hostObj = GoogleCodeType
-        repoObj = MercurialType
+       case "googlecode":
+           hostObj = GoogleCodeType
+           repoObj = MercurialType
     */
     default:
         fmt.Fprintf(os.Stderr, "Unknown HOST %s\n", host)
@@ -220,7 +221,7 @@ func main() {
     if DEBUG || VERBOSE {
         fmt.Print("Parsing config file.\n")
     }
-	ReadConfig()
+    ReadConfig()
     var request = parseArgs()
     switch request {
     case ProjectRequest:
@@ -239,7 +240,7 @@ func main() {
             fmt.Printf("Library requested %v\n", pretty.Formatter(RequestedFile))
         } else if VERBOSE {
             fmt.Printf("Generating library %s (package %s)\n",
-                    RequestedFile.Name + ".go", RequestedFile.Pkg)
+                RequestedFile.Name+".go", RequestedFile.Pkg)
         }
         var errCreate = RequestedFile.Create()
         if errCreate != nil {

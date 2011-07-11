@@ -6,7 +6,7 @@ package main
 *  File: project.go
 *  Author: Bryan Matsuo [bmatsuo@soe.ucsc.edu] 
 *  Created: Sat Jul  2 20:28:54 PDT 2011
-*/
+ */
 import (
     "os"
     "fmt"
@@ -22,6 +22,7 @@ var (
 )
 
 type ProjectType int
+
 const (
     NilProjectType ProjectType = iota
     CmdType
@@ -29,6 +30,7 @@ const (
     //LibType
     //MainType
 )
+
 func (ptype ProjectType) String() string {
     switch ptype {
     case CmdType:
@@ -129,30 +131,30 @@ func (p Project) CreateFiles(dict map[string]string) os.Error {
 
 func (p Project) GenerateDictionary() map[string]string {
     var td = make(map[string]string, 9)
-    td["project"]   = p.Name
-    td["name"]   = AppConfig.Name
-    td["email"]  = AppConfig.Email
+    td["project"] = p.Name
+    td["name"] = AppConfig.Name
+    td["email"] = AppConfig.Email
     td["gotarget"] = p.Target
-    td["main"]   = p.MainFilename()
-    td["type"]   = p.Type.String()
-    td["repo"]   = p.HostRepoString()
-    td["year"]   = YearString()
-    td["date"]   = DateString()
+    td["main"] = p.MainFilename()
+    td["type"] = p.Type.String()
+    td["repo"] = p.HostRepoString()
+    td["year"] = YearString()
+    td["date"] = DateString()
     return td
 }
 
 func (p Project) CreateMakefile(dict map[string]string) os.Error {
     var (
         templatePath = p.MakefileTemplatePath()
-        errWrite = WriteTemplate("Makefile", "makefile", dict, templatePath...)
+        errWrite     = WriteTemplate("Makefile", "makefile", dict, templatePath...)
     )
     return errWrite
 }
 func (p Project) CreateMainFile(dict map[string]string) os.Error {
-    var(
-        mainfile = p.MainFilename()
-        ltemplateName = p.GofileLicenseHeadTemplateName()
-        templatePath  = p.MainTemplatePath()
+    var (
+        mainfile            = p.MainFilename()
+        ltemplateName       = p.GofileLicenseHeadTemplateName()
+        templatePath        = p.MainTemplatePath()
         errWrite, errAppend os.Error
     )
     if ltemplateName == "" {
@@ -177,10 +179,10 @@ func (p Project) CreateTestFile(dict map[string]string) os.Error {
         }
         return nil
     }
-    var(
-        testfile = p.TestFilename()
-        ltemplateName = p.GofileLicenseHeadTemplateName()
-        templatePath  = p.TestTemplatePath()
+    var (
+        testfile            = p.TestFilename()
+        ltemplateName       = p.GofileLicenseHeadTemplateName()
+        templatePath        = p.TestTemplatePath()
         errWrite, errAppend os.Error
     )
     if ltemplateName == "" {
@@ -201,9 +203,9 @@ func (p Project) CreateTestFile(dict map[string]string) os.Error {
 func (p Project) CreateReadme(dict map[string]string) os.Error {
     var (
         templatePath = p.ReadmeTemplatePath()
-        readme = p.ReadmeFilename()
+        readme       = p.ReadmeFilename()
     )
-	var errWrite = WriteTemplate(readme, "README", dict, templatePath...)
+    var errWrite = WriteTemplate(readme, "README", dict, templatePath...)
     if errWrite != nil {
         return errWrite
     }
@@ -212,38 +214,38 @@ func (p Project) CreateReadme(dict map[string]string) os.Error {
     }
     var (
         ltemplatePath = []string{"licenses", p.ReadmeLicenseTailTemplateName()}
-        errAppend = AppendTemplate(readme, "README license tail", dict, ltemplatePath...)
+        errAppend     = AppendTemplate(readme, "README license tail", dict, ltemplatePath...)
     )
     return errAppend
 }
 func (p Project) CreateLicense(dict map[string]string) os.Error {
     var (
         templatePath = []string{"licenses", p.LicenseTemplateName()}
-        license = "LICENSE"
+        license      = "LICENSE"
     )
-	var errWrite = WriteTemplate(license, "license", dict, templatePath...)
+    var errWrite = WriteTemplate(license, "license", dict, templatePath...)
     return errWrite
 }
 func (p Project) CreateOptionsFile(dict map[string]string) os.Error {
     if p.Type == PkgType {
         return nil
     }
-	var (
-		doc = "options.go"
+    var (
+        doc          = "options.go"
         templatePath = p.OptionsTemplatePath()
-		errWrite = WriteTemplate(doc, "option parsing file", dict, templatePath...)
-	)
+        errWrite     = WriteTemplate(doc, "option parsing file", dict, templatePath...)
+    )
     return errWrite
 }
 func (p Project) CreateDocFile(dict map[string]string) os.Error {
     if p.Type == PkgType {
         return nil
     }
-	var (
-		doc = "doc.go"
+    var (
+        doc          = "doc.go"
         templatePath = p.DocTemplatePath()
-		errWrite = WriteTemplate(doc, "documentation file", dict, templatePath...)
-	)
+        errWrite     = WriteTemplate(doc, "documentation file", dict, templatePath...)
+    )
     return errWrite
 }
 func (p Project) CreateOtherFiles(dict map[string]string) os.Error {
@@ -262,8 +264,8 @@ func (p Project) CreateOtherFiles(dict map[string]string) os.Error {
 func (p Project) InitializeRepo(add, commit, push bool) os.Error {
     switch p.Repo {
     case GitType:
-		var git = GitRepository{}
-		git.Initialize(add, commit)
+        var git = GitRepository{}
+        git.Initialize(add, commit)
     case MercurialType:
         var hg = MercurialRepository{}
         hg.Initialize(add, commit)
