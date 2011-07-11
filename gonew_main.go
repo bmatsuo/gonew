@@ -98,11 +98,11 @@ func parseArgs() Request {
     }
     var narg = fs.NArg()
     if narg < 1 {
-        fmt.Fprint(os.Stderr, "missing TYPE argument")
+        fmt.Fprint(os.Stderr, "missing TYPE argument\n")
         os.Exit(1)
     }
     if narg < 2 {
-        fmt.Fprint(os.Stderr, "mising NAME argument")
+        fmt.Fprint(os.Stderr, "missing NAME argument\n")
         os.Exit(1)
     }
     ptype = fs.Arg(0)
@@ -190,7 +190,7 @@ func parseArgs() Request {
         return ProjectRequest
     } else {
         if narg < 3 {
-            fmt.Fprint(os.Stderr, "mising PKG argument")
+            fmt.Fprint(os.Stderr, "missing PKG argument\n")
             os.Exit(1)
         }
         file.Pkg = fs.Arg(2)
