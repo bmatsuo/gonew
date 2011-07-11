@@ -78,9 +78,11 @@ func (p Project) Create() os.Error {
     if errFiles != nil {
         return errFiles
     }
-    errRepo = p.InitializeRepo(true, true, true)
-    if errRepo != nil {
-        return errRepo
+    if userepo {
+        errRepo = p.InitializeRepo(true, true, true)
+        if errRepo != nil {
+            return errRepo
+        }
     }
     if DEBUG || VERBOSE {
         fmt.Print("Leaving project directory.\n")

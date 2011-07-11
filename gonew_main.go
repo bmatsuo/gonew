@@ -28,6 +28,7 @@ gonew [options] pkg NAME
 gonew [options] lib NAME PKG
 `
     printUsageHead = func () { fmt.Fprint(os.Stderr, usage, "\n") }
+    userepo = true
     VERBOSE = false
     DEBUG = false
 	DEBUG_LEVEL = -1
@@ -58,6 +59,7 @@ func setupFlags() *flag.FlagSet {
         "license", "", "Project license (e.g. 'newbsd').")
     fs.BoolVar(&(AppConfig.MakeTest),
         "test", AppConfig.MakeTest, "Produce test files with Go files.")
+    fs.BoolVar(&(userepo), "userepo", true, "Create a local repository.")
     fs.BoolVar(&VERBOSE,
         "v", false, "Verbose output.")
     fs.IntVar(&DEBUG_LEVEL,
