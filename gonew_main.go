@@ -18,7 +18,7 @@ import (
     //"io/ioutil"
     //"path/filepath"
     //"github.com/hoisie/mustache.go"
-    "github.com/kr/pretty.go"
+    //"github.com/kr/pretty.go"
 )
 
 var (
@@ -226,7 +226,7 @@ func main() {
     switch request {
     case ProjectRequest:
         if DEBUG {
-            fmt.Printf("Project requested %v\n", pretty.Formatter(RequestedProject))
+            fmt.Printf("Project requested %v\n", RequestedProject)
         } else if VERBOSE {
             fmt.Printf("Generating project %s\n", RequestedProject.Name)
         }
@@ -237,7 +237,7 @@ func main() {
         }
     case LibraryRequest:
         if DEBUG {
-            fmt.Printf("Library requested %v\n", pretty.Formatter(RequestedFile))
+            fmt.Printf("Library requested %v\n", RequestedFile)
         } else if VERBOSE {
             fmt.Printf("Generating library %s (package %s)\n",
                 RequestedFile.Name+".go", RequestedFile.Pkg)
