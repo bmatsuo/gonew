@@ -9,7 +9,7 @@ package main
 import (
 )
 
+var opt = ParseFlags()
+
 func main() {.meta-left}
-    ParseFlags()
-    // Options are now stored in the global variable opt.
 {.meta-right}

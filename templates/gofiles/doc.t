@@ -2,8 +2,8 @@
  *  Filename:    {file}
  *  Author:      {name} <{email}>
  *  Created:     {date}
- *  Description: {desc}
- *  Usage:       gotest
+ *  Description: Documentation for {gotarget}
+ *  Usage:       godoc {repo}
  */
 
 /*
