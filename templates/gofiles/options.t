@@ -23,7 +23,7 @@ func setupFlags(opt *options) *flag.FlagSet {.meta-left}
 func verifyFlags(opt *options, fs *flag.FlagSet) {.meta-left}
 {.meta-right}
 
-func ParseFlags() options {.meta-left}
+func parseFlags() options {.meta-left}
     var opt options
     var fs = setupFlags(&opt)
     fs.Parse(os.Args[1:])

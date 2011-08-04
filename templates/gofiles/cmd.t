@@ -9,7 +9,7 @@ package main
 import (
 )
 
-var opt = ParseFlags()
+var opt = parseFlags()
 
 func main() {.meta-left}
 {.meta-right}
