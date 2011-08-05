@@ -246,8 +246,8 @@ func (p Project) InitializeRepo(add, commit, push bool) os.Error {
     case GitType:
         git := GitRepository{}
         git.Initialize(add, commit)
-    case MercurialType:
-        hg := MercurialRepository{}
+    case HgType:
+        hg := HgRepository{}
         hg.Initialize(add, commit)
     }
     switch p.Host {
@@ -372,7 +372,7 @@ func (p Project) OtherTemplatePaths() [][]string {
     switch p.Repo {
     case GitType:
         others = append(others, []string{".gitignore", "otherfiles", "gitignore.t"})
-    case MercurialType:
+    case HgType:
         others = append(others, []string{".hgignore", "otherfiles", "hgignore.t"})
     }
     if len(others) == 0 {

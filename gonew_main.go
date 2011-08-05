@@ -152,7 +152,7 @@ func parseArgs() Request {
     case "git":
         repoObj = GitType
     case "mercurial":
-        repoObj = MercurialType
+        repoObj = HgType
     default:
         fmt.Fprintf(os.Stderr, "Unknown REPO %s\n", repo)
         os.Exit(1)
