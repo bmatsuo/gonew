@@ -9,10 +9,10 @@ package main
  *  Created:     Mon Jul  4 00:53:08 PDT 2011
  *  Description: 
  */
-import (
-)
+import ()
 
 type LicenseType int
+
 const (
     NilLicenseType LicenseType = iota
     NewBSD
@@ -22,18 +22,14 @@ const (
     // ...
 )
 
-func (license LicenseType) String() string {
-    switch license {
-    case NewBSD:
-        return "New BSD License"
-    }
-    return ""
+var licstrings = []string{
+    NilLicenseType: "Nil",
+    NewBSD:         "New BSD",
 }
+func (lt LicenseType) String() string { return licstrings[lt] }
 
-func (license LicenseType) TemplateNamePrefix() string {
-    switch license {
-    case NewBSD:
-        return "newbsd"
-    }
-    return ""
+var licprefix = []string{
+    NilLicenseType: "",
+    NewBSD:         "newbsd",
 }
+func (lt LicenseType) TemplateNamePrefix() string { return licprefix[lt] }
