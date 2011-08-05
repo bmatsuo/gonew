@@ -16,6 +16,7 @@ import (
 )
 
 type RepoHost int
+
 const (
     NilRepoHost RepoHost = iota
     GitHubHost
@@ -23,20 +24,28 @@ const (
     //...
 )
 
+var hoststrings = []string{
+    NilRepoHost:    "Nil",
+    GitHubHost: "GitHub",
+}
+func (rh RepoHost) String() string {
+    return hoststrings[rh]
+}
+
 type RemoteRepository interface {
-    Project()          Project
+    Project() Project
     Init(orign string) os.Error // Setup local repository for push.
-    Push()             os.Error // Push changes to the remote host.
-    Repo()             RepoType
-    Host()             RepoHost
-    UseMarkdown()      bool
+    Push() os.Error             // Push changes to the remote host.
+    Repo() RepoType
+    Host() RepoHost
+    UseMarkdown() bool
 }
 
 func VerifyRemote(remote RemoteRepository) {
     if remote.Repo() != remote.Project().Repo {
         if DEBUG {
             log.Printf("Remote/local repo type mismatch %s %s",
-                    remote.Repo(), remote.Project().Repo)
+                remote.Repo(), remote.Project().Repo)
         }
         panic("typemismatch")
     }
