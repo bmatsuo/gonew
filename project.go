@@ -93,37 +93,28 @@ func (p Project) Create() os.Error {
     return errChdirBack
 }
 func (p Project) CreateFiles(dict map[string]string) os.Error {
-    var errMake, errMain, errOpt, errDoc, errLic, errTest, errReadme, errOther os.Error
-    errMake = p.CreateMakefile(dict)
-    if errMake != nil {
+    if errMake = p.CreateMakefile(dict); errMake != nil {
         return errMake
     }
-    errMain = p.CreateMainFile(dict)
-    if errMain != nil {
+    if errMain = p.CreateMainFile(dict); errMain != nil {
         return errMain
     }
-    errOpt = p.CreateOptionsFile(dict)
-    if errOpt != nil {
+    if errOpt = p.CreateOptionsFile(dict); errOpt != nil {
         return errOpt
     }
-    errDoc = p.CreateDocFile(dict)
-    if errDoc != nil {
+    if errDoc = p.CreateDocFile(dict); errDoc != nil {
         return errDoc
     }
-    errTest = p.CreateTestFile(dict)
-    if errTest != nil {
+    if errTest = p.CreateTestFile(dict); errTest != nil {
         return errTest
     }
-    errReadme = p.CreateReadme(dict)
-    if errReadme != nil {
+    if errReadme = p.CreateReadme(dict); errReadme != nil {
         return errReadme
     }
-    errOther = p.CreateOtherFiles(dict)
-    if errOther != nil {
+    if errOther = p.CreateOtherFiles(dict); errOther != nil {
         return errOther
     }
-    errLic = p.CreateLicense(dict)
-    if errLic != nil {
+    if errLic = p.CreateLicense(dict); errLic != nil {
         return errLic
     }
     return nil
