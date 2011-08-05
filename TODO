@@ -5,13 +5,3 @@ Add more repository hosts (googlecode, ...).
 [ADDED mercurial] Add more repository types (svn, ...).
 
 [ADDED newbsd] Add license templates (Apache, GNU LGPLv3, GNU GPLv3, MIT, ...).
-
-[DONE] Add option -test to avoid emitting test files.
-
-[DONE] Custom template directory.
-
-[DONE] Add command line option: remote repo url.
-
-[DONE] Make individual files ("lib").
-
-[DONE] Generate tests for individual "lib" files.
