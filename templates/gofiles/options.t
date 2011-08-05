@@ -12,13 +12,13 @@ import (
 
 //  A struct that holds parsed option values.
 type options struct {.meta-left}
-    verbose bool
+    Verbose bool
 {.meta-right}
 
 //  Create a flag.FlagSet to parse the command line options/arguments.
 func setupFlags(opt *options) *flag.FlagSet {.meta-left}
     var fs = flag.NewFlagSet("{gotarget}", flag.ExitOnError)
-    fs.BoolVar(&(opt.verbose), "v", false, "Verbose program output.")
+    fs.BoolVar(&(opt.Verbose), "v", false, "Verbose program output.")
     return fs
 {.meta-right}
 
