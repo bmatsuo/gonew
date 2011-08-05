@@ -166,7 +166,7 @@ func parseArgs() Request {
     /*
        case "googlecode":
            hostObj = GoogleCodeType
-           repoObj = MercurialType
+           repoObj = HgType
     */
     default:
         fmt.Fprintf(os.Stderr, "Unknown HOST %s\n", host)

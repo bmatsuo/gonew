@@ -244,10 +244,10 @@ func (p Project) CreateOtherFiles(dict map[string]string) os.Error {
 func (p Project) InitializeRepo(add, commit, push bool) os.Error {
     switch p.Repo {
     case GitType:
-        git := GitRepository{}
+        git := GitRepo{}
         git.Initialize(add, commit)
     case HgType:
-        hg := HgRepository{}
+        hg := HgRepo{}
         hg.Initialize(add, commit)
     }
     switch p.Host {
