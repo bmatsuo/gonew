@@ -15,22 +15,36 @@ import (
 )
 
 type RepoType int
-const(
+
+const (
     NilRepoType RepoType = iota
     GitType
     MercurialType
     // ...
 )
 
-type Repository interface {
-    Initialize(commit bool) os.Error // Initialize the working directory as a new repository.
-    Add(paths...string)     os.Error // Add a set of paths to the repository.
-    Commit(message string)  os.Error // Commit changes with a given message.
-    //IsClean()               bool     // Returns true if there is nothing to commit on the working branch.
+var repotypestrings = []string{
+    NilRepoType:   "Nil",
+    GitType:       "Git",
+    MercurialType: "Mercurial",
 }
 
-type GitRepository struct {
+func (rt RepoType) String() string {
+    return repotypestrings[rt]
 }
+
+type Repository interface {
+    Type() RepoType
+    Initialize(commit bool) os.Error // Initialize the working directory as a new repository.
+    Add(paths ...string) os.Error    // Add a set of paths to the repository.
+    Commit(message string) os.Error  // Commit changes with a given message.
+    //IsClean()               bool   // Returns true if there is nothing to commit on the working branch.
+}
+
+type GitRepository struct{}
+
+func (git GitRepository) Type() RepoType { return GitType }
+
 func (git GitRepository) Initialize(add, commit bool) os.Error {
     var (
         initcmd = exec.Command("git", "init")
@@ -54,8 +68,8 @@ func (git GitRepository) Initialize(add, commit bool) os.Error {
     return nil
 }
 
-func (git GitRepository) Add(paths...string) os.Error {
-    var cmdslice = make([]string,len(paths)+1)
+func (git GitRepository) Add(paths ...string) os.Error {
+    var cmdslice = make([]string, len(paths)+1)
     cmdslice[0] = "add"
     copy(cmdslice[1:], paths)
     var (
@@ -74,8 +88,10 @@ func (git GitRepository) Commit(message string) os.Error {
     return errCommit
 }
 
-type MercurialRepository struct {
-}
+type MercurialRepository struct{}
+
+func (hg MercurialRepository) Type() RepoType { return MercurialType }
+
 func (hg MercurialRepository) Initialize(add, commit bool) os.Error {
     var (
         initcmd = exec.Command("hg", "init")
@@ -98,8 +114,8 @@ func (hg MercurialRepository) Initialize(add, commit bool) os.Error {
     }
     return nil
 }
-func (hg MercurialRepository) Add(paths...string) os.Error {
-    var cmdslice = make([]string,len(paths)+1)
+func (hg MercurialRepository) Add(paths ...string) os.Error {
+    var cmdslice = make([]string, len(paths)+1)
     cmdslice[0] = "add"
     copy(cmdslice[1:], paths)
     var (
