@@ -256,7 +256,7 @@ func (p Project) InitializeRepo(add, commit, push bool) os.Error {
         if origin == "" {
             return nil
         }
-        github := GitHubRepository{p}
+        github := GitHubRepo{p}
         if err := github.Init(origin); err != nil {
             return err
         }

@@ -10,9 +10,9 @@ package main
  *  Description: 
  */
 import (
-    "os"
-    "log"
     "exec"
+    "fmt"
+    "os"
 )
 
 type RepoHost int
@@ -25,53 +25,49 @@ const (
 )
 
 var hoststrings = []string{
-    NilRepoHost:    "Nil",
-    GitHubHost: "GitHub",
+    NilRepoHost: "Nil",
+    GitHubHost:  "GitHub",
 }
+
 func (rh RepoHost) String() string {
     return hoststrings[rh]
 }
 
 type RemoteRepository interface {
+    // The new project the remote repository is being used for.
     Project() Project
-    Init(orign string) os.Error // Setup local repository for push.
-    Push() os.Error             // Push changes to the remote host.
-    Repo() RepoType
+    // Setup local repository for push.
+    Init(orign string) os.Error
+    // Push changes to the remote host.
+    Push() os.Error
+    // Return the base repository type used by the host.
+    Type() RepoType
+    // Return the RepoHost that the object implements.
     Host() RepoHost
+    // Return true if the host accepts README.md (markdown).
     UseMarkdown() bool
 }
 
 func VerifyRemote(remote RemoteRepository) {
-    if remote.Repo() != remote.Project().Repo {
-        if DEBUG {
-            log.Printf("Remote/local repo type mismatch %s %s",
-                remote.Repo(), remote.Project().Repo)
-        }
-        panic("typemismatch")
+    if remote.Type() != remote.Project().Repo {
+        panic(fmt.Errorf("Remote/local repo type mismatch %s %s",
+            remote.Type().String(), remote.Project().Repo))
     }
 }
 
-type GitHubRepository struct {
+type GitHubRepo struct {
     P Project
 }
 
-func (github GitHubRepository) Project() Project {
-    return github.P
-}
-func (github GitHubRepository) Repo() RepoType {
-    return GitType
-}
-func (github GitHubRepository) Host() RepoHost {
-    return GitHubHost
-}
-func (github GitHubRepository) UseMarkdown() bool {
-    return true
-}
-func (github GitHubRepository) Init(origin string) os.Error {
+func (github GitHubRepo) Project() Project  { return github.P }
+func (github GitHubRepo) Type() RepoType    { return GitType }
+func (github GitHubRepo) Host() RepoHost    { return GitHubHost }
+func (github GitHubRepo) UseMarkdown() bool { return true }
+func (github GitHubRepo) Init(origin string) os.Error {
     VerifyRemote(github)
     return exec.Command("git", "remote", "add", "origin", origin).Run()
 }
-func (github GitHubRepository) Push() os.Error {
+func (github GitHubRepo) Push() os.Error {
     VerifyRemote(github)
     return exec.Command("git", "push", "-u", "origin", "master").Run()
 }
