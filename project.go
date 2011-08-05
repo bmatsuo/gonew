@@ -59,63 +59,64 @@ type Project struct {
 
 func (p Project) Create() os.Error {
     var dict = p.GenerateDictionary()
-    var errMkdir, errChdir, errFiles, errRepo, errChdirBack os.Error
 
     // Make the directory and change the working directory.
     if DEBUG || VERBOSE {
         fmt.Print("Creating project directory.\n")
     }
-    errMkdir = os.Mkdir(p.Name, DirPermissions)
-    if errMkdir != nil {
-        return errMkdir
+
+    var err os.Error
+    if err = os.Mkdir(p.Name, DirPermissions); err != nil {
+        return err
     }
+
     if DEBUG || VERBOSE {
         fmt.Print("Entering project directory.\n")
     }
-    errChdir = os.Chdir(p.Name)
-    if errChdir != nil {
-        return errChdir
+
+    if err = os.Chdir(p.Name); err != nil {
+        return err
     }
-    errFiles = p.CreateFiles(dict)
-    if errFiles != nil {
-        return errFiles
+    if err = p.CreateFiles(dict); err != nil {
+        return err
     }
     if userepo {
-        errRepo = p.InitializeRepo(true, true, true)
-        if errRepo != nil {
-            return errRepo
+        if err = p.InitializeRepo(true, true, true); err != nil {
+            return err
         }
     }
+
     if DEBUG || VERBOSE {
         fmt.Print("Leaving project directory.\n")
     }
-    errChdirBack = os.Chdir("..")
-    return errChdirBack
+
+    return os.Chdir("..")
 }
 func (p Project) CreateFiles(dict map[string]string) os.Error {
-    if errMake = p.CreateMakefile(dict); errMake != nil {
-        return errMake
+    var err os.Error
+    if err = p.CreateMakefile(dict); err != nil {
+        return err
     }
-    if errMain = p.CreateMainFile(dict); errMain != nil {
-        return errMain
+    if err = p.CreateMainFile(dict); err != nil {
+        return err
     }
-    if errOpt = p.CreateOptionsFile(dict); errOpt != nil {
-        return errOpt
+    if err = p.CreateOptionsFile(dict); err != nil {
+        return err
     }
-    if errDoc = p.CreateDocFile(dict); errDoc != nil {
-        return errDoc
+    if err = p.CreateDocFile(dict); err != nil {
+        return err
     }
-    if errTest = p.CreateTestFile(dict); errTest != nil {
-        return errTest
+    if err = p.CreateTestFile(dict); err != nil {
+        return err
     }
-    if errReadme = p.CreateReadme(dict); errReadme != nil {
-        return errReadme
+    if err = p.CreateReadme(dict); err != nil {
+        return err
     }
-    if errOther = p.CreateOtherFiles(dict); errOther != nil {
-        return errOther
+    if err = p.CreateOtherFiles(dict); err != nil {
+        return err
     }
-    if errLic = p.CreateLicense(dict); errLic != nil {
-        return errLic
+    if err = p.CreateLicense(dict); err != nil {
+        return err
     }
     return nil
 }
