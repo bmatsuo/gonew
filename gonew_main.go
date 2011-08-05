@@ -225,26 +225,21 @@ func parseArgs() Request {
 }
 
 func main() {
-    var errTouch = TouchConfig()
-    if errTouch != nil {
-        fmt.Print(errTouch.String(), "\n")
+    if err := TouchConfig(); err != nil {
+        fmt.Fprint(os.Stderr, err.String(), "\n")
         os.Exit(1)
     }
-    if DEBUG || VERBOSE {
-        fmt.Print("Parsing config file.\n")
-    }
+    Verbose("Parsing config file.\n")
     ReadConfig()
-    var request = parseArgs()
-    switch request {
+    switch request := parseArgs(); request {
     case ProjectRequest:
         if DEBUG {
             fmt.Printf("Project requested %v\n", RequestedProject)
         } else if VERBOSE {
             fmt.Printf("Generating project %s\n", RequestedProject.Name)
         }
-        var errCreate = RequestedProject.Create()
-        if errCreate != nil {
-            fmt.Fprint(os.Stderr, errCreate.String(), "\n")
+        if err := RequestedProject.Create(); err != nil {
+            fmt.Fprint(os.Stderr, err.String(), "\n")
             os.Exit(1)
         }
     case LibraryRequest:
@@ -254,9 +249,8 @@ func main() {
             fmt.Printf("Generating library %s (package %s)\n",
                 RequestedFile.Name+".go", RequestedFile.Pkg)
         }
-        var errCreate = RequestedFile.Create()
-        if errCreate != nil {
-            fmt.Fprint(os.Stderr, errCreate.String(), "\n")
+        if err := RequestedFile.Create(); err != nil {
+            fmt.Fprint(os.Stderr, err.String(), "\n")
             os.Exit(1)
         }
     }
