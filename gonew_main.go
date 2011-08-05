@@ -11,7 +11,7 @@ package main
 import (
     "os"
     //"io"
-    //"log"
+    "log"
     "fmt"
     "flag"
     //"bufio"
@@ -42,6 +42,18 @@ gonew [options] lib NAME PKG
     remote         string
     help           bool
 )
+
+func Debug(level int, msg string) {
+    if DEBUG && DEBUG_LEVEL >= level {
+        log.Print(msg)
+    }
+}
+
+func Verbose(msg string) {
+    if DEBUG || VERBOSE {
+        fmt.Print(msg)
+    }
+}
 
 func setupFlags() *flag.FlagSet {
     var fs = flag.NewFlagSet("gonew", flag.ExitOnError)

@@ -12,7 +12,7 @@ package main
 import (
     "os"
     "fmt"
-    "log"
+    //"log"
     "bytes"
     "strings"
     "io/ioutil"
@@ -70,16 +70,12 @@ func GetTemplatePath(relpath []string) string {
 
 func GetAltTemplatePath(relpath []string) string {
     if AppConfig.AltRoot == "" {
-        if DEBUG {
-            log.Print("No alt root found.")
-        }
+        Debug(0, "No alt root found.")
         return ""
     }
     altpath := GetRootedTemplatePath([]string{AppConfig.AltRoot}, relpath)
     if stat, err := os.Stat(altpath); stat == nil || err != nil {
-        if DEBUG {
-            log.Printf("Error stat'ing %s.", altpath)
-        }
+        Debug(0, fmt.Sprintf("Error stat'ing %s.", altpath))
         return ""
     }
     return altpath
@@ -117,16 +113,12 @@ func ParseAltTemplate(filename string, dict map[string]string, relpath []string)
         return "", NoTemplateError
     } else {
         templ = template.MustParseFile(tpath, nil)
-        if DEBUG && DEBUG_LEVEL > 0 {
-            log.Printf("scanning: %s", tpath)
-            if DEBUG_LEVEL > 1 {
-                log.Printf("context:\n%v", dict)
-            }
-        }
+        Debug(0, fmt.Sprintf("scanning: %s", tpath))
+        Debug(1, fmt.Sprintf("context:\n%v", dict))
     }
 
     buff := bytes.NewBuffer(make([]byte, 0, 1<<20))
-    errTExec := template.Execute(buff, combined(dict, extraData(filename)))
+    errTExec := templ.Execute(buff, combined(dict, extraData(filename)))
     return buff.String(), errTExec
 }
 
@@ -139,16 +131,12 @@ func ParseTemplate(filename string, dict map[string]string, relpath []string) (s
     } else {
         templ = template.MustParseFile(tpath, nil)
 
-        if DEBUG && DEBUG_LEVEL > 0 {
-            log.Printf("scanning: %s", tpath)
-            if DEBUG_LEVEL > 1 {
-                log.Printf("context:\n%v", dict)
-            }
-        }
+        Debug(0, fmt.Sprintf("scanning: %s", tpath))
+        Debug(1, fmt.Sprintf("context:\n%v", dict))
     }
 
     buff := bytes.NewBuffer(make([]byte, 0, 1<<20))
-    errTExec := template.Execute(buff, combined(dict, extraData(filename)))
+    errTExec := templ.Execute(buff, combined(dict, extraData(filename)))
     return buff.String(), errTExec
 }
 
@@ -160,45 +148,33 @@ func WriteTemplate(filename, desc string, dict map[string]string, relpath ...str
     var templ string
     if altt, err := ParseAltTemplate(filename, dict, relpath); err == nil {
         templ = altt
-        if DEBUG || VERBOSE {
-            fmt.Printf("Using alternate template %s\n", GetAltTemplatePath(relpath))
-        }
+        Verbose(fmt.Sprintf("Using alternate template %s\n", GetAltTemplatePath(relpath)))
     } else if stdt, err := ParseTemplate(filename, dict, relpath); err == nil {
         templ = stdt
     } else {
         return err
     }
 
-    if DEBUG || VERBOSE {
-        fmt.Printf("Creating %s %s\n", desc, filename)
-        if DEBUG && DEBUG_LEVEL > 2 {
-            log.Print("\n", template, "\n")
-        }
-    }
+    Verbose(fmt.Sprintf("Creating %s %s\n", desc, filename))
+    Debug(2, fmt.Sprint("\n", templ, "\n"))
 
-    templout := make([]byte, len(template))
-    copy(templout, template)
+    templout := make([]byte, len(templ))
+    copy(templout, templ)
     return ioutil.WriteFile(filename, templout, FilePermissions)
 }
 func AppendTemplate(filename, desc string, dict map[string]string, relpath ...string) os.Error {
     var templ string
     if altt, err := ParseAltTemplate(filename, dict, relpath); err == nil {
         templ = altt
-        if DEBUG || VERBOSE {
-            fmt.Printf("Using alternate template %s\n", GetAltTemplatePath(relpath))
-        }
+        Verbose(fmt.Sprintf("Using alternate template %s\n", GetAltTemplatePath(relpath)))
     } else if stdt, err := ParseTemplate(filename, dict, relpath); err == nil {
         templ = stdt
     } else {
         return err
     }
 
-    if DEBUG || VERBOSE {
-        fmt.Printf("Appending %s %s\n", desc, filename)
-        if DEBUG && DEBUG_LEVEL > 2 {
-            log.Print("\n", templ, "\n")
-        }
-    }
+    Verbose(fmt.Sprintf("Appending %s %s\n", desc, filename))
+    Debug(2, fmt.Sprint("\n", templ, "\n"))
 
     fout, err := os.OpenFile(filename, os.O_WRONLY|os.O_APPEND, FilePermissions)
     if err != nil {
