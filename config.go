@@ -6,11 +6,11 @@ package main
 *  File: config.go
 *  Author: Bryan Matsuo [bmatsuo@soe.ucsc.edu] 
 *  Created: Sat Jul  2 23:09:50 PDT 2011
-*/
+ */
 import (
     "os"
     "fmt"
-    "log"
+    //"log"
     "bytes"
     "bufio"
     "path/filepath"
@@ -31,8 +31,9 @@ type GonewConfig struct {
     Repo     RepoType
     Host     RepoHost
 }
+
 var AppConfig GonewConfig = GonewConfig{
-        true, "", "", "", "", NilLicenseType, NilRepoType, NilRepoHost}
+    true, "", "", "", "", NilLicenseType, NilRepoType, NilRepoHost}
 
 func ReadConfig() os.Error {
     conf, err := config.ReadDefault(ConfigFilename)
@@ -48,6 +49,7 @@ func ReadConfig() os.Error {
     AppConfig.Email, err = conf.String("variables", "email")
     AppConfig.HostUser, err = conf.String("general", "hostuser")
     AppConfig.AltRoot, err = conf.String("general", "templates")
+
     license, err = conf.String("general", "license")
     switch license {
     case "":
@@ -55,17 +57,19 @@ func ReadConfig() os.Error {
     case "newbsd":
         AppConfig.License = NewBSD
     }
+
     repostr, err = conf.String("general", "repo")
     switch repostr {
     case "":
         AppConfig.Repo = NilRepoType
     case "git":
         AppConfig.Repo = GitType
-    //case "mercurial":
+    //case "hg":
     //...
     default:
         AppConfig.Repo = NilRepoType
     }
+
     hoststr, err = conf.String("general", "host")
     switch hoststr {
     case "":
@@ -78,62 +82,56 @@ func ReadConfig() os.Error {
     default:
         AppConfig.Host = NilRepoHost
     }
+
     return nil
 }
 
 func TouchConfig() os.Error {
-    stat, err := os.Stat(ConfigFilename)
     var patherr *os.PathError
+
+    stat, err := os.Stat(ConfigFilename)
     switch err.(type) {
-    case nil:
-        patherr = nil
     case *os.PathError:
         patherr = err.(*os.PathError)
     }
+
     if patherr != nil && patherr.Error != os.ENOENT {
         fmt.Fprintf(os.Stderr, "Error stat'ing ~/.gonewrc. %v", patherr)
         return patherr
     } else if stat == nil || (patherr != nil && patherr.Error == os.ENOENT) {
-        if DEBUG || VERBOSE {
-            log.Print("Config not found. Prompting user for info.")
-        }
+        Verbose("Config not found. Prompting user for info.")
         return MakeConfig()
     } else {
-        if DEBUG {
-            log.Print("~/.gonewrc found.")
-        }
+        Debug(0, "~/.gonewrc found.")
     }
     return nil
 }
 
 func MakeConfig() os.Error {
+    c := config.NewDefault()
+    scanner := bufio.NewReader(os.Stdin)
+
     var (
-        c       = config.NewDefault()
-        scanner = bufio.NewReader(os.Stdin)
-        errScan os.Error
+        err os.Error
         buff    []byte
     )
     fmt.Printf("Enter your name: ")
-    buff, _, errScan = scanner.ReadLine()
-    if errScan != nil {
-        return errScan
+    if buff, _, err = scanner.ReadLine(); err != nil {
+        return err
     }
     c.AddOption("variables", "name", string(bytes.TrimRight(buff, "\n")))
+
     fmt.Printf("Enter your email address: ")
-    buff, _, errScan = scanner.ReadLine()
-    if errScan != nil {
-        return errScan
+    if buff, _, err = scanner.ReadLine(); err != nil {
+        return err
     }
     c.AddOption("variables", "email", string(bytes.TrimRight(buff, "\n")))
-    var (
-        repoName string
-        repoOk   bool
-    )
-    for !repoOk {
+
+    var repoName string
+    for repoOk := false; !repoOk; {
         fmt.Printf("Enter a repository type ('git', or none): ")
-        buff, _, errScan = scanner.ReadLine()
-        if errScan != nil {
-            return errScan
+        if buff, _, err = scanner.ReadLine(); err != nil {
+            return err
         }
         repoName = string(bytes.TrimRight(buff, "\n"))
         switch repoName {
@@ -146,15 +144,12 @@ func MakeConfig() os.Error {
         }
     }
     c.AddOption("general", "repo", repoName)
-    var (
-        hostName string
-        hostOk   bool
-    )
-    for !hostOk {
+
+    var hostName string
+    for hostOk := false; !hostOk; {
         fmt.Printf("Enter a repo host ('github', or none): ")
-        buff, _, errScan = scanner.ReadLine()
-        if errScan != nil {
-            return errScan
+        if buff, _, err = scanner.ReadLine(); err != nil {
+            return err
         }
         hostName = string(bytes.TrimRight(buff, "\n"))
         switch hostName {
@@ -167,13 +162,12 @@ func MakeConfig() os.Error {
         }
     }
     c.AddOption("general", "host", hostName)
-    var hostuser = ""
-    var hostuserOk = hostName != "github"
-    for !hostuserOk {
+
+    var hostuser string
+    for hostuserOk := hostName != "github"; !hostuserOk; {
         fmt.Printf("Enter a %s username: ", hostName)
-        buff, _, errScan = scanner.ReadLine()
-        if errScan != nil {
-            return errScan
+        if buff, _, err = scanner.ReadLine(); err != nil {
+            return err
         }
         hostuser = string(bytes.TrimRight(buff, "\n"))
         if hostuser == "" {
@@ -183,5 +177,6 @@ func MakeConfig() os.Error {
         }
     }
     c.AddOption("general", "hostuser", hostuser)
+
     return c.WriteFile(ConfigFilename, FilePermissions, "Generated configuration for gonew.")
 }
