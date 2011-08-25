@@ -5,11 +5,6 @@ About {project}
 
 {desc}
 
-Dependencies
-=============
-
-You must have Go installed (http://golang.org/). 
-
 Documentation
 =============
 Usage
@@ -18,6 +13,11 @@ Usage
 Run {project} with the command
 
     {gotarget} [options]
+
+Prerequisites
+-------------
+
+You must have Go installed (http://golang.org/). 
 
 Installation
 -------------

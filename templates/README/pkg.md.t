@@ -5,13 +5,13 @@ About {project}
 
 {desc}
 
-Dependencies
+Documentation
 =============
+Prerequisites
+-------------
 
 You must have Go installed (http://golang.org/). 
 
-Documentation
-=============
 Installation
 -------------
 

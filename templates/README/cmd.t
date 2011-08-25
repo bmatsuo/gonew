@@ -11,7 +11,7 @@ USAGE
 
         {gotarget} [options]
 
-DEPENDENCIES
+PREREQUISITES
 
     You must have Go installed (http://golang.org/). 
 

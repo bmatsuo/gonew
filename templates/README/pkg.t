@@ -5,7 +5,7 @@ ABOUT {project}
 
     {desc}
 
-DEPENDENCIES
+PREREQUISITES
 
     You must have Go installed (http://golang.org/). 
 
