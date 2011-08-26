@@ -23,7 +23,8 @@ import (
 
 func ArgumentError(msg string) {
     fmt.Fprintf(os.Stderr, "%s\n", msg)
-    fmt.Fprint(os.Stderr, "Try `gonew -help`\n")
+    fs := setupFlags()
+    fs.Usage()
 }
 
 var (
