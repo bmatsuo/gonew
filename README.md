@@ -29,10 +29,24 @@ Documentation
 Install
 -------
 
-Installation *must* be done with goinstall. Otherwise, the templates will
-not be found.
+If on the stable release version of Go, installation should be done with
+goinstall.
 
     goinstall github.com/bmatsuo/gonew
+
+That's all there is to it.
+
+If working on a more recent weekly Go build, users should clone the
+repository and install using gomake.
+
+    git clone git@github.com:bmatsuo/gonew.git
+    cd gonew
+    gomake install
+
+To finish the installation and make the templates visible to gonew,
+create the file ~/.gonewrc (there is an example in the repo) and
+edit the "templates" setting so that the path point to the templates/
+subdirectory of the repository.
 
 Examples
 --------
