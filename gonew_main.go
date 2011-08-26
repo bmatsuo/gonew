@@ -21,6 +21,11 @@ import (
     //"github.com/kr/pretty.go"
 )
 
+func ArgumentError(msg string) {
+    fmt.Fprintf(os.Stderr, "%s\n", msg)
+    fmt.Fprint(os.Stderr, "Try `gonew -help`\n")
+}
+
 var (
     usage          = `
 gonew [options] cmd NAME
@@ -110,11 +115,11 @@ func parseArgs() Request {
     }
     var narg = fs.NArg()
     if narg < 1 {
-        fmt.Fprint(os.Stderr, "missing TYPE argument\n")
+        ArgumentError("Missing TYPE argument")
         os.Exit(1)
     }
     if narg < 2 {
-        fmt.Fprint(os.Stderr, "missing NAME argument\n")
+        ArgumentError("Missing NAME argument")
         os.Exit(1)
     }
     ptype = fs.Arg(0)
@@ -202,7 +207,7 @@ func parseArgs() Request {
         return ProjectRequest
     } else {
         if narg < 3 {
-            fmt.Fprint(os.Stderr, "missing PKG argument\n")
+            ArgumentError("Missing PKG argument")
             os.Exit(1)
         }
         file.Pkg = fs.Arg(2)
