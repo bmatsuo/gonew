@@ -34,17 +34,22 @@ func (rt RepoType) String() string {
 }
 
 type Repository interface {
+    // Return the Repository's underlying RepoType.
     Type() RepoType
-    Initialize(commit bool) os.Error // Initialize the working directory as a new repository.
-    Add(paths ...string) os.Error    // Add a set of paths to the repository.
-    Commit(message string) os.Error  // Commit changes with a given message.
-    //IsClean()               bool   // Returns true if there is nothing to commit on the working branch.
+    // Initialize the working directory as a new repository.
+    Initialize(commit bool) os.Error
+    // Add a set of paths to the repository.
+    Add(paths ...string) os.Error
+    // Commit changes with a given message.
+    Commit(message string) os.Error
+    // Returns true if there is nothing to commit on the working branch.
+    //IsClean()               bool
 }
 
+//  A Git Repository object.
 type GitRepo struct{}
 
 func (git GitRepo) Type() RepoType { return GitType }
-
 func (git GitRepo) Initialize(add, commit bool) os.Error {
     var (
         initcmd = exec.Command("git", "init")
@@ -67,7 +72,6 @@ func (git GitRepo) Initialize(add, commit bool) os.Error {
     }
     return nil
 }
-
 func (git GitRepo) Add(paths ...string) os.Error {
     var cmdslice = make([]string, len(paths)+1)
     cmdslice[0] = "add"
@@ -78,7 +82,6 @@ func (git GitRepo) Add(paths ...string) os.Error {
     )
     return errAdd
 }
-
 func (git GitRepo) Commit(message string) os.Error {
     var (
         commitcmd = exec.Command("git", "commit",
@@ -88,10 +91,10 @@ func (git GitRepo) Commit(message string) os.Error {
     return errCommit
 }
 
+//  A Mercurial Repository object.
 type HgRepo struct{}
 
 func (hg HgRepo) Type() RepoType { return HgType }
-
 func (hg HgRepo) Initialize(add, commit bool) os.Error {
     var (
         initcmd = exec.Command("hg", "init")
