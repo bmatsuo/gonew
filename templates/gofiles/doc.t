@@ -1,17 +1,17 @@
 /*
- *  Filename:    {file}
- *  Author:      {name} <{email}>
- *  Created:     {date}
- *  Description: Documentation for {gotarget}
- *  Usage:       godoc {repo}
+ *  Filename:    {{.file}}
+ *  Author:      {{.name}} <{{.email}}>
+ *  Created:     {{.date}}
+ *  Description: Documentation for {{.gotarget}}
+ *  Usage:       godoc {{.repo}}
  */
 
 /*
-{gotarget} does...
+{{.gotarget}} does...
 
 Usage:
 
-    {gotarget} [options] ARGUMENT ...
+    {{.gotarget}} [options] ARGUMENT ...
 
 Arguments:
 
