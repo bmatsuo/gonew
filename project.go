@@ -202,6 +202,9 @@ func (p Project) CreateReadme(dict map[string]string) os.Error {
     return AppendTemplate(readme, "README license tail", dict, ltemplatePath...)
 }
 func (p Project) CreateLicense(dict map[string]string) os.Error {
+    if p.License == NilLicenseType {
+        return nil
+    }
     var (
         templatePath = []string{"licenses", p.LicenseTemplateName()}
         license      = "LICENSE"
