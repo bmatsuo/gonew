@@ -99,7 +99,7 @@ func TouchConfig() os.Error {
         fmt.Fprintf(os.Stderr, "Error stat'ing ~/.gonewrc. %v", patherr)
         return patherr
     } else if stat == nil || (patherr != nil && patherr.Error == os.ENOENT) {
-        Verbose("Config not found. Prompting user for info.")
+        fmt.Fprintln(os.Stderr, "~/.gonewrc now found. Please initialize it now.")
         return MakeConfig()
     } else {
         Debug(0, "~/.gonewrc found.")
@@ -177,6 +177,24 @@ func MakeConfig() os.Error {
         }
     }
     c.AddOption("general", "hostuser", hostuser)
+
+    var license string
+    for licenseOK := false; !licenseOK; {
+        fmt.Print("Enter a license type ('newbsd', or none): ")
+        if buff, _, err = scanner.ReadLine(); err != nil {
+            return err
+        }
+        license = string(bytes.TrimRight(buff, "\n"))
+        switch license {
+        case "":
+            fallthrough
+        case "newbsd":
+            licenseOK = true
+        default:
+            fmt.Printf("Invalid %s username '%s'\n", hostName, hostuser)
+        }
+    }
+    c.AddOption("general", "license", license)
 
     return c.WriteFile(ConfigFilename, FilePermissions, "Generated configuration for gonew.")
 }
