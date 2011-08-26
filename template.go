@@ -112,7 +112,7 @@ func ParseAltTemplate(filename string, dict map[string]string, relpath []string)
     if tpath := GetTemplatePath(relpath); tpath == "" {
         return "", NoTemplateError
     } else {
-        templ = template.MustParseFile(tpath, nil)
+        templ = template.Must(template.ParseFile(tpath))
         Debug(0, fmt.Sprintf("scanning: %s", tpath))
         Debug(1, fmt.Sprintf("context:\n%v", dict))
     }
@@ -129,7 +129,7 @@ func ParseTemplate(filename string, dict map[string]string, relpath []string) (s
     if tpath := GetTemplatePath(relpath); tpath == "" {
         return "", NoTemplateError
     } else {
-        templ = template.MustParseFile(tpath, nil)
+        templ = template.Must(template.ParseFile(tpath))
 
         Debug(0, fmt.Sprintf("scanning: %s", tpath))
         Debug(1, fmt.Sprintf("context:\n%v", dict))
