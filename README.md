@@ -29,15 +29,13 @@ Documentation
 Install
 -------
 
-If on the stable release version of Go, installation should be done with
-goinstall.
+Install gonew using Goinstall. It's the easiest way to ensure the templates
+are correctly installed.
 
     goinstall github.com/bmatsuo/gonew
 
-That's all there is to it.
-
-If working on a more recent weekly Go build, users should clone the
-repository and install using gomake.
+For the more adventurous, who like making life harder, clone the git
+repository and build gonew yourself.
 
     git clone git@github.com:bmatsuo/gonew.git
     cd gonew
