@@ -34,7 +34,7 @@ type options struct {
 //  Create a flag.FlagSet to parse the command line options/arguments.
 //  TODO: Edit this function and add custom flags for {{.gotarget}}
 func setupFlags(opt *options) *flag.FlagSet {
-    var fs := flag.NewFlagSet("{{.gotarget}}", flag.ExitOnError)
+    fs := flag.NewFlagSet("{{.gotarget}}", flag.ExitOnError)
     fs.BoolVar(&(opt.Verbose), "v", false, "Verbose program output.")
 
     setupUsage(fs)
@@ -49,7 +49,7 @@ func verifyFlags(opt *options, fs *flag.FlagSet) {}
 //  Print a help message to standard error. See constants CommandLineHelpUsage
 //  and CommandLineHelpFooter.
 func PrintHelp() {
-    fs = setupFlags(&options{})
+    fs := setupFlags(&options{})
     fs.Usage()
 }
 
@@ -73,7 +73,7 @@ func setupUsage(fs *flag.FlagSet) {
 //  further (e.g. Initialize more complex structs) if need be.
 func parseFlags() options {
     var opt options
-    var fs = setupFlags(&opt)
+    fs := setupFlags(&opt)
     fs.Parse(os.Args[1:])
     verifyFlags(&opt, fs)
     // Process the verified options...
