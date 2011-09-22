@@ -34,7 +34,7 @@ type options struct {
 //  Create a flag.FlagSet to parse the command line options/arguments.
 //  TODO: Edit this function and add custom flags for {{.gotarget}}
 func setupFlags(opt *options) *flag.FlagSet {
-    var fs = flag.NewFlagSet("{{.gotarget}}", flag.ExitOnError)
+    var fs := flag.NewFlagSet("{{.gotarget}}", flag.ExitOnError)
     fs.BoolVar(&(opt.Verbose), "v", false, "Verbose program output.")
 
     setupUsage(fs)
@@ -56,16 +56,16 @@ func PrintHelp() {
 //  Hook up the commandLineHelpUsage and commandLineHelpFooter strings
 //  to the standard Go flag.Usage function.
 func setupUsage(fs *flag.FlagSet) {
-    printNonEmpty = func (s string) {
+    printNonEmpty := func (s string) {
         if s != "" {
             fmt.Fprintf(os.Stderr, "%s\n", s)
         }
     }
     tmpUsage := fs.Usage
     fs.Usage = func() {
-        printNonEmpty(commandLineHelpUsage)
+        printNonEmpty(CommandLineHelpUsage)
         tmpUsage()
-        printNonEmpty(commandLineHelpFooter)
+        printNonEmpty(CommandLineHelpFooter)
     }
 }
 
