@@ -16,7 +16,7 @@ import (
  */
 
 
-const (
+var (
     // Set this variable to customize the help message header.
     // For example, `{{.gotarget}} [options] action [arg2 ...]`.
     CommandLineHelpUsage string
