@@ -84,10 +84,9 @@ func setupFlags() *flag.FlagSet {
         "debug", -1, "Change the amout of debug output.")
     fs.BoolVar(&help,
         "help", false, "Show this message.")
-    var usageTemp = fs.Usage
     fs.Usage = func() {
         printUsageHead()
-        usageTemp()
+        fs.PrintDefaults()
     }
     return fs
 }
