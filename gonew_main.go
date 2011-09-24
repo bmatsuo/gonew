@@ -34,7 +34,8 @@ gonew [options] pkg NAME
 gonew [options] lib NAME PKG
 `
     printUsageHead = func() { fmt.Fprint(os.Stderr, usage, "\n") }
-    userepo        = true
+    userepo        = false
+    norepo         = true
     VERBOSE        = false
     DEBUG          = false
     DEBUG_LEVEL    = -1
@@ -64,7 +65,7 @@ func Verbose(msg string) {
 func setupFlags() *flag.FlagSet {
     var fs = flag.NewFlagSet("gonew", flag.ExitOnError)
     fs.StringVar(&repo,
-        "repo", "git", "Repository type (e.g. 'git').")
+        "repo", "", "Repository type (e.g. 'git').")
     fs.StringVar(&host,
         "host", "", "Repository host if any (e.g. 'github').")
     fs.StringVar(&user,
@@ -77,7 +78,7 @@ func setupFlags() *flag.FlagSet {
         "license", "", "Project license (e.g. 'newbsd').")
     fs.BoolVar(&(AppConfig.MakeTest),
         "test", AppConfig.MakeTest, "Produce test files with Go files.")
-    fs.BoolVar(&(userepo), "userepo", true, "Create a local repository.")
+    fs.BoolVar(&(norepo), "norepo", false, "Don't start a repository.")
     fs.BoolVar(&VERBOSE,
         "v", false, "Verbose output.")
     fs.IntVar(&DEBUG_LEVEL,
@@ -106,6 +107,7 @@ var RequestedProject Project
 func parseArgs() Request {
     var fs = setupFlags()
     fs.Parse(os.Args[1:])
+    userepo = !norepo
     if DEBUG_LEVEL >= 0 {
         DEBUG = true
     }
@@ -163,31 +165,33 @@ func parseArgs() Request {
         fmt.Fprintf(os.Stderr, "Unknown TYPE %s\n", ptype)
         os.Exit(1)
     }
-    switch repo {
-    case "":
-        break
-    case "git":
-        repoObj = GitType
-    case "mercurial":
-        repoObj = HgType
-    default:
-        fmt.Fprintf(os.Stderr, "Unknown REPO %s\n", repo)
-        os.Exit(1)
-    }
-    switch host {
-    case "":
-        break
-    case "github":
-        hostObj = GitHubHost
-        repoObj = GitType
-    /*
-       case "googlecode":
-           hostObj = GoogleCodeType
-           repoObj = HgType
-    */
-    default:
-        fmt.Fprintf(os.Stderr, "Unknown HOST %s\n", host)
-        os.Exit(1)
+    if userepo {
+        switch repo {
+        case "":
+            break
+        case "git":
+            repoObj = GitType
+        case "mercurial":
+            repoObj = HgType
+        default:
+            fmt.Fprintf(os.Stderr, "Unknown REPO %s\n", repo)
+            os.Exit(1)
+        }
+        switch host {
+        case "":
+            break
+        case "github":
+            hostObj = GitHubHost
+            repoObj = GitType
+        /*
+        case "googlecode":
+            hostObj = GoogleCodeType
+            repoObj = HgType
+        */
+        default:
+            fmt.Fprintf(os.Stderr, "Unknown HOST %s\n", host)
+            os.Exit(1)
+        }
     }
     if produceProject {
         // TODO check target for improper characters.
@@ -200,7 +204,7 @@ func parseArgs() Request {
         if hostObj != NilRepoHost {
             project.Host = hostObj
         }
-        if repoObj != NilRepoType {
+        if userepo && repoObj != NilRepoType {
             project.Repo = repoObj
         }
         RequestedProject = project
@@ -220,7 +224,7 @@ func parseArgs() Request {
         if hostObj != NilRepoHost {
             file.Host = hostObj
         }
-        if repoObj != NilRepoType {
+        if userepo && repoObj != NilRepoType {
             file.Repo = repoObj
         }
         RequestedFile = file
