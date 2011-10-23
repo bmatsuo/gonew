@@ -15,7 +15,7 @@ import (
     "fmt"
     //"log"
     "bytes"
-    "strings"
+    //"strings"
     //"io/ioutil"
     "path/filepath"
     "template"
@@ -98,17 +98,6 @@ func CollectTemplates(root string, f template.FuncMap) (s *template.Set, err os.
         return
     }
     return
-}
-
-func TestName(filename string) string {
-    var test = filename
-    if strings.HasSuffix(test, ".go") {
-        test = test[:len(test)-3]
-    }
-    if strings.HasSuffix(test, "_test") {
-        test = test[:len(test)-5]
-    }
-    return strings.Title(test)
 }
 
 //  The $GOROOT environment variable.

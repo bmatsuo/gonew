@@ -10,9 +10,30 @@ package main
  *  Description: 
  */
 import (
+    "strings"
+    "unicode"
     "fmt"
     "os"
 )
+
+func TestName(filename string) string {
+    var test = filename
+    if strings.HasSuffix(test, ".go") {
+        test = test[:len(test)-3]
+    }
+    if strings.HasSuffix(test, "_test") {
+        test = test[:len(test)-5]
+    }
+    return strings.Title(
+        strings.Map(
+            func(c int)int{
+                if unicode.IsNumber(c) || unicode.IsLetter(c) {
+                    return c
+                }
+                return -1
+            },
+            test))
+}
 
 type FileType uint
 
@@ -46,7 +67,7 @@ func (f ProjectFile) Package() string {
 func (f ProjectFile) Description() string { return f.Desc }
 func (f ProjectFile) DebugDescription() string { return f.DebugDesc }
 func (f ProjectFile) Tests() []string {
-    return []string{ f.p.Target }
+    return []string{ TestName(f.p.Target) }
 }
 func (f ProjectFile) Project() Project { return f.p }
 func (f ProjectFile) LicenseType() LicenseType { return f.p.License }
@@ -98,7 +119,7 @@ func (f File) Package() string { return f.Pkg }
 func (f File) Description() string { return f.Desc }
 func (f File) DebugDescription() string { return "library" }
 func (f File) FileType() FileType { return Go }
-func (f File) Tests() []string { return []string{f.Name} }
+func (f File) Tests() []string { return []string{ TestName(f.Name) } }
 func (f File) Project() Project { return Project{} }
 func (f File) LicenseType() LicenseType { return f.License }
 func (f File) Create(ms TemplateMultiSet) os.Error {
