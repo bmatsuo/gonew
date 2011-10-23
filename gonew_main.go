@@ -237,12 +237,9 @@ func parseArgs() Request {
 func FindTemplates() (TemplateMultiSet, os.Error) {
     troots := make([]string, 0, 2)
     if alt := AppConfig.AltRoot; alt != "" {
-        fmt.Println(alt)
         troots = append(troots, alt)
     }
-    if false {
-        troots = append(troots, filepath.Join(GetTemplateRoot()...))
-    }
+    troots = append(troots, filepath.Join(GetTemplateRoot()...))
     return MakeTemplateMultiSet(DefaultFuncMap(), troots...)
 }
 
