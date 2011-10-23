@@ -19,6 +19,7 @@ import (
     //"io/ioutil"
     "path/filepath"
     "template"
+    "runtime"
     //"github.com/hoisie/mustache.go"
 )
 
@@ -100,17 +101,8 @@ func CollectTemplates(root string, f template.FuncMap) (s *template.Set, err os.
     return
 }
 
-//  The $GOROOT environment variable.
-func GetGoroot() string {
-    goroot, err := os.Getenverror("GOROOT")
-    if err != nil {
-        panic("goroot")
-    }
-    return goroot
-}
-
 //  The template directory of the goinstall'ed gonew package.
 func GetTemplateRoot() []string {
-    return []string{GetGoroot(), "src", "pkg",
+    return []string{runtime.GOROOT(), "src", "pkg",
         "github.com", "bmatsuo", "gonew", "templates"}
 }
