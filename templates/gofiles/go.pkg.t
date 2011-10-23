@@ -1,12 +1,5 @@
-/*
- *  Filename:    {{.file}}
- *  Package:     {{.gotarget}}
- *  Author:      {{.name}} <{{.email}}>
- *  Created:     {{.date}}
- *  Description: {{.desc}}
- */
+{{ template "go._head.t" $ }}
 
 // Package {{.gotarget}} does ....
-package {{.gotarget}}
-import (
-)
+{{ template "go._package.t" $ }}
+{{ import }}

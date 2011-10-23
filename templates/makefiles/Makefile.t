@@ -12,7 +12,9 @@ GOFILES=\
         options.go\
         {{.main}}\
 
-include $(GOROOT)/src/Make.cmd
+include $(GOROOT)/src/Make.{{ print .Type.String }}
 
+{{ if .IsCommand }}
 test:
 	gotest
+{{ end }}

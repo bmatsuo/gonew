@@ -123,6 +123,11 @@ func (p Project) CreateFiles(dict map[string]string) os.Error {
 
 func (p Project) GenerateDictionary() map[string]string {
     var td = make(map[string]string, 9)
+    if p.Type == PkgType {
+        td["IsPackage"] = p.Target
+    } else {
+        td["IsCommand"] = "main"
+    }
     td["project"] = p.Name
     td["name"] = AppConfig.Name
     td["email"] = AppConfig.Email
@@ -394,6 +399,9 @@ func (p Project) HostString() string {
     }
     return "<INSERT REPO HOST HERE>"
 }
+
+//  Returns the remote repo address. For instance, "github.com/ghuser/go-project"
+//  if p.Host is GitHubHost. Returns a placeholderstring if p.Host is not defined.
 func (p Project) HostRepoString() string {
     switch p.Host {
     case GitHubHost:
@@ -404,12 +412,18 @@ func (p Project) HostRepoString() string {
     }
     return "<INSERT REPO HOST HERE>"
 }
+
+//  The current year in a four-digit format.
 func YearString() string {
     return time.LocalTime().Format("2006")
 }
+
+//  The current datetime in the default string format
 func DateString() string {
     return time.LocalTime().String()
 }
+
+//  Returns true if the repo host uses Markdown enabled README files.
 func (p Project) ReadmeIsMarkdown() bool {
     return userepo && p.Host == GitHubHost
 }

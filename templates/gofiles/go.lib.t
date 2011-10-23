@@ -1,10 +1,3 @@
-package {{.gotarget}}
-/*
- *  Filename:    {{.file}}
- *  Package:     {{.gotarget}}
- *  Author:      {{.name}} <{{.email}}>
- *  Created:     {{.date}}
- *  Description: {{.desc}}
- */
-import (
-)
+{{ template "go._package.t" $ }}
+{{ template "go._head.t" $ }}
+{{ import }}

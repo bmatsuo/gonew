@@ -1,15 +1,6 @@
-package main
-/*
- *  Filename:    {{.file}}
- *  Author:      {{.name}} <{{.email}}>
- *  Created:     {{.date}}
- *  Description: Parse arguments and options from the command line.
- */
-import (
-    "flag"
-    "fmt"
-    "os"
-)
+{{ template "go._package.t" $ }}
+{{ template "go._head.t" $ }}
+{{ import "flag" "fmt" "os" }}
 /*
  *  Constants, variables, and functions that users may actually want to call
  *  are capitalized.

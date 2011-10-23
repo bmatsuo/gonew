@@ -1,8 +1,8 @@
 {{ template "go._package.t" $ }}
 {{ template "go._head.t" $ }}
-{{ import }}
+import (
+    "testing"
+)
 
-var opt = parseFlags()
-
-func main() {
+func Test{{.test}}(T *testing.T) {
 }

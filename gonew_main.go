@@ -14,6 +14,8 @@ import (
     "log"
     "fmt"
     "flag"
+    "strings"
+    "template"
     //"bufio"
     //"io/ioutil"
     "path/filepath"
@@ -233,6 +235,7 @@ func parseArgs() Request {
     return NilRequest
 }
 
+
 func FindTemplates() (TemplateMultiSet, os.Error) {
     troots := make([]string, 0, 2)
     if alt := AppConfig.AltRoot; alt != "" {
@@ -242,7 +245,21 @@ func FindTemplates() (TemplateMultiSet, os.Error) {
     if false {
         troots = append(troots, filepath.Join(GetTemplateRoot()...))
     }
-    return MakeTemplateMultiSet(nil, troots...)
+    f := template.FuncMap{
+        "import":func(pkg... string)string {
+            if len(pkg) == 0 {
+                return "import ()"
+            }
+            pieces := make([]string, len(pkg) + 2)
+            pieces[0] = "import ("
+            copy(pieces[1:], pkg)
+            pieces[len(pieces)-1] = ")"
+            return strings.Join(pieces, "\n")
+        },
+        "date":DateString,
+        "year":YearString,
+    }
+    return MakeTemplateMultiSet(f, troots...)
 }
 
 func main() {

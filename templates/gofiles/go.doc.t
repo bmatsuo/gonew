@@ -1,10 +1,4 @@
-/*
- *  Filename:    {{.file}}
- *  Author:      {{.name}} <{{.email}}>
- *  Created:     {{.date}}
- *  Description: Documentation for {{.gotarget}}
- *  Usage:       godoc {{.repo}}
- */
+{{ template "go._head.t" $ }}
 
 /*
 {{.gotarget}} does...
