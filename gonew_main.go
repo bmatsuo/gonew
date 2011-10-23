@@ -16,7 +16,7 @@ import (
     "flag"
     //"bufio"
     //"io/ioutil"
-    //"path/filepath"
+    "path/filepath"
     //"github.com/hoisie/mustache.go"
     //"github.com/kr/pretty.go"
 )
@@ -233,6 +233,18 @@ func parseArgs() Request {
     return NilRequest
 }
 
+func FindTemplates() (TemplateMultiSet, os.Error) {
+    troots := make([]string, 0, 2)
+    if alt := AppConfig.AltRoot; alt != "" {
+        fmt.Println(alt)
+        troots = append(troots, alt)
+    }
+    if false {
+        troots = append(troots, filepath.Join(GetTemplateRoot()...))
+    }
+    return MakeTemplateMultiSet(nil, troots...)
+}
+
 func main() {
     if err := TouchConfig(); err != nil {
         fmt.Fprint(os.Stderr, err.String(), "\n")
@@ -240,6 +252,17 @@ func main() {
     }
     Verbose("Parsing config file.\n")
     ReadConfig()
+
+    ms, err := FindTemplates()
+    if err != nil {
+        panic(err)
+    }
+    if p, err := ExecutedSet(ms, "go.cmd.t", nil); err != nil {
+        panic(err)
+    } else {
+        fmt.Println(string(p))
+    }
+
     switch request := parseArgs(); request {
     case ProjectRequest:
         if DEBUG {
