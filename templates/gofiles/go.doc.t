@@ -1,11 +1,11 @@
 {{ template "go._head.t" $ }}
 
 /*
-{{.gotarget}} does...
+{{ .Project.Target }} does...
 
 Usage:
 
-    {{.gotarget}} [options] ARGUMENT ...
+    {{ .Project.Target }} [options] ARGUMENT ...
 
 Arguments:
 

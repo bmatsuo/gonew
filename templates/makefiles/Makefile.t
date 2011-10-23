@@ -7,14 +7,14 @@
 
 include $(GOROOT)/src/Make.inc
 
-TARG={{.gotarget}}
+TARG={{.Project.Target}}
 GOFILES=\
-        options.go\
-        {{.main}}\
+{{ if .Project.IsCommand }}        options.go\
+{{ end }}        {{.Project.MainFilename}}\
 
-include $(GOROOT)/src/Make.{{ print .Type.String }}
+include $(GOROOT)/src/Make.{{ print .Project.Type.String }}
 
-{{ if .IsCommand }}
+{{ if .Project.IsCommand }}
 test:
 	gotest
 {{ end }}

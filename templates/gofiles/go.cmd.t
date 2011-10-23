@@ -4,5 +4,4 @@
 
 var opt = parseFlags()
 
-func main() {
-}
+{{ func "main" }}

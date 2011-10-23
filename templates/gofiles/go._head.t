@@ -1,5 +1,5 @@
-/*  Filename:    {{.file}}
- *  Author:      {{.name}} <{{.email}}>
+/*  Filename:    {{.Filename}}
+ *  Author:      {{ name }} <{{ email }}>
  *  Created:     {{ date }}
- *  Description: {{.desc}}
+ *  Description: {{.Description}}
  */

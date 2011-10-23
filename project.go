@@ -10,8 +10,7 @@ package main
 import (
     "os"
     "fmt"
-    "log"
-    "time"
+    //"log"
 )
 
 var (
@@ -57,8 +56,8 @@ type Project struct {
     Repo    RepoType
 }
 
-func (p Project) Create() os.Error {
-    var dict = p.GenerateDictionary()
+func (p Project) Create(ms TemplateMultiSet) os.Error {
+    //var dict = p.GenerateDictionary()
 
     // Make the directory and change the working directory.
     if DEBUG || VERBOSE {
@@ -77,7 +76,7 @@ func (p Project) Create() os.Error {
     if err = os.Chdir(p.Name); err != nil {
         return err
     }
-    if err = p.CreateFiles(dict); err != nil {
+    if err = p.CreateFiles(ms); err != nil {
         return err
     }
     if userepo {
@@ -92,163 +91,169 @@ func (p Project) Create() os.Error {
 
     return os.Chdir("..")
 }
-func (p Project) CreateFiles(dict map[string]string) os.Error {
+func (p Project) CreateFiles(ms TemplateMultiSet) os.Error {
     var err os.Error
-    if err = p.CreateMakefile(dict); err != nil {
-        return err
-    }
-    if err = p.CreateMainFile(dict); err != nil {
-        return err
-    }
-    if err = p.CreateOptionsFile(dict); err != nil {
-        return err
-    }
-    if err = p.CreateDocFile(dict); err != nil {
-        return err
-    }
-    if err = p.CreateTestFile(dict); err != nil {
-        return err
-    }
-    if err = p.CreateReadme(dict); err != nil {
-        return err
-    }
-    if err = p.CreateOtherFiles(dict); err != nil {
-        return err
-    }
-    if err = p.CreateLicense(dict); err != nil {
-        return err
-    }
-    return nil
-}
-
-func (p Project) GenerateDictionary() map[string]string {
-    var td = make(map[string]string, 9)
-    if p.Type == PkgType {
-        td["IsPackage"] = p.Target
-    } else {
-        td["IsCommand"] = "main"
-    }
-    td["project"] = p.Name
-    td["name"] = AppConfig.Name
-    td["email"] = AppConfig.Email
-    td["gotarget"] = p.Target
-    td["main"] = p.MainFilename()
-    td["type"] = p.Type.String()
-    td["repo"] = p.HostRepoString()
-    td["year"] = YearString()
-    td["date"] = DateString()
-    return td
-}
-
-func (p Project) CreateMakefile(dict map[string]string) os.Error {
-    var (
-        templatePath = p.MakefileTemplatePath()
-        errWrite     = WriteTemplate("Makefile", "makefile", dict, templatePath...)
-    )
-    return errWrite
-}
-func (p Project) CreateMainFile(dict map[string]string) os.Error {
-    var (
-        mainfile      = p.MainFilename()
-        ltemplateName = p.GofileLicenseHeadTemplateName()
-        templatePath  = p.MainTemplatePath()
-    )
-    if ltemplateName == "" {
-        if DEBUG {
-            log.Print("No license template found for %s", p.License.String())
-        }
-        return WriteTemplate(mainfile, "main file", dict, templatePath...)
-    }
-    var ltemplatePath = []string{"licenses", ltemplateName}
-    errWrite := WriteTemplate(mainfile, "main file license", dict, ltemplatePath...)
-    if errWrite != nil {
-        return errWrite
-    }
-    return AppendTemplate(mainfile, "main file contents", dict, templatePath...)
-}
-func (p Project) CreateTestFile(dict map[string]string) os.Error {
-    if !AppConfig.MakeTest {
-        if DEBUG || VERBOSE {
-            fmt.Printf("Skipping test file generation.")
-        }
-        return nil
-    }
-    var (
-        testfile      = p.TestFilename()
-        ltemplateName = p.GofileLicenseHeadTemplateName()
-        templatePath  = p.TestTemplatePath()
-    )
-    if ltemplateName == "" {
-        if DEBUG {
-            log.Print("No license template found for %s", p.License.String())
-        }
-        return WriteTemplate(testfile, "test file", dict, templatePath...)
-    }
-    var ltemplatePath = []string{"licenses", ltemplateName}
-    errWrite := WriteTemplate(testfile, "test file license", dict, ltemplatePath...)
-    if errWrite != nil {
-        return errWrite
-    }
-    return AppendTemplate(testfile, "test file contents", dict, templatePath...)
-}
-func (p Project) CreateReadme(dict map[string]string) os.Error {
-    var (
-        templatePath = p.ReadmeTemplatePath()
-        readme       = p.ReadmeFilename()
-    )
-    errWrite := WriteTemplate(readme, "README", dict, templatePath...)
-    if errWrite != nil {
-        return errWrite
-    }
-    if p.License == NilLicenseType {
-        return nil
-    }
-    ltemplatePath := []string{"licenses", p.ReadmeLicenseTailTemplateName()}
-    return AppendTemplate(readme, "README license tail", dict, ltemplatePath...)
-}
-func (p Project) CreateLicense(dict map[string]string) os.Error {
-    if p.License == NilLicenseType {
-        return nil
-    }
-    var (
-        templatePath = []string{"licenses", p.LicenseTemplateName()}
-        license      = "LICENSE"
-    )
-    return WriteTemplate(license, "license", dict, templatePath...)
-}
-func (p Project) CreateOptionsFile(dict map[string]string) os.Error {
-    if p.Type == PkgType {
-        return nil
-    }
-    var (
-        doc          = "options.go"
-        templatePath = p.OptionsTemplatePath()
-    )
-    return WriteTemplate(doc, "option parsing file", dict, templatePath...)
-}
-func (p Project) CreateDocFile(dict map[string]string) os.Error {
-    if p.Type == PkgType {
-        return nil
-    }
-    var (
-        doc          = "doc.go"
-        templatePath = p.DocTemplatePath()
-    )
-    return WriteTemplate(doc, "documentation file", dict, templatePath...)
-}
-func (p Project) CreateOtherFiles(dict map[string]string) os.Error {
-    templatePaths := p.OtherTemplatePaths()
-    if templatePaths == nil {
-        return nil
-    }
-    for _, path := range templatePaths {
-        errWrite := WriteTemplate(path[0], "other file", dict, path[1:]...)
-        if errWrite != nil {
-            return errWrite
+    for _, f := range p.Files() {
+        if err = f.Create(ms); err != nil {
+            return err
         }
     }
     return nil
 }
+
+func (p Project) Files() []ProjectFile {
+    ps := make([]ProjectFile, 0, 7)
+    ps = append(ps, p.Makefile())
+    ps = append(ps, p.MainFile())
+    ps = append(ps, p.TestFile())
+    ps = append(ps, p.ReadmeFile())
+    if p.License != NilLicenseType {
+        ps = append(ps, p.LicenseFile())
+    }
+    if p.IsCommand() {
+        ps = append(ps, p.OptionsFile())
+        ps = append(ps, p.DocFile())
+    }
+    ps = append(ps, p.OtherFiles()...)
+    return ps
+}
+
+func (p Project) MainFilename() string {
+    return p.Target + ".go"
+}
+func (p Project) TestFilename() string {
+    switch p.Type {
+    case CmdType:
+        return "main_test.go"
+    case PkgType:
+        return p.Target + "_test.go"
+    }
+    return p.Target + "_test.go"
+}
+func (p Project) ReadmeFilename() string {
+    if p.ReadmeIsMarkdown() {
+        return "README.md"
+    }
+    return "README"
+}
+
+func (p Project) Makefile() ProjectFile {
+    return ProjectFile{
+        Name:"Makefile",
+        Desc:fmt.Sprintf("Makefile for %s", p.Name),
+        Type:Makefile,
+        Template:"Makefile.t",
+        DebugDesc:"makefile",
+        p:p,
+    }
+}
+func (p Project) MainFile() ProjectFile {
+    return ProjectFile{
+        Name:p.MainFilename(),
+        Desc:fmt.Sprintf("Main source file in %s", p.Name),
+        Type:Go,
+        Template:fmt.Sprintf("go.%s.t", p.Type.String()),
+        DebugDesc:"main file",
+        p:p,
+    }
+}
+func (p Project) TestFile() ProjectFile {
+    return ProjectFile{
+        Name:p.TestFilename(),
+        Desc:fmt.Sprintf("Main test file for %s", p.Name),
+        Type:Go,
+        Template:"test.t",
+        DebugDesc:"main test",
+        p:p,
+    }
+}
+func (p Project) ReadmeFile() ProjectFile {
+    return ProjectFile{
+        Name:p.ReadmeFilename(),
+        Desc:fmt.Sprintf("%s is the best program for...", p.Name),
+        Type:README,
+        Template:"README.t",
+        DebugDesc:"README",
+        p:p,
+    }
+}
+
+func (p Project) OptionsFile() ProjectFile {
+    return ProjectFile{
+        Name:"options.go",
+        Desc:fmt.Sprintf("Option parsing for %s", p.Name),
+        Type:Go,
+        Template:"go.options.t",
+        DebugDesc:"option parse file",
+        p:p,
+    }
+}
+
+func (p Project) DocFile() ProjectFile {
+    return ProjectFile{
+        Name:"doc.go",
+        Desc:fmt.Sprintf("Godoc documentation for %s", p.Name),
+        Type:Go,
+        Template:"go.doc.t",
+        DebugDesc:"documentation",
+        p:p,
+    }
+}
+
+func (p Project) LicenseFile() ProjectFile {
+    return ProjectFile{
+        Name:"LICENSE",
+        Desc:fmt.Sprintf("License for using %s", p.Name),
+        Type:Other,
+        Template:p.License.FullTemplateName(),
+        DebugDesc:"license file",
+        p:p,
+    }
+}
+
+func (p Project) OtherFiles() []ProjectFile {
+    var others = make([]ProjectFile, 0, 1)
+    switch p.Repo {
+    case GitType:
+        others = append(others, ProjectFile{
+        Name:".gitignore",
+        Desc:"Junk files to ignore",
+        Type:Other,
+        Template:"other.gitignore.t",
+        DebugDesc:"ignore file",
+        p:p,
+    })
+    case HgType:
+        others = append(others, ProjectFile{
+        Name:".hgignore",
+        Desc:"Junk files to ignore",
+        Type:Other,
+        Template:"other.hgignore.t",
+        DebugDesc:"ignore file",
+        p:p,
+    })
+    }
+    if len(others) == 0 {
+        return nil
+    }
+    return others
+}
+
+//  Returns the remote repo address. For instance, "github.com/ghuser/go-project"
+//  if p.Host is GitHubHost. Returns a placeholderstring if p.Host is not defined.
+func (p Project) HostRepoString() string {
+    switch p.Host {
+    case GitHubHost:
+        if p.User == "" {
+            return ""
+        }
+        return "github.com/" + p.User + "/" + p.Target
+    }
+    return "<INSERT REPO HOST HERE>"
+}
+
+//  Initialize the repository after templates have been successfully
+//  generated.
 func (p Project) InitializeRepo(add, commit, push bool) os.Error {
     switch p.Repo {
     case GitType:
@@ -278,152 +283,11 @@ func (p Project) InitializeRepo(add, commit, push bool) os.Error {
     return nil
 }
 
-func (p Project) MainFilename() string {
-    return p.Target + ".go"
-}
-func (p Project) TestFilename() string {
-    switch p.Type {
-    case CmdType:
-        return "main_test.go"
-    case PkgType:
-        return p.Target + "_test.go"
-    }
-    return p.Target + "_test.go"
-}
-func (p Project) ReadmeFilename() string {
-    if p.ReadmeIsMarkdown() {
-        return "README.md"
-    }
-    return "README"
-}
-
-func (p Project) LicenseTemplateName() string {
-    lstring := p.License.TemplateNamePrefix()
-    if lstring == "" {
-        return ""
-    }
-    return lstring + ".t"
-}
-func (p Project) GofileLicenseHeadTemplateName() string {
-    lstring := p.License.TemplateNamePrefix()
-    if lstring == "" {
-        return ""
-    }
-    return lstring + ".gohead.t"
-}
-func (p Project) ReadmeLicenseTailTemplateName() string {
-    lstring := p.License.TemplateNamePrefix()
-    if lstring == "" {
-        return ""
-    }
-    if p.ReadmeIsMarkdown() {
-        return lstring + ".readme.md.t"
-    }
-    return lstring + ".readme.t"
-}
-func (p Project) MainTemplateName() string {
-    switch p.Type {
-    case PkgType:
-        return "pkg.t"
-    case CmdType:
-        return "cmd.t"
-    }
-    return ""
-}
-func (p Project) TestTemplateName() string {
-    switch p.Type {
-    case PkgType:
-        return "pkg.t"
-    case CmdType:
-        return "cmd.t"
-    }
-    return ""
-}
-func (p Project) ReadmeTemplateName() string {
-    switch p.Type {
-    case PkgType:
-        if p.ReadmeIsMarkdown() {
-            return "pkg.md.t"
-        } else {
-            return "pkg.t"
-        }
-    case CmdType:
-        if p.ReadmeIsMarkdown() {
-            return "cmd.md.t"
-        } else {
-            return "cmd.t"
-        }
-    }
-    return ""
-}
-
-func (p Project) MakefileTemplatePath() []string {
-    return []string{"makefiles", p.Type.String() + ".t"}
-}
-func (p Project) MainTemplatePath() []string {
-    return []string{"gofiles", p.MainTemplateName()}
-}
-func (p Project) TestTemplatePath() []string {
-    return []string{"testfiles", p.TestTemplateName()}
-}
-func (p Project) ReadmeTemplatePath() []string {
-    return []string{"README", p.ReadmeTemplateName()}
-}
-func (p Project) OptionsTemplatePath() []string {
-    return []string{"gofiles", "options.t"}
-}
-func (p Project) DocTemplatePath() []string {
-    return []string{"gofiles", "doc.t"}
-}
-func (p Project) OtherTemplatePaths() [][]string {
-    var others = make([][]string, 0, 1)
-    switch p.Repo {
-    case GitType:
-        others = append(others, []string{".gitignore", "otherfiles", "gitignore.t"})
-    case HgType:
-        others = append(others, []string{".hgignore", "otherfiles", "hgignore.t"})
-    }
-    if len(others) == 0 {
-        return nil
-    }
-    return others
-}
-
-func (p Project) HostString() string {
-    switch p.Host {
-    case GitHubHost:
-        if p.User == "" {
-            return ""
-        }
-        return "github.com/" + p.User
-    }
-    return "<INSERT REPO HOST HERE>"
-}
-
-//  Returns the remote repo address. For instance, "github.com/ghuser/go-project"
-//  if p.Host is GitHubHost. Returns a placeholderstring if p.Host is not defined.
-func (p Project) HostRepoString() string {
-    switch p.Host {
-    case GitHubHost:
-        if p.User == "" {
-            return ""
-        }
-        return "github.com/" + p.User + "/" + p.Target
-    }
-    return "<INSERT REPO HOST HERE>"
-}
-
-//  The current year in a four-digit format.
-func YearString() string {
-    return time.LocalTime().Format("2006")
-}
-
-//  The current datetime in the default string format
-func DateString() string {
-    return time.LocalTime().String()
-}
-
 //  Returns true if the repo host uses Markdown enabled README files.
 func (p Project) ReadmeIsMarkdown() bool {
     return userepo && p.Host == GitHubHost
 }
+//  The target is a command.
+func (p Project) IsCommand() bool { return p.Type == CmdType }
+//  The target is an importable package
+func (p Project) IsPackage() bool { return p.Type == PkgType }

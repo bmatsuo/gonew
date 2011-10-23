@@ -4,5 +4,6 @@ import (
     "testing"
 )
 
-func Test{{.test}}(T *testing.T) {
-}
+{{ range .Tests }}
+{{ with printf "Test%s" . }}{{ func . "T *testing.T" }}{{ end }}
+{{ end }}

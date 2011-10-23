@@ -9,6 +9,7 @@ include $(GOROOT)/src/Make.inc
 
 TARG=gonew
 GOFILES=\
+		funcmap.go\
 		config.go\
 		template.go\
 		repository.go\
@@ -16,6 +17,7 @@ GOFILES=\
 		license.go\
 		file.go\
 		project.go\
+		context.go\
 		gonew_main.go\
 
 include $(GOROOT)/src/Make.cmd

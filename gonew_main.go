@@ -14,8 +14,6 @@ import (
     "log"
     "fmt"
     "flag"
-    "strings"
-    "template"
     //"bufio"
     //"io/ioutil"
     "path/filepath"
@@ -245,21 +243,7 @@ func FindTemplates() (TemplateMultiSet, os.Error) {
     if false {
         troots = append(troots, filepath.Join(GetTemplateRoot()...))
     }
-    f := template.FuncMap{
-        "import":func(pkg... string)string {
-            if len(pkg) == 0 {
-                return "import ()"
-            }
-            pieces := make([]string, len(pkg) + 2)
-            pieces[0] = "import ("
-            copy(pieces[1:], pkg)
-            pieces[len(pieces)-1] = ")"
-            return strings.Join(pieces, "\n")
-        },
-        "date":DateString,
-        "year":YearString,
-    }
-    return MakeTemplateMultiSet(f, troots...)
+    return MakeTemplateMultiSet(DefaultFuncMap(), troots...)
 }
 
 func main() {
@@ -274,11 +258,6 @@ func main() {
     if err != nil {
         panic(err)
     }
-    if p, err := ExecutedSet(ms, "go.cmd.t", nil); err != nil {
-        panic(err)
-    } else {
-        fmt.Println(string(p))
-    }
 
     switch request := parseArgs(); request {
     case ProjectRequest:
@@ -287,7 +266,7 @@ func main() {
         } else if VERBOSE {
             fmt.Printf("Generating project %s\n", RequestedProject.Name)
         }
-        if err := RequestedProject.Create(); err != nil {
+        if err := RequestedProject.Create(ms); err != nil {
             fmt.Fprint(os.Stderr, err.String(), "\n")
             os.Exit(1)
         }
@@ -298,7 +277,11 @@ func main() {
             fmt.Printf("Generating library %s (package %s)\n",
                 RequestedFile.Name+".go", RequestedFile.Pkg)
         }
-        if err := RequestedFile.Create(); err != nil {
+        if err := RequestedFile.Create(ms); err != nil {
+            fmt.Fprint(os.Stderr, err.String(), "\n")
+            os.Exit(1)
+        }
+        if err := RequestedFile.TestFile().Create(ms); err != nil {
             fmt.Fprint(os.Stderr, err.String(), "\n")
             os.Exit(1)
         }

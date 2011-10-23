@@ -7,4 +7,4 @@ _obj
 _test
 _testmain.go
 _cgo_export.h
-{{.gotarget}}
+{{.Project.Target}}

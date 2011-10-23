@@ -9,23 +9,23 @@
 
 var (
     // Set this variable to customize the help message header.
-    // For example, `{{.gotarget}} [options] action [arg2 ...]`.
+    // For example, `{{.Project.Target}} [options] action [arg2 ...]`.
     CommandLineHelpUsage string
     // Set this variable to print a message after the option specifications.
-    // For example, "For more help:\n\t{{.gotarget}} help [action]"
+    // For example, "For more help:\n\t{{.Project.Target}} help [action]"
     CommandLineHelpFooter string
 )
 
 //  A struct that holds parsed option values.
-//  TODO: Customize this struct with options for {{.gotarget}}
+//  TODO: Customize this struct with options for {{.Project.Target}}
 type options struct {
     Verbose bool
 }
 
 //  Create a flag.FlagSet to parse the command line options/arguments.
-//  TODO: Edit this function and add custom flags for {{.gotarget}}
+//  TODO: Edit this function and add custom flags for {{.Project.Target}}
 func setupFlags(opt *options) *flag.FlagSet {
-    fs := flag.NewFlagSet("{{.gotarget}}", flag.ExitOnError)
+    fs := flag.NewFlagSet("{{.Project.Target}}", flag.ExitOnError)
     fs.BoolVar(&(opt.Verbose), "v", false, "Verbose program output.")
 
     setupUsage(fs)
@@ -34,7 +34,7 @@ func setupFlags(opt *options) *flag.FlagSet {
 
 //  Check the options for acceptable values. Panics or otherwise exits
 //  with a non-zero exitcode when errors are encountered.
-//  TODO: Make sure the {{.gotarget}}'s flags are valid.
+//  TODO: Make sure the {{.Project.Target}}'s flags are valid.
 func verifyFlags(opt *options, fs *flag.FlagSet) {}
 
 //  Print a help message to standard error. See constants CommandLineHelpUsage
@@ -52,10 +52,9 @@ func setupUsage(fs *flag.FlagSet) {
             fmt.Fprintf(os.Stderr, "%s\n", s)
         }
     }
-    tmpUsage := fs.Usage
     fs.Usage = func() {
         printNonEmpty(CommandLineHelpUsage)
-        tmpUsage()
+        fs.PrintDefaults()
         printNonEmpty(CommandLineHelpFooter)
     }
 }
