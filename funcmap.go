@@ -70,8 +70,13 @@ func GoImport(pkgs... interface{}) (stmt string, err os.Error) {
         }
     }
 
-    for i := range pkgstrs {
-        pkgstrs[i] = fmt.Sprintf(`    "%s"`, pkgstrs[i])
+    for i, pkg := range pkgstrs {
+        pkgfmt := `    "%s"`
+        if strings.HasPrefix(pkg, "//") {
+            pkg = pkg[2:]
+            pkgfmt = `    //"%s"`
+        }
+        pkgstrs[i] = fmt.Sprintf(pkgfmt, pkg)
     }
     pieces := make([]string, len(pkgstrs) + 2)
     pieces[0] = "import ("
