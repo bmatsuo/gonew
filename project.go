@@ -48,6 +48,7 @@ func DefaultTarget(pname string) string {
 type Project struct {
     Name    string
     Target  string
+    ImportLibs []string
     User    string
     Remote  string
     License LicenseType

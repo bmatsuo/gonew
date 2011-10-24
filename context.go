@@ -116,6 +116,9 @@ type Context interface {
     // The name of the go package the Context belongs to. For commands, this
     // should return "main". For packages, the package/target name.
     Package() string
+    // The names of packages that source (non-test, non-options) .go files
+    // should import.
+    Imports() []string
     // The description of the Context. This should be unique for each file
     // and should describe the file's purpose.
     Description() string

@@ -64,6 +64,7 @@ func (f ProjectFile) Package() string {
     return "main"
 }
 
+func (f ProjectFile) Imports() []string { return f.p.ImportLibs }
 func (f ProjectFile) Description() string { return f.Desc }
 func (f ProjectFile) DebugDescription() string { return f.DebugDesc }
 func (f ProjectFile) Tests() []string {
@@ -88,6 +89,7 @@ type TestFile struct {
 
 func (t TestFile) Filename() string { return t.Name + "_test.go" }
 func (t TestFile) Package() string { return t.Pkg }
+func (t TestFile) Imports() []string { return nil }
 func (t TestFile) Description() string {
     return fmt.Sprintf("For testing %s", t.File.Filename())
 }
@@ -108,6 +110,7 @@ type File struct {
     Name    string
     User    string
     Pkg     string
+    ImportLibs []string
     Desc    string
 	License LicenseType
     Repo    RepoType
@@ -116,6 +119,7 @@ type File struct {
 
 func (f File) Filename() string { return f.Name + ".go" }
 func (f File) Package() string { return f.Pkg }
+func (f File) Imports() []string { return f.ImportLibs }
 func (f File) Description() string { return f.Desc }
 func (f File) DebugDescription() string { return "library" }
 func (f File) FileType() FileType { return Go }

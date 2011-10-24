@@ -15,6 +15,8 @@ import (
     "fmt"
     "flag"
     //"bufio"
+    "unicode"
+    "strings"
     //"io/ioutil"
     "path/filepath"
     //"github.com/hoisie/mustache.go"
@@ -40,6 +42,7 @@ gonew [options] lib NAME PKG
     DEBUG          = false
     DEBUG_LEVEL    = -1
     name           string
+    importlist     string
     ptype          string
     repo           string
     host           string
@@ -64,6 +67,8 @@ func Verbose(msg string) {
 
 func setupFlags() *flag.FlagSet {
     var fs = flag.NewFlagSet("gonew", flag.ExitOnError)
+    fs.StringVar(&importlist,
+        "import", "", "Packages to import in source .go files.")
     fs.StringVar(&repo,
         "repo", "", "Repository type (e.g. 'git').")
     fs.StringVar(&host,
@@ -130,16 +135,24 @@ func parseArgs() Request {
     if target == "" {
         target = DefaultTarget(name)
     }
+
+    imports := strings.Split(importlist, ":")
+    for i := range imports {
+        imports[i] = strings.TrimFunc(imports[i], unicode.IsSpace)
+    }
+
     var (
         file = File{
             Name: name, Pkg: "main",
             Repo: AppConfig.Repo, License: AppConfig.License,
-            User: AppConfig.HostUser, Host: AppConfig.Host}
+            User: AppConfig.HostUser, Host: AppConfig.Host,
+            ImportLibs: imports}
         project = Project{
             Name: name, Target: target,
             Type: NilProjectType, License: AppConfig.License, Remote: remote,
             Host: AppConfig.Host, User: AppConfig.HostUser,
-            Repo: AppConfig.Repo}
+            Repo: AppConfig.Repo,
+            ImportLibs: imports}
         produceProject = true
         licObj         = NilLicenseType
         repoObj        = NilRepoType
@@ -232,7 +245,6 @@ func parseArgs() Request {
     }
     return NilRequest
 }
-
 
 func FindTemplates() (TemplateMultiSet, os.Error) {
     troots := make([]string, 0, 2)

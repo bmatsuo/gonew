@@ -1,5 +1,5 @@
 {{ template "go._head.t" $ }}
 
-// Package {{.gotarget}} does ....
+// Package {{.Project.Target}} does ....
 {{ template "go._package.t" $ }}
-{{ import }}
+{{ import .Imports }}
