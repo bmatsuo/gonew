@@ -26,8 +26,8 @@ const(
 )
 
 var writeModeStrings = []string{
-    AppendMode:"Append",
-    CreateMode:"Create",
+    AppendMode:"Appending",
+    CreateMode:"Creating",
 }
 func (wm WriteMode) String() string { return writeModeStrings[wm] }
 
@@ -35,15 +35,15 @@ func (wm WriteMode) String() string { return writeModeStrings[wm] }
 //  WriteContext uses template named tname in the templates ExecutorSet. The
 //  value desc is only used for printing debugging information.
 func WriteContext(context Context, mode WriteMode, templates ExecutorSet, tname, desc string) os.Error {
+    filename := context.Filename()
+    Verbose(fmt.Sprintf("WriteContext: %s %s %s\n", mode.String(), desc, filename))
+    Debug(1, fmt.Sprintf("Executing template %s", tname))
+
     // Execute the template.
     p, errExec := ExecutedSet(templates, tname, context)
     if errExec != nil {
         return errExec
     }
-
-    // Compute the output filename and print out debugging information.
-    filename := context.Filename()
-    Verbose(fmt.Sprintf("%s %s %s\n", mode.String(), desc, filename))
     Debug(2, fmt.Sprintf("\n%s\n", p))
 
     // Open the output file.
