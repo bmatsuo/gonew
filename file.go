@@ -94,7 +94,7 @@ func (t TestFile) Description() string {
     return fmt.Sprintf("For testing %s", t.File.Filename())
 }
 func (t TestFile) DebugDescription() string {
-    return t.File.Filename() + " test"
+    return "test for " + t.File.Filename()
 }
 func (t TestFile) FileType() FileType { return Go }
 func (t TestFile) Tests() []string { return t.File.Tests() }
