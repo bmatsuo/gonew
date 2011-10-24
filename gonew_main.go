@@ -136,9 +136,14 @@ func parseArgs() Request {
         target = DefaultTarget(name)
     }
 
-    imports := strings.Split(importlist, ":")
-    for i := range imports {
-        imports[i] = strings.TrimFunc(imports[i], unicode.IsSpace)
+    imports := make([]string, 0, 1 + strings.Count(importlist, ":"))
+    for _, s := range strings.Split(importlist, ":") {
+        if pkg := strings.TrimFunc(s, unicode.IsSpace); pkg != "" {
+            imports = append(imports, pkg)
+        }
+    }
+    if len(imports) == 0 {
+        imports = nil
     }
 
     var (
