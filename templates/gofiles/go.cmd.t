@@ -2,6 +2,6 @@
 {{ template "go._head.t" $ }}
 {{ import .Imports "//log" "//fmt" "//os" }}
 
-var opt = parseFlags()
+var opt options
 
-{{ func "main" }}
+{{ main "opt = parseFlags()" }}

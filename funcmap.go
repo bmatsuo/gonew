@@ -91,9 +91,16 @@ func GoFunction(name string, args... string) string {
     return fmt.Sprintf("func %s(%s) {\n\n}", name, strings.Join(args, ", "))
 }
 
+//  A template helper function to define an empty function with specified
+//  arguments and no return values.
+func GoMain(init... string) string {
+    return fmt.Sprintf("func main() {\n    %s\n}", strings.Join(init, "\n    "))
+}
+
 func DefaultFuncMap() template.FuncMap {
     return template.FuncMap{
         "import":GoImport,
+        "main":GoMain,
         "func":GoFunction,
         "date":DateString,
         "year":YearString,
