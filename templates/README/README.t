@@ -16,7 +16,7 @@ Run {{.Project.Name}} with the command
 Prerequisites
 {{ if .Project.ReadmeIsMarkdown }}-------------{{ end }}
 
-You must have Go installed (http://golang.org/). 
+[Install Go](http://golang.org/doc/install.html). 
 
 Installation
 {{ if .Project.ReadmeIsMarkdown }}-------------{{ end }}
@@ -36,7 +36,7 @@ Or alternatively, use a godoc http server
 
     godoc -http=:6060
 
-and view the url http://localhost:6060/pkg/{{.Project.HostRepoString}}/
+and view the docs [here](http://localhost:6060/pkg/{{.Project.HostRepoString}}/)
 
 Author
 {{ if .Project.ReadmeIsMarkdown }}======{{ end }}
