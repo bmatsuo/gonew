@@ -11,11 +11,11 @@ package main
  */
 
 import (
+	"errors"
 	"template"
 	"strings"
 	"time"
 	"fmt"
-	"os"
 )
 
 //  The name supplied via ~/.gonewrc or by command line options. Accessible
@@ -42,7 +42,7 @@ func DateString(format ...string) string {
 }
 
 //  A template helper function to import multiple libraries into a go file.
-func GoImport(pkgs ...interface{}) (stmt string, err os.Error) {
+func GoImport(pkgs ...interface{}) (stmt string, err error) {
 	if len(pkgs) == 0 {
 		stmt = "import ()"
 		return
@@ -60,12 +60,12 @@ func GoImport(pkgs ...interface{}) (stmt string, err os.Error) {
 				case string:
 					pkgstrs = append(pkgstrs, s1.(string))
 				default:
-					err = os.NewError("import argument slice element is not a string")
+					err = errors.New("import argument slice element is not a string")
 					return
 				}
 			}
 		default:
-			err = os.NewError("import argument not a (slice of) string(s)")
+			err = errors.New("import argument not a (slice of) string(s)")
 			return
 		}
 	}
