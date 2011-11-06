@@ -16,7 +16,7 @@ Run {{.Project.Name}} with the command
 Prerequisites
 {{ if .Project.ReadmeIsMarkdown }}-------------{{ end }}
 
-You must have Go installed (http://golang.org/). 
+{{ if .Project.ReadmeIsMarkdown }}[Install Go] []{{ else }}Install Go [http://golang.org/doc/install.html]{{ end }}. 
 
 Installation
 {{ if .Project.ReadmeIsMarkdown }}-------------{{ end }}
@@ -36,7 +36,8 @@ Or alternatively, use a godoc http server
 
     godoc -http=:6060
 
-and view the url http://localhost:6060/pkg/{{.Project.HostRepoString}}/
+and view the {{ if .Project.ReadmeIsMarkdown }}[Godoc URL][]{{ else }}Godoc url [http://localhost:6060/pkg/{{.Project.HostRepoString}}/]{{ end }}
+
 
 Author
 {{ if .Project.ReadmeIsMarkdown }}======{{ end }}
@@ -49,3 +50,7 @@ Copyright & License
 Copyright (c) {{year}}, {{name}}.
 All rights reserved.
 
+{{ if .Project.ReadmeIsMarkdown }}
+[install go]: http://golang.org/doc/install.html "Install Go"
+[godoc url]:  http://localhost:6060/pkg/{{.Project.HostRepoString}}/ "Godoc URL"
+{{ end }}
