@@ -253,7 +253,7 @@ func parseArgs() Request {
 	return NilRequest
 }
 
-func FindTemplates() (TemplateMultiSet, os.Error) {
+func FindTemplates() (TemplateMultiSet, error) {
 	troots := make([]string, 0, 2)
 	if alt := AppConfig.AltRoot; alt != "" {
 		troots = append(troots, alt)
@@ -264,7 +264,7 @@ func FindTemplates() (TemplateMultiSet, os.Error) {
 
 func main() {
 	if err := TouchConfig(); err != nil {
-		fmt.Fprint(os.Stderr, err.String(), "\n")
+		fmt.Fprint(os.Stderr, err.Error(), "\n")
 		os.Exit(1)
 	}
 	Verbose("Parsing config file.\n")
@@ -283,7 +283,7 @@ func main() {
 			fmt.Printf("Generating project %s\n", RequestedProject.Name)
 		}
 		if err := RequestedProject.Create(ms); err != nil {
-			fmt.Fprint(os.Stderr, err.String(), "\n")
+			fmt.Fprint(os.Stderr, err.Error(), "\n")
 			os.Exit(1)
 		}
 	case LibraryRequest:
@@ -294,11 +294,11 @@ func main() {
 				RequestedFile.Name+".go", RequestedFile.Pkg)
 		}
 		if err := RequestedFile.Create(ms); err != nil {
-			fmt.Fprint(os.Stderr, err.String(), "\n")
+			fmt.Fprint(os.Stderr, err.Error(), "\n")
 			os.Exit(1)
 		}
 		if err := RequestedFile.TestFile().Create(ms); err != nil {
-			fmt.Fprint(os.Stderr, err.String(), "\n")
+			fmt.Fprint(os.Stderr, err.Error(), "\n")
 			os.Exit(1)
 		}
 	}

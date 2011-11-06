@@ -36,7 +36,7 @@ type GonewConfig struct {
 var AppConfig GonewConfig = GonewConfig{
 	true, "", "", "", "", NilLicenseType, NilRepoType, NilRepoHost, false}
 
-func ReadConfig() os.Error {
+func ReadConfig() error {
 	conf, err := config.ReadDefault(ConfigFilename)
 	if err != nil {
 		return err
@@ -88,7 +88,7 @@ func ReadConfig() os.Error {
 	return nil
 }
 
-func TouchConfig() os.Error {
+func TouchConfig() error {
 	var patherr *os.PathError
 
 	stat, err := os.Stat(ConfigFilename)
@@ -97,10 +97,10 @@ func TouchConfig() os.Error {
 		patherr = err.(*os.PathError)
 	}
 
-	if patherr != nil && patherr.Error != os.ENOENT {
+	if patherr != nil && patherr.Err != os.ENOENT {
 		fmt.Fprintf(os.Stderr, "Error stat'ing ~/.gonewrc. %v", patherr)
 		return patherr
-	} else if stat == nil || (patherr != nil && patherr.Error == os.ENOENT) {
+	} else if stat == nil || (patherr != nil && patherr.Err == os.ENOENT) {
 		fmt.Fprintln(os.Stderr, "~/.gonewrc now found. Please initialize it now.")
 		return MakeConfig()
 	} else {
@@ -109,12 +109,12 @@ func TouchConfig() os.Error {
 	return nil
 }
 
-func MakeConfig() os.Error {
+func MakeConfig() error {
 	c := config.NewDefault()
 	scanner := bufio.NewReader(os.Stdin)
 
 	var (
-		err  os.Error
+		err  error
 		buff []byte
 	)
 	fmt.Printf("Enter your name: ")

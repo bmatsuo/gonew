@@ -8,14 +8,15 @@ package main
 *  Created: Sat Jul  2 20:28:54 PDT 2011
  */
 import (
+	"errors"
 	"os"
 	"fmt"
 	//"log"
 )
 
 var (
-	NoUserNameError        = os.NewError("Missing remote repository username.")
-	NoRemoteError          = os.NewError("Missing remote repository url")
+	NoUserNameError        = errors.New("Missing remote repository username.")
+	NoRemoteError          = errors.New("Missing remote repository url")
 	DirPermissions  uint32 = 0755
 	FilePermissions uint32 = 0644
 )
@@ -58,7 +59,7 @@ type Project struct {
 	Markdown   bool
 }
 
-func (p Project) Create(ms TemplateMultiSet) os.Error {
+func (p Project) Create(ms TemplateMultiSet) error {
 	//var dict = p.GenerateDictionary()
 
 	// Make the directory and change the working directory.
@@ -66,7 +67,7 @@ func (p Project) Create(ms TemplateMultiSet) os.Error {
 		fmt.Print("Creating project directory.\n")
 	}
 
-	var err os.Error
+	var err error
 	if err = os.Mkdir(p.Name, DirPermissions); err != nil {
 		return err
 	}
@@ -93,8 +94,8 @@ func (p Project) Create(ms TemplateMultiSet) os.Error {
 
 	return os.Chdir("..")
 }
-func (p Project) CreateFiles(ms TemplateMultiSet) os.Error {
-	var err os.Error
+func (p Project) CreateFiles(ms TemplateMultiSet) error {
+	var err error
 	for _, f := range p.Files() {
 		if err = f.Create(ms); err != nil {
 			return err
@@ -256,7 +257,7 @@ func (p Project) HostRepoString() string {
 
 //  Initialize the repository after templates have been successfully
 //  generated.
-func (p Project) InitializeRepo(add, commit, push bool) os.Error {
+func (p Project) InitializeRepo(add, commit, push bool) error {
 	switch p.Repo {
 	case GitType:
 		git := GitRepo{}
