@@ -8,7 +8,7 @@ package main
 
 import (
     "testing"
-    "template"
+    "text/template"
     "bytes"
 )
 

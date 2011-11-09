@@ -12,7 +12,7 @@ package main
 
 import (
 	"errors"
-	"template"
+	"text/template"
 	"strings"
 	"time"
 	"fmt"

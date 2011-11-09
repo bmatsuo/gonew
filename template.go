@@ -18,7 +18,7 @@ import (
 	//"strings"
 	//"io/ioutil"
 	"path/filepath"
-	"template"
+	"text/template"
 	"runtime"
 	//"github.com/hoisie/mustache.go"
 )

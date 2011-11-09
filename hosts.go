@@ -11,7 +11,7 @@ package main
  *  Description: 
  */
 import (
-	"exec"
+	"os/exec"
 	"fmt"
 )
 
