@@ -11,15 +11,15 @@ package main
  */
 import (
 	"errors"
-	"io"
 	"fmt"
+	"io"
 	//"log"
 	"bytes"
 	//"strings"
 	//"io/ioutil"
 	"path/filepath"
-	"template"
 	"runtime"
+	"text/template"
 	//"github.com/hoisie/mustache.go"
 )
 
@@ -62,11 +62,11 @@ func TemplateGlobPattern(root string) string {
 	return filepath.Join(root, "*", fmt.Sprintf("*%s", TemplateFileExt))
 }
 
-type TemplateMultiSet []*template.Set
+type TemplateMultiSet []*template.Template
 
 //  Call function CollectTemplates on each given root and create a TemplateMultiSet.
 func MakeTemplateMultiSet(f template.FuncMap, roots ...string) (ms TemplateMultiSet, err error) {
-	var s *template.Set
+	var s *template.Template
 	ms = make(TemplateMultiSet, len(roots))
 	for i := range roots {
 		if s, err = CollectTemplates(roots[i], f); err != nil {
@@ -81,24 +81,24 @@ func MakeTemplateMultiSet(f template.FuncMap, roots ...string) (ms TemplateMulti
 //  Execute a template in first s in ms for which s.Template(name) is non-nil.
 func (ms TemplateMultiSet) Execute(wr io.Writer, name string, data interface{}) error {
 	for _, s := range ms {
-		if t := s.Template(name); t != nil {
+		if t := s.Lookup(name); t != nil {
 			return t.Execute(wr, data)
 		}
 	}
 	return NoTemplateError
 }
 
+func emptyTemplate(name string) (*template.Template, error) { return template.New(name).Parse("") }
+
 //  Parse templates <root>/*/*.t, allowing them a given function map.
-func CollectTemplates(root string, f template.FuncMap) (s *template.Set, err error) {
-	s = new(template.Set)
-	if f != nil {
+func CollectTemplates(root string, f template.FuncMap) (s *template.Template, err error) {
+	switch s, err = emptyTemplate(root); {
+	case err != nil:
+		return
+	case f != nil:
 		s.Funcs(f)
 	}
-	s, err = s.ParseTemplateGlob(TemplateGlobPattern(root))
-	if err != nil {
-		return
-	}
-	return
+	return s.ParseGlob(TemplateGlobPattern(root))
 }
 
 //  The template directory of the goinstall'ed gonew package.

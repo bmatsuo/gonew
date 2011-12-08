@@ -12,7 +12,7 @@ package main
 
 import (
 	"errors"
-	"template"
+	"text/template"
 	"strings"
 	"time"
 	"fmt"
@@ -29,16 +29,16 @@ func GonewUserEmail() string { return AppConfig.Email }
 //  The current year in a four-digit format. Accessible as the template
 //  function "year"
 func YearString() string {
-	return time.LocalTime().Format("2006")
+	return time.Now().Local().Format("2006")
 }
 
 //  The local datetime in the default string format. Accessible as the
 //  template function "date".
 func DateString(format ...string) string {
 	if len(format) > 0 {
-		return time.LocalTime().Format(format[0])
+		return time.Now().Local().Format(format[0])
 	}
-	return time.LocalTime().String()
+	return time.Now().Local().String()
 }
 
 //  A template helper function to import multiple libraries into a go file.
