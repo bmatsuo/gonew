@@ -1,4 +1,8 @@
-About {{.Project.Name}}
+{{ if .Project.ReadmeIsMarkdown }}
+[install go]: http://golang.org/install.html "Install Go"
+[the godoc url]: http://localhost:6060/pkg/{{.Project.HostRepoString}}/ "the Godoc URL"
+
+{{ end }}About {{.Project.Name}}
 {{ if .Project.ReadmeIsMarkdown }}============={{ end }}
 
 {{.Description}}
@@ -51,6 +55,3 @@ Copyright & License
 
 Copyright (c) {{year}}, {{name}}.
 All rights reserved.
-{{ if .Project.ReadmeIsMarkdown }}
-[install go]: http://golang.org/install.html "Install Go"
-[the godoc url]: http://localhost:6060/pkg/{{.Project.HostRepoString}}/ "the Godoc URL"

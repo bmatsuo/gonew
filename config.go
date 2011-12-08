@@ -30,10 +30,11 @@ type GonewConfig struct {
     License  LicenseType
     Repo     RepoType
     Host     RepoHost
+	Markdown bool
 }
 
 var AppConfig GonewConfig = GonewConfig{
-    true, "", "", "", "", NilLicenseType, NilRepoType, NilRepoHost}
+    true, "", "", "", "", NilLicenseType, NilRepoType, NilRepoHost, false}
 
 func ReadConfig() os.Error {
     conf, err := config.ReadDefault(ConfigFilename)
@@ -49,6 +50,7 @@ func ReadConfig() os.Error {
     AppConfig.Email, err = conf.String("variables", "email")
     AppConfig.HostUser, err = conf.String("general", "hostuser")
     AppConfig.AltRoot, err = conf.String("general", "templates")
+	AppConfig.Markdown, err = conf.Bool("general", "markdown")
 
     license, err = conf.String("general", "license")
     switch license {
