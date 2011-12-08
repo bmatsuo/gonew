@@ -9,7 +9,7 @@ package main
  *  Created:     Sun Jul  3 19:10:10 PDT 2011
  *  Description: 
  */
-import "exec"
+import "os/exec"
 
 type RepoType int
 
