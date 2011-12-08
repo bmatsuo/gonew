@@ -43,6 +43,7 @@ Or alternatively, use a godoc http server
 and visit [the Godoc URL][]
 {{ else }}
 and view the Godoc URL http://localhost:6060/pkg/{{.Project.HostRepoString}}/.
+{{ end }}
 
 Author
 {{ if .Project.ReadmeIsMarkdown }}======{{ end }}
