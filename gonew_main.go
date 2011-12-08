@@ -159,7 +159,7 @@ func parseArgs() Request {
 			Host: AppConfig.Host, User: AppConfig.HostUser,
 			Repo:       AppConfig.Repo,
 			ImportLibs: imports,
-			Markdown: AppConfig.Markdown}
+			Markdown:   AppConfig.Markdown}
 		produceProject = true
 		licObj         = NilLicenseType
 		repoObj        = NilRepoType
