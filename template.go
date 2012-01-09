@@ -13,6 +13,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"os"
 	//"log"
 	"bytes"
 	//"strings"
@@ -67,13 +68,16 @@ type TemplateMultiSet []*template.Template
 //  Call function CollectTemplates on each given root and create a TemplateMultiSet.
 func MakeTemplateMultiSet(f template.FuncMap, roots ...string) (ms TemplateMultiSet, err error) {
 	var s *template.Template
-	ms = make(TemplateMultiSet, len(roots))
+	ms = make(TemplateMultiSet, 0, len(roots))
 	for i := range roots {
 		if s, err = CollectTemplates(roots[i], f); err != nil {
-			break
+			fmt.Fprintln(os.Stderr, err)
 		} else {
-			ms[i] = s
+			ms = append(ms, s)
 		}
+	}
+	if len(ms) == 0 {
+		err = errors.New("No valid templates found")
 	}
 	return
 }
