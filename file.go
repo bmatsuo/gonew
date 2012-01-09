@@ -25,7 +25,7 @@ func TestName(filename string) string {
 	}
 	return strings.Title(
 		strings.Map(
-			func(c int) int {
+			func(c rune) rune {
 				if unicode.IsNumber(c) || unicode.IsLetter(c) {
 					return c
 				}
