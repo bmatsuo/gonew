@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 package main
+
 /* 
 *  File: gonew_main.go
 *  Author: Bryan Matsuo [bmatsuo@soe.ucsc.edu] 
@@ -9,18 +10,15 @@ package main
 *  Usage: gonew [options]
  */
 import (
-	"os"
-	//"io"
-	"log"
-	"fmt"
 	"flag"
-	//"bufio"
-	"unicode"
-	"strings"
-	//"io/ioutil"
+	"fmt"
+	"log"
+	"os"
+	"os/exec"
 	"path/filepath"
-	//"github.com/hoisie/mustache.go"
-	//"github.com/kr/pretty.go"
+	"runtime"
+	"strings"
+	"unicode"
 )
 
 func ArgumentError(msg string) {
@@ -97,6 +95,74 @@ func setupFlags() *flag.FlagSet {
 		fs.PrintDefaults()
 	}
 	return fs
+}
+
+// Returns a path to the directory containing Gonew's source (and the templates/ directory).
+// This function first searches locates the 'gonew' executable in PATH. Then locates the directory
+// it was built from (either GOROOT or a subdirectory of GOPATH).
+func FindGonew() (dir string, err error) {
+	var bin string
+	if bin, err = exec.LookPath("gonew"); err != nil {
+		return
+	}
+	var bindir string
+	if bindir, err = filepath.Abs(filepath.Dir(bin)); err != nil {
+		return
+	}
+	var gobin string
+	var gopath string
+	for _, env := range os.Environ() {
+		if strings.HasPrefix(env, "GOBIN=") {
+			if gobin, err = filepath.Abs(env[6:]); err != nil {
+				return
+			}
+		}
+		if strings.HasPrefix(env, "GOPATH=") {
+			if gopath, err = filepath.Abs(env[7:]); err != nil {
+				return
+			}
+		}
+		if len(gobin) > 0 && len(gopath) > 0 {
+			break
+		}
+	}
+	if bindir == gobin {
+		rootdir := filepath.Join(runtime.GOROOT(), "github.com", "bmtasuo", "gonew")
+		var stat os.FileInfo
+		switch stat, err = os.Stat(rootdir); {
+		case err != nil:
+			if err != os.ENOENT {
+				return
+			}
+		case stat != nil:
+			dir = rootdir
+			return
+		default:
+			panic("unreachable")
+		}
+	}
+	/*
+		var stat os.FileInfo
+		if !strings.HasSuffix(bindir, "bin") {
+			err = fmt.Errorf("%s not under a GOPATH", bindir)
+		} else if stat, err = filepath.Join(filepath.Dir(bindir), "src"); err != nil {
+			err = fmt.Errorf("%s not under a GOPATH: %s", bindir)
+		} else if !stat.IsDir() {
+			err = fmt.Errorf("%s not under a GOPATH", bindir)
+		} else if stat, err = filepath.Join(filepath.Join(filepath.Dir(bindir), "src", "github.com/bmatsuo/gonew")); err != nil {
+			if err == os.ENOENT {
+				if stat, err = filepath.Join(filepath.Join(filepath.Dir(bindir), "src", "gonew")); err != nil {
+					bin = filepath.Join(filepath.Join(filepath.Dir(bindir), "src", "gonew"))
+				}
+			}
+		} else {
+			bin = filepath.Join(filepath.Join(filepath.Dir(bindir), "src", "github.com/bmatsuo/gonew"))
+		}
+	*/
+	if err != nil {
+		return
+	}
+	return
 }
 
 type Request int
