@@ -1,4 +1,8 @@
-About {{.Project.Name}}
+{{ if .Project.ReadmeIsMarkdown }}
+[install go]: http://golang.org/install.html "Install Go"
+[the godoc url]: http://localhost:6060/pkg/{{.Project.HostRepoString}}/ "the Godoc URL"
+
+{{ end }}About {{.Project.Name}}
 {{ if .Project.ReadmeIsMarkdown }}============={{ end }}
 
 {{.Description}}
@@ -16,7 +20,7 @@ Run {{.Project.Name}} with the command
 Prerequisites
 {{ if .Project.ReadmeIsMarkdown }}-------------{{ end }}
 
-[Install Go](http://golang.org/doc/install.html). 
+{{ if .Project.ReadmeIsMarkdown }}[{{ end }}Install Go{{ if .Project.ReadmeIsMarkdown }}][]{{ else }}(http://golang.org/install.html){{ end }}.
 
 Installation
 {{ if .Project.ReadmeIsMarkdown }}-------------{{ end }}
@@ -35,17 +39,19 @@ Use godoc to vew the documentation for {{.Project.Name}}
 Or alternatively, use a godoc http server
 
     godoc -http=:6060
-
-and view the docs [here](http://localhost:6060/pkg/{{.Project.HostRepoString}}/)
+{{ if .Project.ReadmeIsMarkdown }}
+and visit [the Godoc URL][]
+{{ else }}
+and view the Godoc URL http://localhost:6060/pkg/{{.Project.HostRepoString}}/.
+{{ end }}
 
 Author
 {{ if .Project.ReadmeIsMarkdown }}======{{ end }}
 
-{{name}} <{{email}}>
+{{name}} {{ if .Project.ReadmeIsMarkdown }}&lt;{{else}}<{{end}}{{email}}{{ if .Project.ReadmeIsMarkdown }}&gt;{{else}}>{{end}}
 
 Copyright & License
 {{ if .Project.ReadmeIsMarkdown }}==================={{ end }}
 
 Copyright (c) {{year}}, {{name}}.
 All rights reserved.
-

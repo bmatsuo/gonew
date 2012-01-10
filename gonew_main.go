@@ -81,6 +81,8 @@ func setupFlags() *flag.FlagSet {
 		"target", "", "Makefile target. Default based on NAME.")
 	fs.StringVar(&license,
 		"license", "", "Project license (e.g. 'newbsd').")
+	fs.BoolVar(&AppConfig.Markdown,
+		"markdown", false, "Markdown-enabled README.")
 	fs.BoolVar(&(AppConfig.MakeTest),
 		"test", AppConfig.MakeTest, "Produce test files with Go files.")
 	fs.BoolVar(&(norepo), "norepo", false, "Don't start a repository.")
@@ -156,7 +158,8 @@ func parseArgs() Request {
 			Type: NilProjectType, License: AppConfig.License, Remote: remote,
 			Host: AppConfig.Host, User: AppConfig.HostUser,
 			Repo:       AppConfig.Repo,
-			ImportLibs: imports}
+			ImportLibs: imports,
+			Markdown:   AppConfig.Markdown}
 		produceProject = true
 		licObj         = NilLicenseType
 		repoObj        = NilRepoType

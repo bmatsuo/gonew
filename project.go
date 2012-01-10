@@ -56,6 +56,7 @@ type Project struct {
 	Type       ProjectType
 	Host       RepoHost
 	Repo       RepoType
+	Markdown   bool
 }
 
 func (p Project) Create(ms TemplateMultiSet) error {
@@ -287,7 +288,10 @@ func (p Project) InitializeRepo(add, commit, push bool) error {
 
 //  Returns true if the repo host uses Markdown enabled README files.
 func (p Project) ReadmeIsMarkdown() bool {
-	return userepo && p.Host == GitHubHost
+	if userepo {
+		return p.Host == GitHubHost
+	}
+	return p.Markdown
 }
 //  The target is a command.
 func (p Project) IsCommand() bool { return p.Type == CmdType }
