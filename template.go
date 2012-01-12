@@ -83,6 +83,15 @@ func MakeTemplateMultiSet(f template.FuncMap, roots ...string) (ms TemplateMulti
 	return
 }
 
+func FindTemplates() (TemplateMultiSet, error) {
+	troots := make([]string, 0, 2)
+	if alt := AppConfig.AltRoot; alt != "" {
+		troots = append(troots, alt)
+	}
+	troots = append(troots, filepath.Join(GetTemplateRoot()...))
+	return MakeTemplateMultiSet(DefaultFuncMap(), troots...)
+}
+
 //  Execute a template in first s in ms for which s.Template(name) is non-nil.
 func (ms TemplateMultiSet) Execute(wr io.Writer, name string, data interface{}) error {
 	for _, s := range ms {

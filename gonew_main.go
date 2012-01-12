@@ -319,15 +319,6 @@ func parseArgs() Request {
 	return NilRequest
 }
 
-func FindTemplates() (TemplateMultiSet, error) {
-	troots := make([]string, 0, 2)
-	if alt := AppConfig.AltRoot; alt != "" {
-		troots = append(troots, alt)
-	}
-	troots = append(troots, filepath.Join(GetTemplateRoot()...))
-	return MakeTemplateMultiSet(DefaultFuncMap(), troots...)
-}
-
 func init() {
 	var err error
 	if err = TouchConfig(); err != nil {
