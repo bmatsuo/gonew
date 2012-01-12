@@ -1,50 +1,59 @@
-*gonew version 0.1_4*
+[install go]: http://golang.org/doc/install.html "Install Go" 
+[go environment]: http://golang.org/doc/install.html#environment "Go environment"
 
-Gonew generates new Go project directories.
+[issues]: https://github.com/bmatsuo/gonew/issues "Github issues"
 
 About gonew
 ===========
 
-Note: There is Mercurial support in Gonew, but no Google Code support.
-I don't know the best practices concerning mercurial. If you can help.
-Read the "Help out" section and contact me.
-
 The idea behind gonew is to quickly and easily generate new Go projects
-and repositories that can be installed immediately via Goinstall. The
-inspiration behind gonew is the h2xs application for Perl.
+and repositoriesl. Gonew is inspired by Perl's the `h2xs` application.
 
-A Project directory produced by gonew contains stub files and an
-initialized repository. Git repositories can be automatically pushed to
-new github repositories. Gonew can be used to create both new packages
-and new commands.
+*Note: Gonew has Mercurial support, but no Google Code support. I'm github for
+life (sorry). To help add support more hosts, read the "Help out" section and
+contact me. I'll help write the necessary code.*
+
+Features
+========
+
+- Create packages, commands, and single files (w/ test files).
+
+- Create a project directory and fill it stub files generated from templates.
+
+- Initialize a repository and commit the file stubs.
+
+- If a new repository has been created on a host like Github, Gonew can push
+the initial commit for you.
 
 Prerequisites
 =============
 
-You must have Go installed (http://golang.org/) and the $GOROOT
-environment variable must be set to the Go source root directory.
+[Install Go](http://golang.org/doc/install.html) 
+
+Its recommended you set the environment variable [GOROOT][go environment] to be
+the root directory of your local Go repository. This is not required in all
+scenarios.
+
 
 Documentation
 =============
 Install
 -------
 
-Install gonew using Goinstall. It's the easiest way to ensure the templates
-are correctly installed.
+**Option 1 (Goinstall)**
 
     goinstall github.com/bmatsuo/gonew
 
-For the more adventurous, who like making life harder, clone the git
-repository and build gonew yourself.
+**Option 2 (Go)**
+
+    git clone git@github.com:bmatsuo/gonew.git
+    go install gonew
+
+**Option 3 (Gomake)**
 
     git clone git@github.com:bmatsuo/gonew.git
     cd gonew
     gomake install
-
-To finish the installation and make the templates visible to gonew,
-create the file ~/.gonewrc (there is an example in the repo) and
-edit the "templates" setting so that the path point to the templates/
-subdirectory of the repository.
 
 Examples
 --------
@@ -67,26 +76,62 @@ General Documentation
 
 For information about command line options.
 
-    gonew -help
+    gonew -h
 
 For more detailed information
 
     godoc github.com/bmatsuo/gonew
 
+Templates
+---------
+
+Gonew uses customizable templates. You can browse the repository to see the
+existing templates. You can also specify a directory of custom templates in the
+file `~/.gonewrc`.
+
+**Caveat 1** To override a default template, the *filename* of the corresponding
+custom template must be identical. Templates with arbitrary filenames can be used
+through reference in custom templates with standard names.
+
+**Caveat 2** Custom templates cannot reference default templates. In order to
+reference a default gonew template, the template must be copied/linked into the
+custom template directory.
+
 Help out
 ========
 
-If you have experience using licenses other than new BSD and LGPL and
-want to help add support for them into Gonew, get in touch with me and
-we can quickly get that done.
+Licenses
+--------
 
-I only use git/github for version control and have never seriously used
-mercurial, svn, etc. or any of their web-based hosts. If you can help
-write handlers for repos and hosts of those kind, please let me know.
-Your help would be greatly appericiated.
+Licenses can be added very easily
 
-If you have any suggestions regarding the contents of the gonew templates
-please make an issue on github (https://github.com/bmatsuo/gonew/issues).
+If you have experience with licenses other than New BSD and want to help add
+them to Gonew, [create a new issue][issues] and provide links to the relavent
+license documentation (and the license text itself).
+
+Versioning systems
+------------------
+
+The Git support in Gonew is tested and stable. Mercurial support has been
+implemented as well.
+
+People can help add other versioning systems by [creating an issue][issues] and
+providing some general information about initializing new repositories,
+committing, and pushing to hosts.
+
+Hosts
+-----
+
+Currently, Github is the only host usable with Gonew.
+
+People can help by [create a new issue][issues] and providing info about
+versioning systems used, repository initialization, and project paths.
+
+Templates
+---------
+
+If you have any suggestions regarding the contents of the default Gonew templates
+please [create a new issue][issues].
 
 Author
 ======

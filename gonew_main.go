@@ -38,8 +38,10 @@ gonew [options] pkg NAME
 gonew [options] lib NAME PKG
 `
 	printUsageHead = func() { fmt.Fprint(os.Stderr, usage, "\n") }
-	userepo        = false
-	norepo         = true
+	userepo		   = true
+	norepo         = false
+	usehost        = true
+	nohost         = false
 	VERBOSE        = false
 	DEBUG          = false
 	DEBUG_LEVEL    = -1
@@ -87,6 +89,7 @@ func setupFlags() *flag.FlagSet {
 		"markdown", false, "Markdown-enabled README.")
 	fs.BoolVar(&(AppConfig.MakeTest),
 		"test", AppConfig.MakeTest, "Produce test files with Go files.")
+	fs.BoolVar(&(nohost), "nohost", false, "Don't use repository host.")
 	fs.BoolVar(&(norepo), "norepo", false, "Don't start a repository.")
 	fs.BoolVar(&VERBOSE,
 		"v", false, "Verbose output.")
@@ -180,6 +183,7 @@ func parseArgs() Request {
 	var fs = setupFlags()
 	fs.Parse(os.Args[1:])
 	userepo = !norepo
+	usehost = !nohost
 	if DEBUG_LEVEL >= 0 {
 		DEBUG = true
 	}
@@ -287,7 +291,9 @@ func parseArgs() Request {
 		if licObj != NilLicenseType {
 			project.License = licObj
 		}
-		if hostObj != NilRepoHost {
+		if !usehost {
+			project.Host = NilRepoHost
+		} else if hostObj != NilRepoHost {
 			project.Host = hostObj
 		}
 		if userepo && repoObj != NilRepoType {
@@ -307,7 +313,9 @@ func parseArgs() Request {
 		if licObj != NilLicenseType {
 			file.License = licObj
 		}
-		if hostObj != NilRepoHost {
+		if !usehost {
+			file.Host = NilRepoHost
+		} else if hostObj != NilRepoHost {
 			file.Host = hostObj
 		}
 		if userepo && repoObj != NilRepoType {
