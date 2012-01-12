@@ -34,19 +34,9 @@ var (
 	ErrParse       = errors.New("Couldn't parse template")
 )
 
+// An abstraction of the template.Template type.
 type Executor interface {
 	Execute(io.Writer, interface{}) error
-}
-
-type ExecutorSet interface {
-	Execute(io.Writer, string, interface{}) error
-}
-
-func collectBytes(f func(w io.Writer) error) (p []byte, err error) {
-	b := new(bytes.Buffer)
-	err = f(b)
-	p = b.Bytes()
-	return
 }
 
 //  Call t.Execute with the given data, writing to a []byte buffer.
@@ -54,24 +44,42 @@ func Executed(t Executor, data interface{}) ([]byte, error) {
 	return collectBytes(func(w io.Writer) error { return t.Execute(w, data) })
 }
 
+// An abstraction of the template.Set type.
+// TODO: Get rid of this now that template.Set is gone.
+type ExecutorSet interface {
+	Execute(io.Writer, string, interface{}) error
+}
+
 //  Call s.Execute with the given name data, writing to a []byte buffer.
-func ExecutedSet(s ExecutorSet, name string, data interface{}) ([]byte, error) {
+func SetExecuted(s ExecutorSet, name string, data interface{}) ([]byte, error) {
 	return collectBytes(func(w io.Writer) error { return s.Execute(w, name, data) })
 }
 
-//  Returns an os-specific pattern <root>/"*"/*<TemplateFileExt>
+func collectBytes(f func(w io.Writer) error) ([]byte, error) {
+	b := new(bytes.Buffer)
+	err := f(b)
+	return b.Bytes(), err
+}
+
+//  Returns an os-specific pattern <root>/*/*<TemplateFileExt>
 func TemplateGlobPattern(root string) string {
 	return filepath.Join(root, "*", fmt.Sprintf("*%s", TemplateFileExt))
 }
 
+// A linear hierarchy of template (sets).
 type TemplateMultiSet []*template.Template
 
-//  Call function CollectTemplates on each given root and create a TemplateMultiSet.
-func MakeTemplateMultiSet(f template.FuncMap, roots ...string) (ms TemplateMultiSet, err error) {
+// Note: this should never ignore an error if the template package is working 'properly'
+func emptyTemplate(name string) *template.Template { t, _ := template.New(name).Parse(""); return t }
+
+// Create a template multiset containing one template.Template for each root
+// diven. Template precedence decreases as roots go from left to right.
+func makeTemplateMultiSet(f template.FuncMap, roots ...string) (ms TemplateMultiSet, err error) {
 	var s *template.Template
 	ms = make(TemplateMultiSet, 0, len(roots))
 	for i := range roots {
-		if s, err = CollectTemplates(roots[i], f); err != nil {
+		s, err = emptyTemplate(roots[i]).Funcs(f).ParseGlob(TemplateGlobPattern(roots[i]))
+		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 		} else {
 			ms = append(ms, s)
@@ -83,16 +91,17 @@ func MakeTemplateMultiSet(f template.FuncMap, roots ...string) (ms TemplateMulti
 	return
 }
 
+// Collect all visible sets of templates visible.
 func FindTemplates() (TemplateMultiSet, error) {
 	troots := make([]string, 0, 2)
 	if alt := AppConfig.AltRoot; alt != "" {
 		troots = append(troots, alt)
 	}
-	troots = append(troots, filepath.Join(GetTemplateRoot()...))
-	return MakeTemplateMultiSet(DefaultFuncMap(), troots...)
+	troots = append(troots, TemplateRoot)
+	return makeTemplateMultiSet(DefaultFuncMap(), troots...)
 }
 
-//  Execute a template in first s in ms for which s.Template(name) is non-nil.
+//  Execute the named template from the first set in which such a template exists.
 func (ms TemplateMultiSet) Execute(wr io.Writer, name string, data interface{}) error {
 	for _, s := range ms {
 		if t := s.Lookup(name); t != nil {
@@ -101,19 +110,3 @@ func (ms TemplateMultiSet) Execute(wr io.Writer, name string, data interface{}) 
 	}
 	return ErrNoTemplates
 }
-
-func emptyTemplate(name string) (*template.Template, error) { return template.New(name).Parse("") }
-
-//  Parse templates <root>/*/*.t, allowing them a given function map.
-func CollectTemplates(root string, f template.FuncMap) (s *template.Template, err error) {
-	switch s, err = emptyTemplate(root); {
-	case err != nil:
-		return
-	case f != nil:
-		s.Funcs(f)
-	}
-	return s.ParseGlob(TemplateGlobPattern(root))
-}
-
-//  The template directory of the goinstall'ed gonew package.
-func GetTemplateRoot() []string { return []string{GonewRoot, "templates"} }

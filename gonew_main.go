@@ -22,8 +22,11 @@ import (
 	"unicode"
 )
 
-var GonewRoot string
-var Templates TemplateMultiSet
+var (
+	GonewRoot    string           // The Gonew source directory
+	TemplateRoot string           // The "templates" subdirectory of GonewRoot.
+	Templates    TemplateMultiSet // The (sets of) templates used by Gonew.
+)
 
 func ArgumentError(msg string) {
 	fmt.Fprintf(os.Stderr, "%s\n", msg)
@@ -38,7 +41,7 @@ gonew [options] pkg NAME
 gonew [options] lib NAME PKG
 `
 	printUsageHead = func() { fmt.Fprint(os.Stderr, usage, "\n") }
-	userepo		   = true
+	userepo        = true
 	norepo         = false
 	usehost        = true
 	nohost         = false
@@ -343,6 +346,7 @@ func init() {
 		os.Exit(1)
 	}
 	GonewRoot = root
+	TemplateRoot = filepath.Join(root, "templates")
 
 	Verbose("Searching for templates.\n")
 	if Templates, err = FindTemplates(); err != nil {
