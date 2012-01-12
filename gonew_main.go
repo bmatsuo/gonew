@@ -238,7 +238,7 @@ func parseArgs() Request {
 	case "lib":
 		produceProject = false
 	default:
-		fmt.Fprintf(os.Stderr, "Unknown TYPE %s\n", ptype)
+		fmt.Fprintf(os.Stderr, "Unknown TYPE argument %s\n", ptype)
 		os.Exit(1)
 	}
 	switch license {
@@ -247,7 +247,7 @@ func parseArgs() Request {
 	case "newbsd":
 		licObj = NewBSD
 	default:
-		fmt.Fprintf(os.Stderr, "Unknown TYPE %s\n", ptype)
+		fmt.Fprintf(os.Stderr, "Unknown license %s\n", ptype)
 		os.Exit(1)
 	}
 	if userepo {
@@ -259,7 +259,7 @@ func parseArgs() Request {
 		case "mercurial":
 			repoObj = HgType
 		default:
-			fmt.Fprintf(os.Stderr, "Unknown REPO %s\n", repo)
+			fmt.Fprintf(os.Stderr, "Unknown repository type %s\n", repo)
 			os.Exit(1)
 		}
 		switch host {
@@ -274,7 +274,7 @@ func parseArgs() Request {
 		       repoObj = HgType
 		*/
 		default:
-			fmt.Fprintf(os.Stderr, "Unknown HOST %s\n", host)
+			fmt.Fprintf(os.Stderr, "Unknown respository host %s\n", host)
 			os.Exit(1)
 		}
 	}
