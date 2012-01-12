@@ -18,12 +18,12 @@ Features
 
 - Create packages, commands, and single files (w/ test files).
 
-- Create a project directory and fill it stub files generated from templates.
+- Create a project directory and fill it with stub files generated from templates.
 
-- Initialize a repository and commit the file stubs.
+- Initialize a repository and commit the stubs.
 
-- If a new repository has been created on a host like Github, Gonew can push
-the initial commit for you.
+- If a new repository has already been created on a host like Github, Gonew can
+push the initial commit for you.
 
 Prerequisites
 =============
