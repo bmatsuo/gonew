@@ -86,8 +86,9 @@ Templates
 ---------
 
 Gonew uses customizable templates. You can browse the repository to see the
-existing templates. You can also specify a directory of custom templates in the
-file `~/.gonewrc`.
+existing templates. Specify a directory of custom templates in the configuration
+file `~/.gonewrc`. The configuration variable is `templates`, in section
+`[general]`.
 
 **Caveat 1** To override a default template, the *filename* of the corresponding
 custom template must be identical. Templates with arbitrary filenames can be used
