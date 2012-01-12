@@ -42,12 +42,8 @@ type Executor interface {
 
 //  Call s.Execute with the given name data, writing to a []byte buffer.
 func Executed(s Executor, name string, data interface{}) ([]byte, error) {
-	return collectBytes(func(w io.Writer) error { return s.Execute(w, name, data) })
-}
-
-func collectBytes(f func(w io.Writer) error) ([]byte, error) {
 	b := new(bytes.Buffer)
-	err := f(b)
+	err := s.Execute(b, name, data)
 	return b.Bytes(), err
 }
 
