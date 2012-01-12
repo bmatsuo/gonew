@@ -41,7 +41,7 @@ func WriteContext(context Context, mode WriteMode, tname, desc string) error {
 	Debug(1, fmt.Sprintf("Executing template %s", tname))
 
 	// Execute the template.
-	p, errExec := SetExecuted(Templates, tname, context)
+	p, errExec := HierarchyExecuted(Templates, tname, context)
 	if errExec != nil {
 		return errExec
 	}

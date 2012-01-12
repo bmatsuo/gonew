@@ -46,12 +46,12 @@ func Executed(t Executor, data interface{}) ([]byte, error) {
 
 // An abstraction of the template.Set type.
 // TODO: Get rid of this now that template.Set is gone.
-type ExecutorSet interface {
+type ExecutorHierarchy interface {
 	Execute(io.Writer, string, interface{}) error
 }
 
 //  Call s.Execute with the given name data, writing to a []byte buffer.
-func SetExecuted(s ExecutorSet, name string, data interface{}) ([]byte, error) {
+func HierarchyExecuted(s ExecutorHierarchy, name string, data interface{}) ([]byte, error) {
 	return collectBytes(func(w io.Writer) error { return s.Execute(w, name, data) })
 }
 
