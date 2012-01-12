@@ -152,15 +152,14 @@ func FindGonew() (dir string, err error) {
 		err = fmt.Errorf("%s not under a GOPATH", bindir)
 	} else if stat, err = os.Stat(filepath.Join(filepath.Join(filepath.Dir(bindir), "src", "github.com", "bmatsuo", "gonew"))); err != nil {
 		if stat, err = os.Stat(filepath.Join(filepath.Join(filepath.Dir(bindir), "src", "gonew"))); err == nil {
-			bin = filepath.Join(filepath.Join(filepath.Dir(bindir), "src", "gonew"))
+			dir = filepath.Join(filepath.Join(filepath.Dir(bindir), "src", "gonew"))
 		}
 	} else {
-		bin = filepath.Join(filepath.Join(filepath.Dir(bindir), "src", "github.com", "bmatsuo", "gonew"))
+		dir = filepath.Join(filepath.Join(filepath.Dir(bindir), "src", "github.com", "bmatsuo", "gonew"))
 	}
 	if err != nil {
 		return
 	}
-	dir = filepath.Dir(bin)
 	return
 }
 
