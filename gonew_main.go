@@ -23,6 +23,7 @@ import (
 )
 
 var GonewRoot string
+var Templates TemplateMultiSet
 
 func ArgumentError(msg string) {
 	fmt.Fprintf(os.Stderr, "%s\n", msg)
@@ -328,7 +329,8 @@ func FindTemplates() (TemplateMultiSet, error) {
 }
 
 func init() {
-	if err := TouchConfig(); err != nil {
+	var err error
+	if err = TouchConfig(); err != nil {
 		fmt.Fprint(os.Stderr, err.Error(), "\n")
 		os.Exit(1)
 	}
@@ -344,8 +346,7 @@ func init() {
 	GonewRoot = root
 
 	Verbose("Searching for templates.\n")
-	ms, err := FindTemplates()
-	if err != nil {
+	if Templates, err = FindTemplates(); err != nil {
 		panic(err)
 	}
 }
@@ -358,7 +359,7 @@ func main() {
 		} else if VERBOSE {
 			fmt.Printf("Generating project %s\n", RequestedProject.Name)
 		}
-		if err := RequestedProject.Create(ms); err != nil {
+		if err := RequestedProject.Create(Templates); err != nil {
 			fmt.Fprint(os.Stderr, err.Error(), "\n")
 			os.Exit(1)
 		}
@@ -369,11 +370,11 @@ func main() {
 			fmt.Printf("Generating library %s (package %s)\n",
 				RequestedFile.Name+".go", RequestedFile.Pkg)
 		}
-		if err := RequestedFile.Create(ms); err != nil {
+		if err := RequestedFile.Create(Templates); err != nil {
 			fmt.Fprint(os.Stderr, err.Error(), "\n")
 			os.Exit(1)
 		}
-		if err := RequestedFile.TestFile().Create(ms); err != nil {
+		if err := RequestedFile.TestFile().Create(Templates); err != nil {
 			fmt.Fprint(os.Stderr, err.Error(), "\n")
 			os.Exit(1)
 		}
