@@ -328,15 +328,6 @@ func FindTemplates() (TemplateMultiSet, error) {
 }
 
 func init() {
-	root, err := FindGonew()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "error finding gonew source directory: %v\n", err)
-		os.Exit(1)
-	}
-	GonewRoot = root
-}
-
-func main() {
 	if err := TouchConfig(); err != nil {
 		fmt.Fprint(os.Stderr, err.Error(), "\n")
 		os.Exit(1)
@@ -344,11 +335,22 @@ func main() {
 	Verbose("Parsing config file.\n")
 	ReadConfig()
 
+	Verbose("Locating source directory.\n")
+	root, err := FindGonew()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error finding gonew source directory: %v\n", err)
+		os.Exit(1)
+	}
+	GonewRoot = root
+
+	Verbose("Searching for templates.\n")
 	ms, err := FindTemplates()
 	if err != nil {
 		panic(err)
 	}
+}
 
+func main() {
 	switch request := parseArgs(); request {
 	case ProjectRequest:
 		if DEBUG {
