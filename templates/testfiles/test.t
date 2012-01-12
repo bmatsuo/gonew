@@ -5,5 +5,5 @@ import (
 )
 
 {{ range .Tests }}
-{{ with printf "Test%s" . }}{{ func . "T *testing.T" }}{{ end }}
+{{ with printf "Test%s" . }}{{ func . "t *testing.T" }}{{ end }}
 {{ end }}
