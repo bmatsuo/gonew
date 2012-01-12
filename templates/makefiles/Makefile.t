@@ -7,7 +7,7 @@
 
 include $(GOROOT)/src/Make.inc
 
-TARG={{.Project.Target}}
+TARG={{if .Project.Host}}.Project.HostRepoString{{else}}.Project.Target{{end}}
 GOFILES=\
 {{ if .Project.IsCommand }}        options.go\
 {{ end }}        {{.Project.MainFilename}}\
