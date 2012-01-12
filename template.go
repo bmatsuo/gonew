@@ -67,16 +67,16 @@ func TemplateGlobPattern(root string) string {
 }
 
 // A linear hierarchy of template (sets).
-type TemplateMultiSet []*template.Template
+type TemplateHierarchy []*template.Template
 
 // Note: this should never ignore an error if the template package is working 'properly'
 func emptyTemplate(name string) *template.Template { t, _ := template.New(name).Parse(""); return t }
 
 // Create a template multiset containing one template.Template for each root
 // diven. Template precedence decreases as roots go from left to right.
-func makeTemplateMultiSet(f template.FuncMap, roots ...string) (ms TemplateMultiSet, err error) {
+func makeTemplateHierarchy(f template.FuncMap, roots ...string) (ms TemplateHierarchy, err error) {
 	var s *template.Template
-	ms = make(TemplateMultiSet, 0, len(roots))
+	ms = make(TemplateHierarchy, 0, len(roots))
 	for i := range roots {
 		s, err = emptyTemplate(roots[i]).Funcs(f).ParseGlob(TemplateGlobPattern(roots[i]))
 		if err != nil {
@@ -92,17 +92,17 @@ func makeTemplateMultiSet(f template.FuncMap, roots ...string) (ms TemplateMulti
 }
 
 // Collect all visible sets of templates visible.
-func FindTemplates() (TemplateMultiSet, error) {
+func FindTemplates() (TemplateHierarchy, error) {
 	troots := make([]string, 0, 2)
 	if alt := AppConfig.AltRoot; alt != "" {
 		troots = append(troots, alt)
 	}
 	troots = append(troots, TemplateRoot)
-	return makeTemplateMultiSet(DefaultFuncMap(), troots...)
+	return makeTemplateHierarchy(DefaultFuncMap(), troots...)
 }
 
 //  Execute the named template from the first set in which such a template exists.
-func (ms TemplateMultiSet) Execute(wr io.Writer, name string, data interface{}) error {
+func (ms TemplateHierarchy) Execute(wr io.Writer, name string, data interface{}) error {
 	for _, s := range ms {
 		if t := s.Lookup(name); t != nil {
 			return t.Execute(wr, data)

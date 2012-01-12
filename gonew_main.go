@@ -23,9 +23,9 @@ import (
 )
 
 var (
-	GonewRoot    string           // The Gonew source directory
-	TemplateRoot string           // The "templates" subdirectory of GonewRoot.
-	Templates    TemplateMultiSet // The (sets of) templates used by Gonew.
+	GonewRoot    string            // The Gonew source directory
+	TemplateRoot string            // The "templates" subdirectory of GonewRoot.
+	Templates    TemplateHierarchy // The (sets of) templates used by Gonew.
 )
 
 func ArgumentError(msg string) {
