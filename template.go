@@ -12,20 +12,17 @@ package main
  *  Description: 
  */
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"io"
 	"os"
-	//"log"
-	"bytes"
-	//"strings"
-	//"io/ioutil"
 	"path/filepath"
-	//"runtime"
 	"text/template"
-	//"github.com/hoisie/mustache.go"
 )
 
+// The file extension used by Gonew template files. Custom templates must all
+// use this extension.
 const (
 	TemplateFileExt = ".t"
 )
