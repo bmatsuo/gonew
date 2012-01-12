@@ -35,13 +35,13 @@ func (wm WriteMode) String() string { return writeModeStrings[wm] }
 //  Write a Context to the file it specifies using a specified WriteMode.
 //  WriteContext uses template named tname in the templates ExecutorSet. The
 //  value desc is only used for printing debugging information.
-func WriteContext(context Context, mode WriteMode, templates ExecutorSet, tname, desc string) error {
+func WriteContext(context Context, mode WriteMode, tname, desc string) error {
 	filename := context.Filename()
 	Verbose(fmt.Sprintf("WriteContext: %s %s %s\n", mode.String(), desc, filename))
 	Debug(1, fmt.Sprintf("Executing template %s", tname))
 
 	// Execute the template.
-	p, errExec := ExecutedSet(templates, tname, context)
+	p, errExec := ExecutedSet(Templates, tname, context)
 	if errExec != nil {
 		return errExec
 	}
@@ -69,8 +69,8 @@ func WriteContext(context Context, mode WriteMode, templates ExecutorSet, tname,
 	return nil
 }
 
-//  Write the file specified in c using the template tname from source ms.
-func CreateFile(c Context, tname string, ms TemplateMultiSet) (err error) {
+//  Write the file specified in c using the template tname.
+func CreateFile(c Context, tname string) (err error) {
 	mainWriteMode := CreateMode
 	debugdesc := c.DebugDescription()
 
@@ -82,7 +82,7 @@ func CreateFile(c Context, tname string, ms TemplateMultiSet) (err error) {
 
 	// Write out a license header for the file.
 	if showLicense && pos < 0 {
-		err = WriteContext(c, CreateMode, ms, license, debugdesc+" license")
+		err = WriteContext(c, CreateMode, license, debugdesc+" license")
 		if err != nil {
 			return
 		}
@@ -90,14 +90,14 @@ func CreateFile(c Context, tname string, ms TemplateMultiSet) (err error) {
 	}
 
 	// Write the main file contents.
-	err = WriteContext(c, mainWriteMode, ms, tname, debugdesc)
+	err = WriteContext(c, mainWriteMode, tname, debugdesc)
 	if err != nil {
 		return
 	}
 
 	// Write out a license footer for the file.
 	if showLicense && pos > 0 {
-		err = WriteContext(c, AppendMode, ms, license, debugdesc+" license")
+		err = WriteContext(c, AppendMode, license, debugdesc+" license")
 		if err != nil {
 			return
 		}

@@ -74,8 +74,8 @@ func (f ProjectFile) Project() Project         { return f.p }
 func (f ProjectFile) LicenseType() LicenseType { return f.p.License }
 func (f ProjectFile) FileType() FileType       { return f.Type }
 
-func (f ProjectFile) Create(ms TemplateMultiSet) (err error) {
-	return CreateFile(f, f.Template, ms)
+func (f ProjectFile) Create() (err error) {
+	return CreateFile(f, f.Template)
 }
 
 type TestFile struct {
@@ -100,8 +100,8 @@ func (t TestFile) FileType() FileType       { return Go }
 func (t TestFile) Tests() []string          { return t.File.Tests() }
 func (t TestFile) Project() Project         { return Project{} }
 func (t TestFile) LicenseType() LicenseType { return t.License }
-func (t TestFile) Create(ms TemplateMultiSet) error {
-	return CreateFile(t, "test.t", ms)
+func (t TestFile) Create() error {
+	return CreateFile(t, "test.t")
 }
 
 func (t TestFile) TemplatePath() []string { return []string{"testfiles", "pkg.t"} }
@@ -126,8 +126,8 @@ func (f File) FileType() FileType       { return Go }
 func (f File) Tests() []string          { return []string{TestName(f.Name)} }
 func (f File) Project() Project         { return Project{} }
 func (f File) LicenseType() LicenseType { return f.License }
-func (f File) Create(ms TemplateMultiSet) error {
-	return CreateFile(f, "go.lib.t", ms)
+func (f File) Create() error {
+	return CreateFile(f, "go.lib.t")
 }
 
 func (f File) TemplatePath() []string { return []string{"gofiles", "lib.t"} }

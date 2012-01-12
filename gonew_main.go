@@ -359,7 +359,7 @@ func main() {
 		} else if VERBOSE {
 			fmt.Printf("Generating project %s\n", RequestedProject.Name)
 		}
-		if err := RequestedProject.Create(Templates); err != nil {
+		if err := RequestedProject.Create(); err != nil {
 			fmt.Fprint(os.Stderr, err.Error(), "\n")
 			os.Exit(1)
 		}
@@ -370,11 +370,11 @@ func main() {
 			fmt.Printf("Generating library %s (package %s)\n",
 				RequestedFile.Name+".go", RequestedFile.Pkg)
 		}
-		if err := RequestedFile.Create(Templates); err != nil {
+		if err := RequestedFile.Create(); err != nil {
 			fmt.Fprint(os.Stderr, err.Error(), "\n")
 			os.Exit(1)
 		}
-		if err := RequestedFile.TestFile().Create(Templates); err != nil {
+		if err := RequestedFile.TestFile().Create(); err != nil {
 			fmt.Fprint(os.Stderr, err.Error(), "\n")
 			os.Exit(1)
 		}

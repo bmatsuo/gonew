@@ -60,7 +60,7 @@ type Project struct {
 	Markdown   bool
 }
 
-func (p Project) Create(ms TemplateMultiSet) error {
+func (p Project) Create() error {
 	//var dict = p.GenerateDictionary()
 
 	// Make the directory and change the working directory.
@@ -80,7 +80,7 @@ func (p Project) Create(ms TemplateMultiSet) error {
 	if err = os.Chdir(p.Name); err != nil {
 		return err
 	}
-	if err = p.CreateFiles(ms); err != nil {
+	if err = p.CreateFiles(); err != nil {
 		return err
 	}
 	if userepo {
@@ -95,10 +95,10 @@ func (p Project) Create(ms TemplateMultiSet) error {
 
 	return os.Chdir("..")
 }
-func (p Project) CreateFiles(ms TemplateMultiSet) error {
+func (p Project) CreateFiles() error {
 	var err error
 	for _, f := range p.Files() {
-		if err = f.Create(ms); err != nil {
+		if err = f.Create(); err != nil {
 			return err
 		}
 	}
