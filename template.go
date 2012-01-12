@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 
 package main
+
 /*
  *  Filename:    template.go
  *  Package:     main
@@ -29,9 +30,11 @@ const (
 	TemplateFileExt = ".t"
 )
 
+// Template errors
 var (
-	NoTemplateError = errors.New("Requested template does not exist")
-	ParseError      = errors.New("Couldn't parse template")
+	ErrNoTemplates = errors.New("No valid templates found")
+	ErrNoExist     = errors.New("Requested template does not exist")
+	ErrParse       = errors.New("Couldn't parse template")
 )
 
 type Executor interface {
@@ -78,7 +81,7 @@ func MakeTemplateMultiSet(f template.FuncMap, roots ...string) (ms TemplateMulti
 		}
 	}
 	if len(ms) == 0 {
-		err = errors.New("No valid templates found")
+		err = ErrNoTemplates
 	}
 	return
 }
@@ -99,7 +102,7 @@ func (ms TemplateMultiSet) Execute(wr io.Writer, name string, data interface{}) 
 			return t.Execute(wr, data)
 		}
 	}
-	return NoTemplateError
+	return ErrNoTemplates
 }
 
 func emptyTemplate(name string) (*template.Template, error) { return template.New(name).Parse("") }
