@@ -35,7 +35,6 @@ var (
 )
 
 // An abstraction of the template.Set type.
-// TODO: Get rid of this now that template.Set is gone.
 type Executor interface {
 	Execute(io.Writer, string, interface{}) error
 }
