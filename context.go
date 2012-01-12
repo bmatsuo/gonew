@@ -33,7 +33,7 @@ var writeModeStrings = []string{
 func (wm WriteMode) String() string { return writeModeStrings[wm] }
 
 //  Write a Context to the file it specifies using a specified WriteMode.
-//  WriteContext uses template named tname in the templates ExecutorSet. The
+//  WriteContext uses template named tname in the templates Executor. The
 //  value desc is only used for printing debugging information.
 func WriteContext(context Context, mode WriteMode, tname, desc string) error {
 	filename := context.Filename()
@@ -41,7 +41,7 @@ func WriteContext(context Context, mode WriteMode, tname, desc string) error {
 	Debug(1, fmt.Sprintf("Executing template %s", tname))
 
 	// Execute the template.
-	p, errExec := HierarchyExecuted(Templates, tname, context)
+	p, errExec := Executed(Templates, tname, context)
 	if errExec != nil {
 		return errExec
 	}

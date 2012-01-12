@@ -34,24 +34,14 @@ var (
 	ErrParse       = errors.New("Couldn't parse template")
 )
 
-// An abstraction of the template.Template type.
-type Executor interface {
-	Execute(io.Writer, interface{}) error
-}
-
-//  Call t.Execute with the given data, writing to a []byte buffer.
-func Executed(t Executor, data interface{}) ([]byte, error) {
-	return collectBytes(func(w io.Writer) error { return t.Execute(w, data) })
-}
-
 // An abstraction of the template.Set type.
 // TODO: Get rid of this now that template.Set is gone.
-type ExecutorHierarchy interface {
+type Executor interface {
 	Execute(io.Writer, string, interface{}) error
 }
 
 //  Call s.Execute with the given name data, writing to a []byte buffer.
-func HierarchyExecuted(s ExecutorHierarchy, name string, data interface{}) ([]byte, error) {
+func Executed(s Executor, name string, data interface{}) ([]byte, error) {
 	return collectBytes(func(w io.Writer) error { return s.Execute(w, name, data) })
 }
 
