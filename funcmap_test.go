@@ -17,12 +17,12 @@ var Fn = DefaultFuncMap()
 func RunTemplateTest(name, tstr string, data interface{}, expectation string, T *testing.T) {
 	t, err := template.New(name).Funcs(Fn).Parse(tstr)
 	if err != nil {
-		T.Fatalf("Template %s did not parse; %s", name, err.String())
+		T.Fatalf("Template %s did not parse; %v", name, err)
 	}
 	b := new(bytes.Buffer)
 	err = t.Execute(b, data)
 	if err != nil {
-		T.Fatalf("Template %s execution error; ", name, err.String())
+		T.Fatalf("Template %s execution error; %v", name, err)
 	}
 	produced := string(b.Bytes())
 	if produced != expectation {

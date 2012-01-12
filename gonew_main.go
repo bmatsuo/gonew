@@ -21,6 +21,8 @@ import (
 	"unicode"
 )
 
+var GonewRoot string
+
 func ArgumentError(msg string) {
 	fmt.Fprintf(os.Stderr, "%s\n", msg)
 	fs := setupFlags()
@@ -141,27 +143,24 @@ func FindGonew() (dir string, err error) {
 			panic("unreachable")
 		}
 	}
-	/*
-		var stat os.FileInfo
-		if !strings.HasSuffix(bindir, "bin") {
-			err = fmt.Errorf("%s not under a GOPATH", bindir)
-		} else if stat, err = filepath.Join(filepath.Dir(bindir), "src"); err != nil {
-			err = fmt.Errorf("%s not under a GOPATH: %s", bindir)
-		} else if !stat.IsDir() {
-			err = fmt.Errorf("%s not under a GOPATH", bindir)
-		} else if stat, err = filepath.Join(filepath.Join(filepath.Dir(bindir), "src", "github.com/bmatsuo/gonew")); err != nil {
-			if err == os.ENOENT {
-				if stat, err = filepath.Join(filepath.Join(filepath.Dir(bindir), "src", "gonew")); err != nil {
-					bin = filepath.Join(filepath.Join(filepath.Dir(bindir), "src", "gonew"))
-				}
-			}
-		} else {
-			bin = filepath.Join(filepath.Join(filepath.Dir(bindir), "src", "github.com/bmatsuo/gonew"))
+	var stat os.FileInfo
+	if filepath.Base(bindir) != "bin" {
+		err = fmt.Errorf("%s not under a GOPATH", bindir)
+	} else if stat, err = os.Stat(filepath.Join(filepath.Dir(bindir), "src")); err != nil {
+		err = fmt.Errorf("%s not under a GOPATH: %s", bindir)
+	} else if !stat.IsDir() {
+		err = fmt.Errorf("%s not under a GOPATH", bindir)
+	} else if stat, err = os.Stat(filepath.Join(filepath.Join(filepath.Dir(bindir), "src", "github.com", "bmatsuo", "gonew"))); err != nil {
+		if stat, err = os.Stat(filepath.Join(filepath.Join(filepath.Dir(bindir), "src", "gonew"))); err == nil {
+			bin = filepath.Join(filepath.Join(filepath.Dir(bindir), "src", "gonew"))
 		}
-	*/
+	} else {
+		bin = filepath.Join(filepath.Join(filepath.Dir(bindir), "src", "github.com", "bmatsuo", "gonew"))
+	}
 	if err != nil {
 		return
 	}
+	dir = filepath.Dir(bin)
 	return
 }
 
@@ -326,6 +325,15 @@ func FindTemplates() (TemplateMultiSet, error) {
 	}
 	troots = append(troots, filepath.Join(GetTemplateRoot()...))
 	return MakeTemplateMultiSet(DefaultFuncMap(), troots...)
+}
+
+func init() {
+	root, err := FindGonew()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error finding gonew source directory: %v\n", err)
+		os.Exit(1)
+	}
+	GonewRoot = root
 }
 
 func main() {
