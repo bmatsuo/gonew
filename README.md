@@ -125,8 +125,9 @@ Hosts
 
 Currently, Github is the only host usable with Gonew.
 
-People can help by [create a new issue][issues] and providing info about
-versioning systems used, repository initialization, and project paths.
+To help, [create a new issue][issues] and provide info about versioning systems
+used by the host (at least the default one), repository initialization, and
+generated import paths.
 
 Templates
 ---------
