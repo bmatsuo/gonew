@@ -68,16 +68,11 @@ func (f ProjectFile) Package() string {
 func (f ProjectFile) Imports() []string        { return f.p.ImportLibs }
 func (f ProjectFile) Description() string      { return f.Desc }
 func (f ProjectFile) DebugDescription() string { return f.DebugDesc }
-func (f ProjectFile) Tests() []string {
-	return []string{TestName(f.p.Target)}
-}
+func (f ProjectFile) Tests() []string          { return []string{TestName(f.p.Target)} }
 func (f ProjectFile) Project() Project         { return f.p }
 func (f ProjectFile) LicenseType() LicenseType { return f.p.License }
 func (f ProjectFile) FileType() FileType       { return f.Type }
-
-func (f ProjectFile) Create() (err error) {
-	return CreateFile(f, f.Template)
-}
+func (f ProjectFile) Create() (err error)      { return CreateFile(f, f.Template) }
 
 type TestFile struct {
 	File
@@ -88,22 +83,16 @@ type TestFile struct {
 	Host    RepoHost
 }
 
-func (t TestFile) Filename() string  { return t.Name + "_test.go" }
-func (t TestFile) Package() string   { return t.Pkg }
-func (t TestFile) Imports() []string { return nil }
-func (t TestFile) Description() string {
-	return fmt.Sprintf("For testing %s", t.File.Filename())
-}
-func (t TestFile) DebugDescription() string {
-	return "test for " + t.File.Filename()
-}
+func (t TestFile) Filename() string         { return t.Name + "_test.go" }
+func (t TestFile) Package() string          { return t.Pkg }
+func (t TestFile) Imports() []string        { return nil }
+func (t TestFile) Description() string      { return fmt.Sprintf("For testing %s", t.File.Filename()) }
+func (t TestFile) DebugDescription() string { return "test for " + t.File.Filename() }
 func (t TestFile) FileType() FileType       { return GoFile }
 func (t TestFile) Tests() []string          { return t.File.Tests() }
 func (t TestFile) Project() Project         { return Project{} }
 func (t TestFile) LicenseType() LicenseType { return t.License }
-func (t TestFile) Create() error {
-	return CreateFile(t, "test.t")
-}
+func (t TestFile) Create() error            { return CreateFile(t, "test.t") }
 
 func (t TestFile) TemplatePath() []string { return []string{"testfiles", "pkg.t"} }
 
@@ -127,9 +116,7 @@ func (f File) FileType() FileType       { return GoFile }
 func (f File) Tests() []string          { return []string{TestName(f.Name)} }
 func (f File) Project() Project         { return Project{} }
 func (f File) LicenseType() LicenseType { return f.License }
-func (f File) Create() error {
-	return CreateFile(f, "go.lib.t")
-}
+func (f File) Create() error            { return CreateFile(f, "go.lib.t") }
 
 func (f File) TemplatePath() []string { return []string{"gofiles", "lib.t"} }
 func (f File) TestFile() TestFile {
