@@ -267,10 +267,10 @@ func (p Project) HostRepoString() string {
 func (p Project) InitializeRepo(add, commit, push bool) error {
 	switch p.Repo {
 	case GitType:
-		git := GitRepo{}
+		git := GitRepository{}
 		git.Initialize(add, commit)
 	case HgType:
-		hg := HgRepo{}
+		hg := HgRepository{}
 		hg.Initialize(add, commit)
 	}
 	switch p.Host {
