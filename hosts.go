@@ -25,7 +25,7 @@ const (
 )
 
 var hoststrings = []string{
-	NilHost: "Nil",
+	NilHost: "no host",
 	GitHubHost:  "GitHub",
 }
 

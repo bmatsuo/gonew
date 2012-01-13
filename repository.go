@@ -22,7 +22,7 @@ const (
 )
 
 var repotypestrings = []string{
-	NilRepoType: "Nil",
+	NilRepoType: "no repository",
 	GitType:     "Git",
 	HgType:      "Mercurial",
 }
