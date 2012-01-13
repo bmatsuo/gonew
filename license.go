@@ -26,15 +26,12 @@ const (
 	// ...
 )
 
-var licstrings = []string{
-	NilLicenseType: "Nil",
-	NewBSD:         "New BSD",
-}
+var licstrings = []string{NilLicenseType: "Nil", NewBSD: "New BSD"}
+var licprefix = []string{NilLicenseType: "", NewBSD: "newbsd"}
 
 func (lt LicenseType) String() string { return licstrings[lt] }
 
-var licprefix = []string{NilLicenseType: "", NewBSD: "newbsd"}
-
+// The prefix that must be present on all template names.
 func (lt LicenseType) TemplatePrefix() string { return fmt.Sprintf("%s.%s", "license", licprefix[lt]) }
 
 // The template of the LICENSE file.
