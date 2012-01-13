@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 
 package main
+
 /*
  *  Filename:    file.go
  *  Package:     main
@@ -11,9 +12,9 @@ package main
  *  Description: 
  */
 import (
+	"fmt"
 	"strings"
 	"unicode"
-	"fmt"
 )
 
 func TestName(filename string) string {
@@ -38,11 +39,11 @@ func TestName(filename string) string {
 type FileType uint
 
 const (
-	Go FileType = iota
-	README
-	Makefile
-	License
-	Other
+	GoFile FileType = iota
+	ReadmeFile
+	MakeFile
+	LicenseFile
+	OtherFile
 )
 
 //  ProjectFile satisfies the Context interface.
@@ -96,7 +97,7 @@ func (t TestFile) Description() string {
 func (t TestFile) DebugDescription() string {
 	return "test for " + t.File.Filename()
 }
-func (t TestFile) FileType() FileType       { return Go }
+func (t TestFile) FileType() FileType       { return GoFile }
 func (t TestFile) Tests() []string          { return t.File.Tests() }
 func (t TestFile) Project() Project         { return Project{} }
 func (t TestFile) LicenseType() LicenseType { return t.License }
@@ -122,7 +123,7 @@ func (f File) Package() string          { return f.Pkg }
 func (f File) Imports() []string        { return f.ImportLibs }
 func (f File) Description() string      { return f.Desc }
 func (f File) DebugDescription() string { return "library" }
-func (f File) FileType() FileType       { return Go }
+func (f File) FileType() FileType       { return GoFile }
 func (f File) Tests() []string          { return []string{TestName(f.Name)} }
 func (f File) Project() Project         { return Project{} }
 func (f File) LicenseType() LicenseType { return f.License }

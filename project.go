@@ -145,7 +145,7 @@ func (p Project) Makefile() ProjectFile {
 	return ProjectFile{
 		Name:      "Makefile",
 		Desc:      fmt.Sprintf("Makefile for %s", p.Name),
-		Type:      Makefile,
+		Type:      MakeFile,
 		Template:  "Makefile.t",
 		DebugDesc: "makefile",
 		p:         p,
@@ -155,7 +155,7 @@ func (p Project) MainFile() ProjectFile {
 	return ProjectFile{
 		Name:      p.MainFilename(),
 		Desc:      fmt.Sprintf("Main source file in %s", p.Name),
-		Type:      Go,
+		Type:      GoFile,
 		Template:  fmt.Sprintf("go.%s.t", p.Type.String()),
 		DebugDesc: "main file",
 		p:         p,
@@ -165,7 +165,7 @@ func (p Project) TestFile() ProjectFile {
 	return ProjectFile{
 		Name:      p.TestFilename(),
 		Desc:      fmt.Sprintf("Main test file for %s", p.Name),
-		Type:      Go,
+		Type:      GoFile,
 		Template:  "test.t",
 		DebugDesc: "main test",
 		p:         p,
@@ -175,7 +175,7 @@ func (p Project) ReadmeFile() ProjectFile {
 	return ProjectFile{
 		Name:      p.ReadmeFilename(),
 		Desc:      fmt.Sprintf("%s is the best program for...", p.Name),
-		Type:      README,
+		Type:      ReadmeFile,
 		Template:  "README.t",
 		DebugDesc: "README",
 		p:         p,
@@ -186,7 +186,7 @@ func (p Project) OptionsFile() ProjectFile {
 	return ProjectFile{
 		Name:      "options.go",
 		Desc:      fmt.Sprintf("Option parsing for %s", p.Name),
-		Type:      Go,
+		Type:      GoFile,
 		Template:  "go.options.t",
 		DebugDesc: "option parse file",
 		p:         p,
@@ -197,7 +197,7 @@ func (p Project) DocFile() ProjectFile {
 	return ProjectFile{
 		Name:      "doc.go",
 		Desc:      fmt.Sprintf("Godoc documentation for %s", p.Name),
-		Type:      Go,
+		Type:      GoFile,
 		Template:  "go.doc.t",
 		DebugDesc: "documentation",
 		p:         p,
@@ -208,7 +208,7 @@ func (p Project) LicenseFile() ProjectFile {
 	return ProjectFile{
 		Name:      "LICENSE",
 		Desc:      fmt.Sprintf("License for using %s", p.Name),
-		Type:      Other,
+		Type:      OtherFile,
 		Template:  p.License.FullTemplateName(),
 		DebugDesc: "license file",
 		p:         p,
@@ -222,7 +222,7 @@ func (p Project) OtherFiles() []ProjectFile {
 		others = append(others, ProjectFile{
 			Name:      ".gitignore",
 			Desc:      "Junk files to ignore",
-			Type:      Other,
+			Type:      OtherFile,
 			Template:  "other.gitignore.t",
 			DebugDesc: "ignore file",
 			p:         p,
@@ -231,7 +231,7 @@ func (p Project) OtherFiles() []ProjectFile {
 		others = append(others, ProjectFile{
 			Name:      ".hgignore",
 			Desc:      "Junk files to ignore",
-			Type:      Other,
+			Type:      OtherFile,
 			Template:  "other.hgignore.t",
 			DebugDesc: "ignore file",
 			p:         p,

@@ -55,11 +55,11 @@ func (lt LicenseType) TemplateName(ftype FileType) string {
 
     t := lt.TemplateNamePrefix()
     switch ftype {
-    case README:
+    case ReadmeFile:
         t += ".readme.t"
-    case Makefile:
+    case MakeFile:
         t += ".makefile.t"
-    case Go:
+    case GoFile:
         t += ".gohead.t"
     }
     return t
@@ -72,13 +72,13 @@ func (lt LicenseType) Position(ftype FileType) (pos int) {
     switch lt {
     case NewBSD:
         switch ftype {
-        case README:
+        case ReadmeFile:
             pos = 1
-        case Makefile:
+        case MakeFile:
             pos = 0
-        case Go:
+        case GoFile:
             pos = -1
-        case Other:
+        case OtherFile:
             pos = 0
         }
     }
