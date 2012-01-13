@@ -111,7 +111,7 @@ func (p Project) Files() []ProjectFile {
 	ps = append(ps, p.MainFile())
 	ps = append(ps, p.TestFile())
 	ps = append(ps, p.ReadmeFile())
-	if p.License != NilLicenseType {
+	if p.License != NilLicense {
 		ps = append(ps, p.LicenseFile())
 	}
 	if p.IsCommand() {

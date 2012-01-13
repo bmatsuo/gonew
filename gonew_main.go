@@ -234,7 +234,7 @@ func parseArgs() Request {
 			ImportLibs: imports,
 			Markdown:   AppConfig.Markdown}
 		produceProject = true
-		licObj         = NilLicenseType
+		licObj         = NilLicense
 		repoObj        = NilRepoType
 		hostObj        = NilRepoHost
 	)
@@ -253,7 +253,7 @@ func parseArgs() Request {
 	case "":
 		break
 	case "newbsd":
-		licObj = NewBSD
+		licObj = NewBSDLicense
 	default:
 		fmt.Fprintf(os.Stderr, "Unknown license %s\n", ptype)
 		os.Exit(1)
@@ -291,7 +291,7 @@ func parseArgs() Request {
 		if user != "" {
 			project.User = user
 		}
-		if licObj != NilLicenseType {
+		if licObj != NilLicense {
 			project.License = licObj
 		}
 		if !usehost {
@@ -313,7 +313,7 @@ func parseArgs() Request {
 		if user != "" {
 			file.User = user
 		}
-		if licObj != NilLicenseType {
+		if licObj != NilLicense {
 			file.License = licObj
 		}
 		if !usehost {

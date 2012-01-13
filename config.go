@@ -35,7 +35,7 @@ type GonewConfig struct {
 }
 
 var AppConfig GonewConfig = GonewConfig{
-	true, "", "", "", "", NilLicenseType, NilRepoType, NilRepoHost, false}
+	true, "", "", "", "", NilLicense, NilRepoType, NilRepoHost, false}
 
 func ReadConfig() error {
 	conf, err := config.ReadDefault(ConfigFilename)
@@ -56,9 +56,9 @@ func ReadConfig() error {
 	license, err = conf.String("general", "license")
 	switch license {
 	case "":
-		AppConfig.License = NilLicenseType
+		AppConfig.License = NilLicense
 	case "newbsd":
-		AppConfig.License = NewBSD
+		AppConfig.License = NewBSDLicense
 	}
 
 	repostr, err = conf.String("general", "repo")

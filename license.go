@@ -18,18 +18,18 @@ import (
 type LicenseType int
 
 const (
-	NilLicenseType LicenseType = iota
-	NewBSD
+	NilLicense LicenseType = iota
+	NewBSDLicense
 	// Apache
 	// GNUGPLv3
 	// GNULGPLv3
 	// ...
 )
 
-var licstrings = []string{NilLicenseType: "no license", NewBSD: "New BSD"}
-var licprefix = []string{NilLicenseType: "", NewBSD: "newbsd"}
+var licstrings = []string{NilLicense: "no license", NewBSDLicense: "New BSD"}
+var licprefix = []string{NilLicense: "", NewBSDLicense: "newbsd"}
 
-// A string describing the license, or "no license" if lt == NilLicenseType.
+// A string describing the license, or "no license" if lt == NilLicense.
 func (lt LicenseType) String() string { return licstrings[lt] }
 
 // The prefix that must be present on all template names.
@@ -37,7 +37,7 @@ func (lt LicenseType) TemplatePrefix() string { return fmt.Sprintf("%s.%s", "lic
 
 // The template of the LICENSE file.
 func (lt LicenseType) Template() (name string) {
-	if lt == NilLicenseType {
+	if lt == NilLicense {
 		return
 	}
 	return lt.TemplatePrefix() + TemplateFileExt
@@ -45,7 +45,7 @@ func (lt LicenseType) Template() (name string) {
 
 // The template to be placed as a file header.
 func (lt LicenseType) HeaderTemlate(typ FileType) (name string) {
-	if lt == NilLicenseType {
+	if lt == NilLicense {
 		return
 	}
 
@@ -60,7 +60,7 @@ func (lt LicenseType) HeaderTemlate(typ FileType) (name string) {
 
 // The template to be placed as a file footer.
 func (lt LicenseType) FooterTemplate(typ FileType) (name string) {
-	if lt == NilLicenseType {
+	if lt == NilLicense {
 		return
 	}
 
@@ -72,7 +72,7 @@ func (lt LicenseType) FooterTemplate(typ FileType) (name string) {
 }
 
 func (lt LicenseType) TemplateName(ftype FileType) string {
-	if lt == NilLicenseType {
+	if lt == NilLicense {
 		return ""
 	}
 
@@ -93,7 +93,7 @@ func (lt LicenseType) TemplateName(ftype FileType) string {
 func (lt LicenseType) Position(ftype FileType) (pos int) {
 	pos = -1
 	switch lt {
-	case NewBSD:
+	case NewBSDLicense:
 		switch ftype {
 		case ReadmeFile:
 			pos = 1
