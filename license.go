@@ -26,9 +26,10 @@ const (
 	// ...
 )
 
-var licstrings = []string{NilLicenseType: "Nil", NewBSD: "New BSD"}
+var licstrings = []string{NilLicenseType: "no license", NewBSD: "New BSD"}
 var licprefix = []string{NilLicenseType: "", NewBSD: "newbsd"}
 
+// A string describing the license, or "no license" if lt == NilLicenseType.
 func (lt LicenseType) String() string { return licstrings[lt] }
 
 // The prefix that must be present on all template names.
