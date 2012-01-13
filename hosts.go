@@ -18,14 +18,14 @@ import (
 type RepoHost int
 
 const (
-	NilRepoHost RepoHost = iota
+	NilHost RepoHost = iota
 	GitHubHost
 	//GoogleCodeHost
 	//...
 )
 
 var hoststrings = []string{
-	NilRepoHost: "Nil",
+	NilHost: "Nil",
 	GitHubHost:  "GitHub",
 }
 

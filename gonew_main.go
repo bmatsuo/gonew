@@ -236,7 +236,7 @@ func parseArgs() Request {
 		produceProject = true
 		licObj         = NilLicense
 		repoObj        = NilRepoType
-		hostObj        = NilRepoHost
+		hostObj        = NilHost
 	)
 	switch ptype {
 	case "cmd":
@@ -295,8 +295,8 @@ func parseArgs() Request {
 			project.License = licObj
 		}
 		if !usehost {
-			project.Host = NilRepoHost
-		} else if hostObj != NilRepoHost {
+			project.Host = NilHost
+		} else if hostObj != NilHost {
 			project.Host = hostObj
 		}
 		if userepo && repoObj != NilRepoType {
@@ -317,8 +317,8 @@ func parseArgs() Request {
 			file.License = licObj
 		}
 		if !usehost {
-			file.Host = NilRepoHost
-		} else if hostObj != NilRepoHost {
+			file.Host = NilHost
+		} else if hostObj != NilHost {
 			file.Host = hostObj
 		}
 		if userepo && repoObj != NilRepoType {

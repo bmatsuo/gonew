@@ -35,7 +35,7 @@ type GonewConfig struct {
 }
 
 var AppConfig GonewConfig = GonewConfig{
-	true, "", "", "", "", NilLicense, NilRepoType, NilRepoHost, false}
+	true, "", "", "", "", NilLicense, NilRepoType, NilHost, false}
 
 func ReadConfig() error {
 	conf, err := config.ReadDefault(ConfigFilename)
@@ -76,14 +76,14 @@ func ReadConfig() error {
 	hoststr, err = conf.String("general", "host")
 	switch hoststr {
 	case "":
-		AppConfig.Host = NilRepoHost
+		AppConfig.Host = NilHost
 	case "github":
 		AppConfig.Host = GitHubHost
 		AppConfig.Repo = GitType
 	//case "googlecode":
 	//...
 	default:
-		AppConfig.Host = NilRepoHost
+		AppConfig.Host = NilHost
 	}
 
 	return nil
