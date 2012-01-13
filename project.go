@@ -209,7 +209,7 @@ func (p Project) LicenseFile() ProjectFile {
 		Name:      "LICENSE",
 		Desc:      fmt.Sprintf("License for using %s", p.Name),
 		Type:      OtherFile,
-		Template:  p.License.FullTemplateName(),
+		Template:  p.License.Template(),
 		DebugDesc: "license file",
 		p:         p,
 	}

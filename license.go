@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 
 package main
+
 /*
  *  Filename:    license.go
  *  Package:     main
@@ -12,41 +13,36 @@ package main
  */
 import (
 	"fmt"
-    "strings"
 )
 
 type LicenseType int
 
 const (
-    NilLicenseType LicenseType = iota
-    NewBSD
-    // Apache
-    // GNUGPLv3
-    // GNULGPLv3
-    // ...
+	NilLicenseType LicenseType = iota
+	NewBSD
+	// Apache
+	// GNUGPLv3
+	// GNULGPLv3
+	// ...
 )
 
 var licstrings = []string{
-    NilLicenseType: "Nil",
-    NewBSD:         "New BSD",
+	NilLicenseType: "Nil",
+	NewBSD:         "New BSD",
 }
+
 func (lt LicenseType) String() string { return licstrings[lt] }
 
-var licprefix = []string{
-    NilLicenseType: "",
-    NewBSD:         "newbsd",
-}
-func (lt LicenseType) TemplateNamePrefix() string {
-    return strings.Join([]string{"license", licprefix[lt]}, ".")
-}
+var licprefix = []string{NilLicenseType: "", NewBSD: "newbsd"}
 
+func (lt LicenseType) TemplatePrefix() string { return fmt.Sprintf("%s.%s", "license", licprefix[lt]) }
 
-func (lt LicenseType) FullTemplateName() string {
-    if lt == NilLicenseType {
-        return ""
-    }
-
-    return lt.TemplateNamePrefix() + TemplateFileExt
+// The template of the LICENSE file.
+func (lt LicenseType) Template() (name string) {
+	if lt == NilLicenseType {
+		return
+	}
+	return lt.TemplatePrefix() + TemplateFileExt
 }
 
 // The template to be placed as a file header.
@@ -57,9 +53,9 @@ func (lt LicenseType) HeaderTemlate(typ FileType) (name string) {
 
 	switch typ {
 	//case MakeFile:
-	//	name = lt.TemplateNamePrefix() + ".makefile.t"
+	//	name = lt.TemplatePrefix() + ".makefile.t"
 	case GoFile:
-		name = fmt.Sprintf("%s.s.%s", lt.TemplateNamePrefix(), "gohead", TemplateFileExt)
+		name = fmt.Sprintf("%s.%s%s", lt.TemplatePrefix(), "gohead", TemplateFileExt)
 	}
 	return
 }
@@ -72,59 +68,44 @@ func (lt LicenseType) FooterTemplate(typ FileType) (name string) {
 
 	switch typ {
 	case ReadmeFile:
-		name = lt.TemplateNamePrefix() + ".readme.t"
-	}
-	return
-}
-
-// The main file template. Generally only produces content for
-// LicenseFile types.
-func (lt LicenseType) Template(typ FileType) (name string) {
-	if lt == NilLicenseType {
-		return
-	}
-
-
-	switch typ {
-	case LicenseFile:
-		name = lt.TemplateNamePrefix() + TemplateFileExt
+		name = fmt.Sprintf("%s.%s%s", lt.TemplatePrefix(), "readme", TemplateFileExt)
 	}
 	return
 }
 
 func (lt LicenseType) TemplateName(ftype FileType) string {
-    if lt == NilLicenseType {
-        return ""
-    }
+	if lt == NilLicenseType {
+		return ""
+	}
 
-    t := lt.TemplateNamePrefix()
-    switch ftype {
-    case ReadmeFile:
-        t += ".readme.t"
-    case MakeFile:
-        t += ".makefile.t"
-    case GoFile:
-        t += ".gohead.t"
-    }
-    return t
+	t := lt.TemplatePrefix()
+	switch ftype {
+	case ReadmeFile:
+		t += ".readme.t"
+	case MakeFile:
+		t += ".makefile.t"
+	case GoFile:
+		t += ".gohead.t"
+	}
+	return t
 }
 
 //  Returns -1 if the license appears at the top of the file, 1 if at the
 //  bottom, and 0 if there should be no license.
 func (lt LicenseType) Position(ftype FileType) (pos int) {
-    pos = -1
-    switch lt {
-    case NewBSD:
-        switch ftype {
-        case ReadmeFile:
-            pos = 1
-        case MakeFile:
-            pos = 0
-        case GoFile:
-            pos = -1
-        case OtherFile:
-            pos = 0
-        }
-    }
-    return
+	pos = -1
+	switch lt {
+	case NewBSD:
+		switch ftype {
+		case ReadmeFile:
+			pos = 1
+		case MakeFile:
+			pos = 0
+		case GoFile:
+			pos = -1
+		case OtherFile:
+			pos = 0
+		}
+	}
+	return
 }
