@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 
 package main
+
 /* 
 *  File: project.go
 *  Author: Bryan Matsuo [bmatsuo@soe.ucsc.edu] 
@@ -10,14 +11,19 @@ package main
  */
 import (
 	"errors"
-	"os"
 	"fmt"
+	"os"
 	//"log"
 )
 
+// Remote host errors.
 var (
-	NoUserNameError        = errors.New("Missing remote repository username.")
-	NoRemoteError          = errors.New("Missing remote repository url")
+	ErrNoUserName = errors.New("Missing host host username.")
+	ErrNoHostURL  = errors.New("Missing host repository url.")
+)
+
+// Default file permissions.
+var (
 	DirPermissions  uint32 = 0755
 	FilePermissions uint32 = 0644
 )
@@ -294,7 +300,9 @@ func (p Project) ReadmeIsMarkdown() bool {
 	}
 	return p.Markdown
 }
+
 //  The target is a command.
 func (p Project) IsCommand() bool { return p.Type == CmdType }
+
 //  The target is an importable package
 func (p Project) IsPackage() bool { return p.Type == PkgType }
