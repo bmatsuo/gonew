@@ -11,6 +11,7 @@ package main
  *  Description: 
  */
 import (
+	"fmt"
     "strings"
 )
 
@@ -46,6 +47,49 @@ func (lt LicenseType) FullTemplateName() string {
     }
 
     return lt.TemplateNamePrefix() + TemplateFileExt
+}
+
+// The template to be placed as a file header.
+func (lt LicenseType) HeaderTemlate(typ FileType) (name string) {
+	if lt == NilLicenseType {
+		return
+	}
+
+	switch typ {
+	//case MakeFile:
+	//	name = lt.TemplateNamePrefix() + ".makefile.t"
+	case GoFile:
+		name = fmt.Sprintf("%s.s.%s", lt.TemplateNamePrefix(), "gohead", TemplateFileExt)
+	}
+	return
+}
+
+// The template to be placed as a file footer.
+func (lt LicenseType) FooterTemplate(typ FileType) (name string) {
+	if lt == NilLicenseType {
+		return
+	}
+
+	switch typ {
+	case ReadmeFile:
+		name = lt.TemplateNamePrefix() + ".readme.t"
+	}
+	return
+}
+
+// The main file template. Generally only produces content for
+// LicenseFile types.
+func (lt LicenseType) Template(typ FileType) (name string) {
+	if lt == NilLicenseType {
+		return
+	}
+
+
+	switch typ {
+	case LicenseFile:
+		name = lt.TemplateNamePrefix() + TemplateFileExt
+	}
+	return
 }
 
 func (lt LicenseType) TemplateName(ftype FileType) string {
