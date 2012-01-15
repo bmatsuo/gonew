@@ -60,7 +60,7 @@ type GitHubRepo struct {
 }
 
 func (github GitHubRepo) Project() Project  { return github.P }
-func (github GitHubRepo) Type() RepoType    { return GitType }
+func (github GitHubRepo) Type() RepoType    { return Git }
 func (github GitHubRepo) Host() RepoHost    { return GitHubHost }
 func (github GitHubRepo) UseMarkdown() bool { return true }
 func (github GitHubRepo) Init(origin string) error {

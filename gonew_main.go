@@ -235,7 +235,7 @@ func parseArgs() Request {
 			Markdown:   AppConfig.Markdown}
 		produceProject = true
 		licObj         = NilLicense
-		repoObj        = NilRepoType
+		repoObj        = NilRepo
 		hostObj        = NilHost
 	)
 	switch ptype {
@@ -263,9 +263,9 @@ func parseArgs() Request {
 		case "":
 			break
 		case "git":
-			repoObj = GitType
+			repoObj = Git
 		case "mercurial":
-			repoObj = HgType
+			repoObj = Hg
 		default:
 			fmt.Fprintf(os.Stderr, "Unknown repository type %s\n", repo)
 			os.Exit(1)
@@ -275,7 +275,7 @@ func parseArgs() Request {
 			break
 		case "github":
 			hostObj = GitHubHost
-			repoObj = GitType
+			repoObj = Git
 		/*
 		   case "googlecode":
 		       hostObj = GoogleCodeType
@@ -299,7 +299,7 @@ func parseArgs() Request {
 		} else if hostObj != NilHost {
 			project.Host = hostObj
 		}
-		if userepo && repoObj != NilRepoType {
+		if userepo && repoObj != NilRepo {
 			project.Repo = repoObj
 		}
 		RequestedProject = project
@@ -321,7 +321,7 @@ func parseArgs() Request {
 		} else if hostObj != NilHost {
 			file.Host = hostObj
 		}
-		if userepo && repoObj != NilRepoType {
+		if userepo && repoObj != NilRepo {
 			file.Repo = repoObj
 		}
 		RequestedFile = file

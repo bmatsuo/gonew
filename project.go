@@ -224,7 +224,7 @@ func (p Project) LicenseFile() ProjectFile {
 func (p Project) OtherFiles() []ProjectFile {
 	var others = make([]ProjectFile, 0, 1)
 	switch p.Repo {
-	case GitType:
+	case Git:
 		others = append(others, ProjectFile{
 			Name:      ".gitignore",
 			Desc:      "Junk files to ignore",
@@ -233,7 +233,7 @@ func (p Project) OtherFiles() []ProjectFile {
 			DebugDesc: "ignore file",
 			p:         p,
 		})
-	case HgType:
+	case Hg:
 		others = append(others, ProjectFile{
 			Name:      ".hgignore",
 			Desc:      "Junk files to ignore",
@@ -266,10 +266,10 @@ func (p Project) HostRepoString() string {
 //  generated.
 func (p Project) InitializeRepo(add, commit, push bool) error {
 	switch p.Repo {
-	case GitType:
+	case Git:
 		git := GitRepository{}
 		git.Initialize(add, commit)
-	case HgType:
+	case Hg:
 		hg := HgRepository{}
 		hg.Initialize(add, commit)
 	}

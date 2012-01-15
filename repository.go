@@ -15,16 +15,16 @@ import "os/exec"
 type RepoType int
 
 const (
-	NilRepoType RepoType = iota
-	GitType
-	HgType
+	NilRepo RepoType = iota
+	Git
+	Hg
 	// ...
 )
 
 var repotypestrings = []string{
-	NilRepoType: "no repository",
-	GitType:     "Git",
-	HgType:      "Mercurial",
+	NilRepo: "no repository",
+	Git:     "Git",
+	Hg:      "Mercurial",
 }
 
 func (rt RepoType) String() string {
@@ -47,7 +47,7 @@ type Repository interface {
 //  A Git Repository object.
 type GitRepository struct{}
 
-func (git GitRepository) Type() RepoType { return GitType }
+func (git GitRepository) Type() RepoType { return Git }
 func (git GitRepository) Initialize(add, commit bool) error {
 	var (
 		initcmd = exec.Command("git", "init")
@@ -92,7 +92,7 @@ func (git GitRepository) Commit(message string) error {
 //  A Mercurial Repository object.
 type HgRepository struct{}
 
-func (hg HgRepository) Type() RepoType { return HgType }
+func (hg HgRepository) Type() RepoType { return Hg }
 func (hg HgRepository) Initialize(add, commit bool) error {
 	var (
 		initcmd = exec.Command("hg", "init")
