@@ -12,6 +12,7 @@ package main
  *  Description: 
  */
 import (
+	"strings"
 	"bytes"
 	"errors"
 	"fmt"
@@ -33,6 +34,26 @@ var (
 	ErrNoExist     = errors.New("Requested template does not exist")
 	ErrParse       = errors.New("Couldn't parse template")
 )
+
+func TemplateType(name string) FileType {
+	i := strings.Index(name, ".")
+	if i < 0 {
+		panic(fmt.Sprintf("bad template %s", name))
+	}
+	switch t := name[:i]; strings.ToLower(t) {
+	case "go":
+		return GoFile
+	case "readme":
+		return ReadmeFile
+	case "makefile":
+		return MakeFile
+	case "license":
+		return LicenseFile
+	case "other":
+		return OtherFile
+	}
+	panic(fmt.Sprintf("unknown template type: %s", name[:i]))
+}
 
 // An abstraction of the template.Set type.
 type Executor interface {
