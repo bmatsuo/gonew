@@ -51,6 +51,8 @@ func TemplateType(name string) (FileType, error) {
 		return LicenseFile, nil
 	case "other":
 		return OtherFile, nil
+	case "test":
+		return GoFile, nil
 	}
 	return 0, fmt.Errorf("unknown template type: %s", name[:i])
 }

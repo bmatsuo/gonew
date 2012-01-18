@@ -12,96 +12,19 @@ package main
 
 import (
 	"fmt"
-	"os"
+	"io/ioutil"
 )
-
-//  A WriteMode determines how a Context should be written.
-type WriteMode uint
-
-//  A Context can either be written by being appended to a file, or creating
-//  the file and truncating the file.
-const (
-	AppendMode WriteMode = iota
-	CreateMode
-)
-
-var writeModeStrings = []string{
-	AppendMode: "Appending",
-	CreateMode: "Creating",
-}
-
-func (wm WriteMode) String() string { return writeModeStrings[wm] }
-
-//  Write a Context to the file it specifies using a specified WriteMode.
-//  WriteContext uses template named tname in the templates Executor. The
-//  value desc is only used for printing debugging information.
-func WriteContext(context Context, mode WriteMode, tname, desc string) error {
-	filename := context.Filename()
-	Verbose(fmt.Sprintf("WriteContext: %s %s %s\n", mode.String(), desc, filename))
-	Debug(1, fmt.Sprintf("Executing template %s", tname))
-
-	// Execute the template.
-	p, errExec := Executed(Templates, tname, context)
-	if errExec != nil {
-		return errExec
-	}
-	Debug(2, fmt.Sprintf("\n%s\n", p))
-
-	// Open the output file.
-	openMode := os.O_WRONLY
-	if mode == AppendMode {
-		openMode |= os.O_APPEND
-	} else {
-		openMode |= os.O_CREATE | os.O_TRUNC
-	}
-	fout, err := os.OpenFile(filename, openMode, FilePermissions)
-	if err != nil {
-		return err
-	}
-
-	// Write out the executed template and close the file
-	if _, err := fout.Write(p); err != nil {
-		return err
-	}
-	if err := fout.Close(); err != nil {
-		return err
-	}
-	return nil
-}
 
 //  Write the file specified in c using the template tname.
 func CreateFile(c Context, tname string) (err error) {
-	mainWriteMode := CreateMode
-	debugdesc := c.DebugDescription()
+	filename := c.Filename()
+	Verbose(fmt.Sprintf("WriteContext: Creating %s %s\n", c.DebugDescription(), filename))
 
-	// Analyze license and file type.
-	ltype := c.LicenseType()
-	license := ltype.TemplateName(c.FileType())
-	pos := ltype.Position(c.FileType())
-	showLicense := pos != 0 && license != ""
-
-	// Write out a license header for the file.
-	if showLicense && pos < 0 {
-		err = WriteContext(c, CreateMode, license, debugdesc+" license")
-		if err != nil {
-			return
-		}
-		mainWriteMode = AppendMode
-	}
-
-	// Write the main file contents.
-	err = WriteContext(c, mainWriteMode, tname, debugdesc)
+	p, err := generateTemplate(Templates, tname, c)
 	if err != nil {
-		return
+		return err
 	}
-
-	// Write out a license footer for the file.
-	if showLicense && pos > 0 {
-		err = WriteContext(c, AppendMode, license, debugdesc+" license")
-		if err != nil {
-			return
-		}
-	}
+	ioutil.WriteFile(filename, p, FilePermissions)
 
 	// TODO: check the new file into git under certain conditions...
 
