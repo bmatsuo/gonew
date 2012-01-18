@@ -12,13 +12,13 @@ package main
  *  Description: 
  */
 import (
-	"strings"
 	"bytes"
 	"errors"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"text/template"
 )
 
@@ -35,24 +35,58 @@ var (
 	ErrParse       = errors.New("Couldn't parse template")
 )
 
-func TemplateType(name string) FileType {
+func TemplateType(name string) (FileType, error) {
 	i := strings.Index(name, ".")
 	if i < 0 {
-		panic(fmt.Sprintf("bad template %s", name))
+		return 0, fmt.Errorf("bad template %s", name)
 	}
 	switch t := name[:i]; strings.ToLower(t) {
 	case "go":
-		return GoFile
+		return GoFile, nil
 	case "readme":
-		return ReadmeFile
+		return ReadmeFile, nil
 	case "makefile":
-		return MakeFile
+		return MakeFile, nil
 	case "license":
-		return LicenseFile
+		return LicenseFile, nil
 	case "other":
-		return OtherFile
+		return OtherFile, nil
 	}
-	panic(fmt.Sprintf("unknown template type: %s", name[:i]))
+	return 0, fmt.Errorf("unknown template type: %s", name[:i])
+}
+
+func executedTemplates(s Executor, names []string, data interface{}) ([]byte, error) {
+	b := new(bytes.Buffer)
+	for _, name := range names {
+		if err := s.Execute(b, name, data); err != nil {
+			return b.Bytes(), err
+		}
+	}
+	return b.Bytes(), nil
+}
+
+type TemplateData interface {
+	LicenseType() LicenseType
+}
+
+func generateTemplate(s Executor, name string, data TemplateData) (p []byte, err error) {
+	lic := data.LicenseType()
+	if lic == NilLicense {
+		return executedTemplates(s, []string{name}, data)
+	}
+	names := make([]string, 0, 1)
+	typ, err := TemplateType(name)
+	if err != nil {
+		return
+	}
+	if head := lic.HeaderTemplate(typ); head != "" {
+		names = append(names, head)
+	}
+	names = append(names, name)
+	if foot := lic.FooterTemplate(typ); foot != "" {
+		names = append(names, foot)
+	}
+	return executedTemplates(s, names, data)
 }
 
 // An abstraction of the template.Set type.

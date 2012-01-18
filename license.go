@@ -44,7 +44,7 @@ func (lt LicenseType) Template() (name string) {
 }
 
 // The template to be placed as a file header.
-func (lt LicenseType) HeaderTemlate(typ FileType) (name string) {
+func (lt LicenseType) HeaderTemplate(typ FileType) (name string) {
 	if lt == NilLicense {
 		return
 	}
