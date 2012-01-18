@@ -7,7 +7,7 @@ About gonew
 ===========
 
 The idea behind gonew is to quickly and easily generate new Go projects
-and repositoriesl. Gonew is inspired by Perl's the `h2xs` application.
+and repositoriesl. Gonew is inspired by Perl's `h2xs` application.
 
 *Note: Gonew has Mercurial support, but no Google Code support. I'm github for
 life (sorry). To help add support more hosts, read the "Help out" section and
