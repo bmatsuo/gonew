@@ -24,8 +24,8 @@ var (
 
 // Default file permissions.
 var (
-	DirPermissions  uint32 = 0755
-	FilePermissions uint32 = 0644
+	DirPermissions  os.FileMode = 0755
+	FilePermissions os.FileMode = 0644
 )
 
 type ProjectType int
