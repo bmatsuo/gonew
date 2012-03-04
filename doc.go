@@ -121,15 +121,22 @@ All templates used by Gonew have acces to a small library of simple
 helper functions. The {{name}} and {{email}} variables have already been
 discussed. Here is list of all available template functions.
 
-    import [PACKAGE [...]]
+    import [PACKAGE ...]
             Produces an import statement which includes the packages
             specified in it arguments. The arguments can be either
             strings or slices of strings.
 
-    func NAME [ARGUMENT [...]]
+    func NAME [ARGUMENT ...]
             Produces the definition of a function with zero return
             values. The arguments should be supplied as identifier-type
             pairs. The name should be a valid go identifier.
+
+	main [EXPRESSION ...]
+			Produces a command's func main() containing the provided
+			list of expressions (one expression per string), one per line.
+
+	init [EXPRESSION ...]
+			Like the function 'main', but produces a func init().
 
     date [FORMAT]
             Produces the current date-time as human readable string when
