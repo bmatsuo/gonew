@@ -28,6 +28,9 @@ Arguments:
 
 Options:
 
+	-test=false
+			Test files will not be produced.
+
     -target=""
             Makefile target. The executable name in case the argument
             TYPE is "cmd", package name in case of "pkg". The default
