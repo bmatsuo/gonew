@@ -91,8 +91,8 @@ func setupFlags() *flag.FlagSet {
 		"license", "", "Project license (e.g. 'newbsd').")
 	fs.BoolVar(&AppConfig.Markdown,
 		"markdown", false, "Markdown-enabled README.")
-	fs.BoolVar(&(AppConfig.MakeTest),
-		"test", AppConfig.MakeTest, "Produce test files with Go files.")
+	fs.BoolVar(&(AppConfig.MakeTests),
+		"test", AppConfig.MakeTests, "Produce test files with Go files.")
 	fs.BoolVar(&(nohost), "nohost", false, "Don't use repository host.")
 	fs.BoolVar(&(norepo), "norepo", false, "Don't start a repository.")
 	fs.BoolVar(&VERBOSE,
@@ -378,9 +378,11 @@ func main() {
 			fmt.Fprint(os.Stderr, err.Error(), "\n")
 			os.Exit(1)
 		}
-		if err := RequestedFile.TestFile().Create(); err != nil {
-			fmt.Fprint(os.Stderr, err.Error(), "\n")
-			os.Exit(1)
+		if AppConfig.MakeTests {
+			if err := RequestedFile.TestFile().Create(); err != nil {
+				fmt.Fprint(os.Stderr, err.Error(), "\n")
+				os.Exit(1)
+			}
 		}
 	}
 }

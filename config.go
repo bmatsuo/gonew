@@ -22,15 +22,15 @@ import (
 var ConfigFilename = filepath.Join(os.Getenv("HOME"), ".gonewrc")
 
 type GonewConfig struct {
-	MakeTest bool
-	Name     string
-	Email    string
-	HostUser string
-	AltRoot  string
-	License  LicenseType
-	Repo     RepoType
-	Host     RepoHost
-	Markdown bool
+	MakeTests bool
+	Name      string
+	Email     string
+	HostUser  string
+	AltRoot   string
+	License   LicenseType
+	Repo      RepoType
+	Host      RepoHost
+	Markdown  bool
 }
 
 var AppConfig GonewConfig = GonewConfig{

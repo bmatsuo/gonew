@@ -115,7 +115,9 @@ func (p Project) Files() []ProjectFile {
 	ps := make([]ProjectFile, 0, 7)
 	ps = append(ps, p.Makefile())
 	ps = append(ps, p.MainFile())
-	ps = append(ps, p.TestFile())
+	if AppConfig.MakeTests {
+		ps = append(ps, p.TestFile())
+	}
 	ps = append(ps, p.ReadmeFile())
 	if p.License != NilLicense {
 		ps = append(ps, p.LicenseFile())
