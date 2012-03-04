@@ -30,9 +30,8 @@ Prerequisites
 
 [Install Go](http://golang.org/doc/install.html) 
 
-Its recommended you set the environment variable [GOROOT][go environment] to be
-the root directory of your local Go repository. This is not required in all
-scenarios.
+It's recommended you set the environment variable [GOROOT][go environment] to be
+the root directory of your local Go repository.
 
 
 Documentation
@@ -40,20 +39,14 @@ Documentation
 Install
 -------
 
-**Option 1 (Goinstall)**
+**Option 1**
 
-    goinstall github.com/bmatsuo/gonew
+    go get github.com/bmatsuo/gonew
 
-**Option 2 (Go)**
+**Option 2**
 
     git clone git@github.com:bmatsuo/gonew.git
     go install gonew
-
-**Option 3 (Gomake)**
-
-    git clone git@github.com:bmatsuo/gonew.git
-    cd gonew
-    gomake install
 
 Examples
 --------
@@ -138,7 +131,7 @@ please [create a new issue][issues].
 Author
 ======
 
-Bryan Matsuo <bmatsuo@soe.ucsc.edu>
+Bryan Matsuo <bryan.matsuo@gmail.com>
 
 Copyright & License
 ===================
