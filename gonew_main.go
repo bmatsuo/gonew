@@ -19,6 +19,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"syscall"
 	"unicode"
 )
 
@@ -141,7 +142,7 @@ func FindGonew() (dir string, err error) {
 		var stat os.FileInfo
 		switch stat, err = os.Stat(rootdir); {
 		case err != nil:
-			if err != os.ENOENT {
+			if err != syscall.ENOENT {
 				return
 			}
 		case stat != nil:

@@ -3,21 +3,20 @@
 // license that can be found in the LICENSE file.
 
 package main
+
 /* 
 *  File: config.go
 *  Author: Bryan Matsuo [bmatsuo@soe.ucsc.edu] 
 *  Created: Sat Jul  2 23:09:50 PDT 2011
  */
 import (
-	"os"
-	"fmt"
-	//"log"
-	"bytes"
 	"bufio"
-	"path/filepath"
-	//"goconf.googlecode.com/hg"    // This does not work for some reason.
-	//"conf"
+	"bytes"
+	"fmt"
 	"github.com/kless/goconfig/config"
+	"os"
+	"path/filepath"
+	"syscall"
 )
 
 var ConfigFilename = filepath.Join(os.Getenv("HOME"), ".gonewrc")
@@ -98,10 +97,10 @@ func TouchConfig() error {
 		patherr = err.(*os.PathError)
 	}
 
-	if patherr != nil && patherr.Err != os.ENOENT {
+	if patherr != nil && patherr.Err != syscall.ENOENT {
 		fmt.Fprintf(os.Stderr, "Error stat'ing ~/.gonewrc. %v", patherr)
 		return patherr
-	} else if stat == nil || (patherr != nil && patherr.Err == os.ENOENT) {
+	} else if stat == nil || (patherr != nil && patherr.Err == syscall.ENOENT) {
 		fmt.Fprintln(os.Stderr, "~/.gonewrc now found. Please initialize it now.")
 		return MakeConfig()
 	} else {
