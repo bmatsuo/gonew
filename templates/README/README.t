@@ -25,9 +25,7 @@ Prerequisites
 Installation
 {{ if .Project.ReadmeIsMarkdown }}-------------{{ end }}
 
-Use goinstall to install {{.Project.Name}}
-
-    goinstall {{.Project.HostRepoString}}
+    go get {{.Project.HostRepoString}}
 
 General Documentation
 {{ if .Project.ReadmeIsMarkdown }}---------------------{{ end }}
