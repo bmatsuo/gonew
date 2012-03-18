@@ -30,9 +30,9 @@ Installation
 General Documentation
 {{ if .Project.ReadmeIsMarkdown }}---------------------{{ end }}
 
-Use godoc to vew the documentation for {{.Project.Name}}
+Use `go doc` to vew the documentation for {{.Project.Name}}
 
-    godoc {{.Project.HostRepoString}}
+    go doc {{.Project.HostRepoString}}
 
 Or alternatively, use a godoc http server
 
