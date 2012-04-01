@@ -1,6 +1,6 @@
 [variables]
 name: Bryan Matsuo
-email: bmatsuo@soe.ucsc.edu
+email: bryan.matsuo [at] gmail.com
 
 [general]
 repo: git
@@ -8,3 +8,4 @@ host: github
 hostuser: bmatsuo
 license: newbsd
 templates: /users/bryan/templates
+markdown: true
