@@ -113,7 +113,6 @@ func (p Project) CreateFiles() error {
 
 func (p Project) Files() []ProjectFile {
 	ps := make([]ProjectFile, 0, 7)
-	ps = append(ps, p.Makefile())
 	ps = append(ps, p.MainFile())
 	if AppConfig.MakeTests {
 		ps = append(ps, p.TestFile())
@@ -149,16 +148,6 @@ func (p Project) ReadmeFilename() string {
 	return "README"
 }
 
-func (p Project) Makefile() ProjectFile {
-	return ProjectFile{
-		Name:      "Makefile",
-		Desc:      fmt.Sprintf("Makefile for %s", p.Name),
-		Type:      MakeFile,
-		Template:  "Makefile.t",
-		DebugDesc: "makefile",
-		p:         p,
-	}
-}
 func (p Project) MainFile() ProjectFile {
 	return ProjectFile{
 		Name:      p.MainFilename(),

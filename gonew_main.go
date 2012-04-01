@@ -86,7 +86,7 @@ func setupFlags() *flag.FlagSet {
 	fs.StringVar(&remote,
 		"remote", "", "Remote repository url to initialize and push to.")
 	fs.StringVar(&target,
-		"target", "", "Makefile target. Default based on NAME.")
+		"target", "", "Project name (executable/package name). Default based on NAME.")
 	fs.StringVar(&license,
 		"license", "", "Project license (e.g. 'newbsd').")
 	fs.BoolVar(&AppConfig.Markdown,

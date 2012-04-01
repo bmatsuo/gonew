@@ -45,8 +45,6 @@ func TemplateType(name string) (FileType, error) {
 		return GoFile, nil
 	case "readme":
 		return ReadmeFile, nil
-	case "makefile":
-		return MakeFile, nil
 	case "license":
 		return LicenseFile, nil
 	case "other":

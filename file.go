@@ -41,7 +41,6 @@ type FileType uint
 const (
 	GoFile FileType = iota
 	ReadmeFile
-	MakeFile
 	LicenseFile
 	OtherFile
 )

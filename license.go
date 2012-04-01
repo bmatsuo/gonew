@@ -50,8 +50,6 @@ func (lt LicenseType) HeaderTemplate(typ FileType) (name string) {
 	}
 
 	switch typ {
-	//case MakeFile:
-	//	name = lt.TemplatePrefix() + ".makefile.t"
 	case GoFile:
 		name = fmt.Sprintf("%s.%s%s", lt.TemplatePrefix(), "gohead", TemplateFileExt)
 	}
@@ -80,8 +78,6 @@ func (lt LicenseType) TemplateName(ftype FileType) string {
 	switch ftype {
 	case ReadmeFile:
 		t += ".readme.t"
-	case MakeFile:
-		t += ".makefile.t"
 	case GoFile:
 		t += ".gohead.t"
 	}
@@ -97,8 +93,6 @@ func (lt LicenseType) Position(ftype FileType) (pos int) {
 		switch ftype {
 		case ReadmeFile:
 			pos = 1
-		case MakeFile:
-			pos = 0
 		case GoFile:
 			pos = -1
 		case OtherFile:

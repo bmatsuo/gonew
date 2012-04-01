@@ -32,9 +32,9 @@ Options:
 			Test files will not be produced.
 
     -target=""
-            Makefile target. The executable name in case the argument
-            TYPE is "cmd", package name in case of "pkg". The default
-            value based on the argument NAME.
+            The executable name in case the argument TYPE is "cmd". The
+			package name when TYPE is "pkg". The default value based on
+			the argument NAME.
 
     -import=""
             Colon ':' separated list of packages to include in source
