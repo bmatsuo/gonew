@@ -1,0 +1,65 @@
+{
+	"User": {
+		"Name": "Bryan Matsuo",
+		"Email": "bryan.matsuo [at] gmail.com"
+	},
+	"License": "newbsd",
+	"VersionControl": {
+		"Type": "git",
+		"Remote": {
+			"Host": "github",
+			"User": "bmatsuo"
+		}
+	},
+	"TemplateRoot": "/Users/bryan/templates",
+	"Projects": {
+		"cmd": {
+			"README": {
+				"Path": "{{projectPrefix}}/README.md",
+				"Type": "readme",
+				"Templates": [
+					"README.md.t"
+				]
+			},
+			"Main": {
+				"Path": "{{projectPrefix}}/{{package}}.go",
+				"Type": "go",
+				"Templates": [
+					"go.cmd.t"
+				]
+			},
+			"Options": {
+				"Path": "{{projectPrefix}}/options.go",
+				"Type": "go",
+				"Templates": [
+					"go.options.t"
+				]
+			}
+		},
+		"pkg": {
+			"README": {
+				"Path": "{{projectPrefix}}/README.md",
+				"Type": "readme",
+				"Templates": [
+					"README.md.t"
+				]
+			},
+			"Main": {
+				"Path": "{{projectPrefix}}/{{package}}.go",
+				"Type": "go",
+				"Templates": [
+					"go.pkg.t"
+				]
+			}
+		},
+		"lib": {
+			"Main": {
+				"Path": "{{lib}}.go",
+				"Type": "go",
+				"Templates": [
+					"go.lib.t"
+				]
+			}
+		}
+	}
+}
