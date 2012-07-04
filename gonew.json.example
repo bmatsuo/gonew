@@ -1,64 +1,149 @@
 {
-	"User": {
-		"Name": "Bryan Matsuo",
-		"Email": "bryan.matsuo [at] gmail.com"
-	},
-	"License": "newbsd",
-	"VersionControl": {
-		"Type": "git",
-		"Remote": {
-			"Host": "github",
-			"User": "bmatsuo"
+	"Environments": {
+		"default": {
+			"User": {
+				"Name": "Bryan Matsuo",
+				"Email": "bryan.matsuo [at] gmail.com"
+			},
+			"License": "newbsd",
+			"VersionControl": {
+				"Type": "git",
+				"Remote": {
+					"Host": "github",
+					"User": "bmatsuo"
+				}
+			}
+		},
+		"work": {
+            "Inherits": [
+                "default"
+            ],
+			"User": {
+				"Email": "bmatsuo [at] janrain.com"
+			},
+			"License": "none",
+			"VersionControl": {
+				"Remote": {
+					"User": "bmatsuo1"
+				}
+			}
 		}
 	},
-	"TemplateRoot": "/Users/bryan/templates",
 	"Projects": {
 		"cmd": {
-			"README": {
-				"Path": "{{projectPrefix}}/README.md",
-				"Type": "readme",
-				"Templates": [
-					"README.md.t"
-				]
+			"Hooks": {
+				"Post": "bash -c \"cd {{.ProjectPrefix}} && git init && git add . && git commit -m '{{.Package}} generated {{Time.Now}} by gonew v2'\""
 			},
-			"Main": {
-				"Path": "{{projectPrefix}}/{{package}}.go",
-				"Type": "go",
-				"Templates": [
-					"go.cmd.t"
-				]
-			},
-			"Options": {
-				"Path": "{{projectPrefix}}/options.go",
-				"Type": "go",
-				"Templates": [
-					"go.options.t"
-				]
+			"Files": {
+				"Git-Ignore": {
+					"Path": "{{.ProjectPrefix}}/.gitignore",
+					"Type": "other",
+					"Templates": [
+						"other.gitignore.t"
+					]
+				},
+				"README": {
+					"Path": "{{.ProjectPrefix}}/README.md",
+					"Type": "readme",
+					"Templates": [
+						"README.md.t"
+					]
+				},
+				"Main": {
+					"Path": "{{.ProjectPrefix}}/{{.Package}}.go",
+					"Type": "go",
+					"Templates": [
+						"go.cmd.t"
+					]
+				},
+				"Options": {
+					"Path": "{{.ProjectPrefix}}/options.go",
+					"Type": "go",
+					"Templates": [
+						"go.options.t"
+					]
+				}
+			}
+		},
+		"cmdtest": {
+			"Inherits": [
+				"cmd"
+			],
+			"Files": {
+				"Test": {
+					"Path": "{{.ProjectPrefix}}/{{.Package}}_test.go",
+					"Type": "go",
+					"Templates": [
+						"test.t"
+					]
+				}
 			}
 		},
 		"pkg": {
-			"README": {
-				"Path": "{{projectPrefix}}/README.md",
-				"Type": "readme",
-				"Templates": [
-					"README.md.t"
-				]
+			"Hooks": {
+				"Post": "bash -c \"cd {{.ProjectPrefix}} && git init && git add . && git commit -m '{{.Package}} generated {{Time.Now}} by gonew v2'\""
 			},
-			"Main": {
-				"Path": "{{projectPrefix}}/{{package}}.go",
-				"Type": "go",
-				"Templates": [
-					"go.pkg.t"
-				]
+			"Files": {
+				"Git-Ignore": {
+					"Path": "{{.ProjectPrefix}}/.gitignore",
+					"Type": "other",
+					"Templates": [
+						"other.gitignore.t"
+					]
+				},
+				"README": {
+					"Path": "{{.ProjectPrefix}}/README.md",
+					"Type": "readme",
+					"Templates": [
+						"README.md.t"
+					]
+				},
+				"Main": {
+					"Path": "{{.ProjectPrefix}}/{{.Package}}.go",
+					"Type": "go",
+					"Templates": [
+						"go.pkg.t"
+					]
+				}
+			}
+		},
+		"pkgtest": {
+			"Inherits": [
+				"pkg"
+			],
+			"Files": {
+				"Test": {
+					"Path": "{{.ProjectPrefix}}/{{.Package}}_test.go",
+					"Type": "go",
+					"Templates": [
+						"test.t"
+					]
+				}
 			}
 		},
 		"lib": {
-			"Main": {
-				"Path": "{{lib}}.go",
-				"Type": "go",
-				"Templates": [
-					"go.lib.t"
-				]
+			"Files": {
+				"Main": {
+					"Path": "{{.Lib}}.go",
+					"Type": "go",
+					"Templates": [
+						"go.lib.t"
+					]
+				}
+			}
+		},
+		"libtest": {
+			"Inherits": [
+				"lib"
+			],
+			"Files": {
+				"Test": {
+					"Path": "{{.Lib}}_test.go",
+					"Type": "go",
+					"Templates": [
+						"test.t"
+					]
+				}
 			}
 		}
 	}
