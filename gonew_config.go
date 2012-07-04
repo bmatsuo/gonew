@@ -12,6 +12,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -34,7 +35,7 @@ type configPropertyError struct {
 func (err configPropertyError) Error() string {
 	prefix := err.Property
 	if err.Index != nil {
-		prefix = fmt.Sprintf("%s[%#v]", err.Index)
+		prefix = fmt.Sprintf("%s[%#v]", prefix, err.Index)
 	}
 	switch err.Err.(type) {
 	case configPropertyError:
@@ -57,6 +58,12 @@ func newConfigInvalidPropertyValueError(property string, value interface{}) erro
 func newConfigInvalidPropertyNameError(property string, name string) error {
 	return configPropertyError{property, nil, fmt.Errorf("invalid name: %q", name)}
 }
+func configPropertyDo(property string, validate func() (interface{}, error)) error {
+	if key, err := validate(); err != nil {
+		return configPropertyError{property, key, err}
+	}
+	return nil
+}
 
 func tryConfigValidate(v interface{}) error {
 	switch v.(type) {
@@ -78,67 +85,97 @@ func configValidateRoot(v interface{}) error {
 	}
 	return nil
 }
-func (config GonewConfig2) Validate() error {
-	if config.Environments == nil {
-		return newConfigMissingPropertyError("Environments")
-	}
-	for k, env := range config.Environments {
-		if strings.IndexFunc(k, unicode.IsSpace) > -1 {
-			return configPropertyError{"Environments", nil,
-				newConfigInvalidPropertyNameError("Environments", k)}
+func (config GonewConfig2) Validate() (err error) {
+	err = configPropertyDo("Environments", func() (key interface{}, err error) {
+		if config.Environments == nil {
+			return nil, fmt.Errorf("missing")
 		}
-		if err := tryConfigValidate(env); err != nil {
-			return configPropertyError{"Environments", k, err}
+		if len(config.Environments) == 0 {
+			return nil, fmt.Errorf("empty")
 		}
-		if env.Inherits != nil {
-			for i, k2 := range env.Inherits {
-				if _, ok := config.Environments[k2]; !ok {
-					return configPropertyError{"Environments", k,
-						configPropertyError{".Inherits", i,
-							fmt.Errorf("missing Environment: %q", k2)}}
+		for k, env := range config.Environments {
+			if strings.IndexFunc(k, unicode.IsSpace) > -1 {
+				key, err = nil, fmt.Errorf("invalid name: %v", k)
+				return
+			}
+			if err = tryConfigValidate(env); err != nil {
+				key = nil
+				return
+			}
+			if env.Inherits != nil {
+				for i, k2 := range env.Inherits {
+					key, err = k, configPropertyDo("Inherits", func() (key interface{}, err error) {
+						if _, ok := config.Environments[k2]; !ok {
+							key, err = i, fmt.Errorf("unknown environment: %q", k2)
+						}
+						return
+					})
+					if err != nil {
+						return
+					}
 				}
 			}
 		}
+		return
+	})
+	if err != nil {
+		return
 	}
 
-	for i, ext := range config.ExternalTemplates {
-		if !strings.HasPrefix(ext, "/") {
-			return configPropertyError{"ExternalTemplates", i,
-				newConfigValidationError("relative path " + ext)}
-		}
-		info, err := os.Stat(ext)
-		if err != nil {
-			return configPropertyError{"ExternalTemplates", i,
-				newConfigValidationError(err.Error())}
-		}
-		if !info.IsDir() {
-			return configPropertyError{"ExternalTemplates", i,
-				newConfigValidationError("not a directory " + ext)}
-		}
-	}
-
-	if config.Projects == nil {
-		return newConfigMissingPropertyError("Projects")
-	}
-	for k, project := range config.Projects {
-		if strings.IndexFunc(k, unicode.IsSpace) > -1 {
-			return configPropertyError{"Projects", nil,
-				newConfigInvalidPropertyNameError("Projects", k)}
-		}
-		if err := tryConfigValidate(project); err != nil {
-			return configPropertyError{"Projects", k, err}
-		}
-		if project.Inherits != nil {
-			for i, k2 := range project.Inherits {
-				if _, ok := config.Projects[k2]; !ok {
-					return configPropertyError{"Projects", k,
-						configPropertyError{".Inherits", i,
-							fmt.Errorf("missing Project: %q", k2)}}
-				}
+	err = configPropertyDo("ExternalTemplates", func() (key interface{}, err error) {
+		for i, ext := range config.ExternalTemplates {
+			if !strings.HasPrefix(ext, "/") {
+				key, err = i, errors.New("relative path " + ext)
+				return
+			}
+			var info os.FileInfo
+			info, err = os.Stat(ext)
+			if err != nil {
+				key = i
+				return
+			} else if !info.IsDir() {
+				key, err = i, errors.New("not a directory " + ext)
 			}
 		}
+		return
+	})
+	if err != nil {
+		return
 	}
-	return nil
+
+	err = configPropertyDo("Projects", func() (key interface{}, err error) {
+		if config.Projects == nil {
+			err = errors.New("missing")
+			return
+		}
+		for k, project := range config.Projects {
+			if strings.IndexFunc(k, unicode.IsSpace) > -1 {
+				key, err = k, errors.New("invalid name: " + k)
+				return
+			}
+			if err = tryConfigValidate(project); err != nil {
+				key = k
+				return
+			}
+			err = configPropertyDo("Inherits", func()(key interface{}, err error) {
+				if project.Inherits != nil {
+					for i, k2 := range project.Inherits {
+						if _, ok := config.Projects[k2]; !ok {
+							key, err = i, fmt.Errorf("missing project: %q", k2)
+							return
+						}
+					}
+				}
+				return
+			})
+			if err != nil {
+				key = k
+				return
+			}
+		}
+		return
+	})
+	return
 }
 
 // Implements json.Marshaler
