@@ -56,11 +56,6 @@ func (config ProjectsConfig) Validate() (err error) {
 	return
 }
 
-type ProjectHooksConfig struct {
-	Pre  string // a hook should be more than a string
-	Post string
-}
-
 type ProjectConfig struct {
 	Inherits []string
 	Hooks    *ProjectHooksConfig
@@ -83,4 +78,9 @@ func (config *ProjectConfig) Validate() (err error) {
 		return
 	})
 	return
+}
+
+type ProjectHooksConfig struct {
+	Pre  string // a hook should be more than a string
+	Post string
 }
