@@ -24,20 +24,38 @@ type configValidator interface {
 }
 
 func newConfigValidationError(msg string) error { return fmt.Errorf(": %s", msg) }
+
+type configPropertyError struct {
+	Property string
+	Index    interface{}
+	Err      error
+}
+
+func (err configPropertyError) Error() string {
+	prefix := err.Property
+	if err.Index != nil {
+		prefix = fmt.Sprintf("%s[%#v]", err.Index)
+	}
+	switch err.Err.(type) {
+	case configPropertyError:
+		return fmt.Sprintf("%s.%v", prefix, err.Err)
+	}
+	return fmt.Sprintf("%s: %v", prefix, err.Err)
+}
 func newConfigPropertyError(property string, err error) error {
-	return fmt.Errorf("%s%v", property, err)
+	return configPropertyError{property, nil, err}
 }
 func newConfigPropertyIndexError(property string, index interface{}, err error) error {
-	return fmt.Errorf("%s[%#v]%v", property, index, err)
+	return configPropertyError{property, index, err}
 }
 func newConfigMissingPropertyError(property string) error {
-	return newConfigValidationError(fmt.Sprintf("missing property: %q", property))
+	return configPropertyError{property, nil, fmt.Errorf("no value")}
 }
-func newConfigInvalidPropertyError(property string, value interface{}) error {
-	return newConfigValidationError(fmt.Sprintf("invalid property: %q (%#v)", property, value))
+func newConfigInvalidPropertyValueError(property string, value interface{}) error {
+	return configPropertyError{property, nil, fmt.Errorf("invalid value: %#v", value)}
 }
-func newConfigInvalidNameError(nameType string, name string) error {
-	return newConfigValidationError(fmt.Sprintf("invalid %s name: %q", nameType, name))
+func newConfigInvalidPropertyNameError(property string, name string) error {
+	return configPropertyError{property, nil, fmt.Errorf("invalid name: %q", name)}
 }
 
 func tryConfigValidate(v interface{}) error {
@@ -54,23 +72,30 @@ type GonewConfig2 struct {
 	Projects          map[string]*ProjectConfig
 }
 
+func configValidateRoot(v interface{}) error {
+	if err := tryConfigValidate(v); err != nil {
+		return configPropertyError{"$", nil, err}
+	}
+	return nil
+}
 func (config GonewConfig2) Validate() error {
 	if config.Environments == nil {
-		return newConfigPropertyError("$", newConfigMissingPropertyError("Environments"))
+		return newConfigMissingPropertyError("Environments")
 	}
 	for k, env := range config.Environments {
 		if strings.IndexFunc(k, unicode.IsSpace) > -1 {
-			return newConfigPropertyError("$.Environments", newConfigInvalidNameError("Environment", k))
+			return configPropertyError{"Environments", nil,
+				newConfigInvalidPropertyNameError("Environments", k)}
 		}
 		if err := tryConfigValidate(env); err != nil {
-			return newConfigPropertyIndexError("$.Environments", k, err)
+			return configPropertyError{"Environments", k, err}
 		}
 		if env.Inherits != nil {
 			for i, k2 := range env.Inherits {
 				if _, ok := config.Environments[k2]; !ok {
-					return newConfigPropertyIndexError("$.Environments", k,
-						newConfigPropertyIndexError(".Inherits", i,
-							fmt.Errorf(": missing Environment: %q", k2)))
+					return configPropertyError{"Environments", k,
+						configPropertyError{".Inherits", i,
+							fmt.Errorf("missing Environment: %q", k2)}}
 				}
 			}
 		}
@@ -78,33 +103,37 @@ func (config GonewConfig2) Validate() error {
 
 	for i, ext := range config.ExternalTemplates {
 		if !strings.HasPrefix(ext, "/") {
-			return newConfigPropertyIndexError("$.ExternalTemplates", i, newConfigValidationError("relative path "+ext))
+			return configPropertyError{"ExternalTemplates", i,
+				newConfigValidationError("relative path " + ext)}
 		}
 		info, err := os.Stat(ext)
 		if err != nil {
-			return newConfigPropertyIndexError("$.ExternalTemplates", i, newConfigValidationError(err.Error()))
+			return configPropertyError{"ExternalTemplates", i,
+				newConfigValidationError(err.Error())}
 		}
 		if !info.IsDir() {
-			return newConfigPropertyIndexError("$.ExternalTemplates", i, newConfigValidationError("not a directory "+ext))
+			return configPropertyError{"ExternalTemplates", i,
+				newConfigValidationError("not a directory " + ext)}
 		}
 	}
 
 	if config.Projects == nil {
-		return newConfigPropertyError("$", newConfigMissingPropertyError("Projects"))
+		return newConfigMissingPropertyError("Projects")
 	}
 	for k, project := range config.Projects {
 		if strings.IndexFunc(k, unicode.IsSpace) > -1 {
-			return newConfigPropertyError("$.Projects", newConfigInvalidNameError("Project", k))
+			return configPropertyError{"Projects", nil,
+				newConfigInvalidPropertyNameError("Projects", k)}
 		}
 		if err := tryConfigValidate(project); err != nil {
-			return newConfigPropertyIndexError("$.Projects", k, err)
+			return configPropertyError{"Projects", k, err}
 		}
 		if project.Inherits != nil {
 			for i, k2 := range project.Inherits {
 				if _, ok := config.Projects[k2]; !ok {
-					return newConfigPropertyIndexError("$.Projects", k,
-						newConfigPropertyIndexError(".Inherits", i,
-							fmt.Errorf("missing Project: %q", k2)))
+					return configPropertyError{"Projects", k,
+						configPropertyError{".Inherits", i,
+							fmt.Errorf("missing Project: %q", k2)}}
 				}
 			}
 		}
@@ -133,7 +162,7 @@ func (config *GonewConfig2) unmarshalJSON(p []byte) error {
 	if err := json.Unmarshal(p, config); err != nil {
 		return err
 	}
-	return tryConfigValidate(config)
+	return configValidateRoot(config)
 }
 func (config *GonewConfig2) UnmarshalFileJSON(filename string) error {
 	f, err := os.Open(filename)

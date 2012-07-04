@@ -39,7 +39,7 @@ func (config EnvironmentConfig) Validate() error {
 	case "none":
 	case "newbsd":
 	default:
-		return newConfigInvalidPropertyError("License", config)
+		return newConfigInvalidPropertyValueError("License", config)
 	}
 	if err := tryConfigValidate(config.VersionControl); err != nil {
 		return fmt.Errorf("VersionControl%v", err)
