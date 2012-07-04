@@ -10,9 +10,22 @@ package main
  *  Description: 
  */
 
-import ()
+import (
+	"go-validate"
+)
 
 type VersionControlConfig struct {
 	Type   string
 	Remote map[string]interface{}
+}
+
+func (config *VersionControlConfig) Validate() (err error) {
+	switch config.Type {
+	case "":
+	case "git":
+	case "hg":
+	default:
+		err = validate.Invalid(config.Type)
+	}
+	return
 }
