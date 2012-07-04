@@ -24,6 +24,12 @@ type configValidator interface {
 }
 
 func newConfigValidationError(msg string) error { return fmt.Errorf(": %s", msg) }
+func newConfigPropertyError(property string, err error) error {
+	return fmt.Errorf("%s%v", property, err)
+}
+func newConfigPropertyIndexError(property string, index interface{}, err error) error {
+	return fmt.Errorf("%s[%#v]%v", property, index, err)
+}
 func newConfigMissingPropertyError(property string) error {
 	return newConfigValidationError(fmt.Sprintf("missing property: %q", property))
 }
@@ -43,44 +49,62 @@ func tryConfigValidate(v interface{}) error {
 }
 
 type GonewConfig2 struct {
-	Environments map[string]*EnvironmentConfig
-	Projects     map[string]*ProjectConfig
+	Environments      map[string]*EnvironmentConfig
+	ExternalTemplates []string
+	Projects          map[string]*ProjectConfig
 }
 
 func (config GonewConfig2) Validate() error {
 	if config.Environments == nil {
-		return fmt.Errorf("$%v", newConfigMissingPropertyError("Environments"))
+		return newConfigPropertyError("$", newConfigMissingPropertyError("Environments"))
 	}
 	for k, env := range config.Environments {
 		if strings.IndexFunc(k, unicode.IsSpace) > -1 {
-			return fmt.Errorf("$.Environments%v", newConfigInvalidNameError("Environment", k))
+			return newConfigPropertyError("$.Environments", newConfigInvalidNameError("Environment", k))
 		}
 		if err := tryConfigValidate(env); err != nil {
-			return fmt.Errorf("$.Environments[%q]%v", k, err)
+			return newConfigPropertyIndexError("$.Environments", k, err)
 		}
 		if env.Inherits != nil {
 			for i, k2 := range env.Inherits {
 				if _, ok := config.Environments[k2]; !ok {
-					return fmt.Errorf("$.Environments[%q].Inherits[%d]", k, i, fmt.Errorf("missing Environment: %q", k2))
+					return newConfigPropertyIndexError("$.Environments", k,
+						newConfigPropertyIndexError(".Inherits", i,
+							fmt.Errorf(": missing Environment: %q", k2)))
 				}
 			}
 		}
 	}
 
+	for i, ext := range config.ExternalTemplates {
+		if !strings.HasPrefix(ext, "/") {
+			return newConfigPropertyIndexError("$.ExternalTemplates", i, newConfigValidationError("relative path "+ext))
+		}
+		info, err := os.Stat(ext)
+		if err != nil {
+			return newConfigPropertyIndexError("$.ExternalTemplates", i, newConfigValidationError(err.Error()))
+		}
+		if !info.IsDir() {
+			return newConfigPropertyIndexError("$.ExternalTemplates", i, newConfigValidationError("not a directory "+ext))
+		}
+	}
+
 	if config.Projects == nil {
-		return fmt.Errorf("$%v", newConfigMissingPropertyError("Projects"))
+		return newConfigPropertyError("$", newConfigMissingPropertyError("Projects"))
 	}
 	for k, project := range config.Projects {
 		if strings.IndexFunc(k, unicode.IsSpace) > -1 {
-			return fmt.Errorf("$.Projects%v", newConfigInvalidNameError("Project", k))
+			return newConfigPropertyError("$.Projects", newConfigInvalidNameError("Project", k))
 		}
 		if err := tryConfigValidate(project); err != nil {
-			return fmt.Errorf("$.Projects[%q]%v", k, err)
+			return newConfigPropertyIndexError("$.Projects", k, err)
 		}
 		if project.Inherits != nil {
 			for i, k2 := range project.Inherits {
 				if _, ok := config.Projects[k2]; !ok {
-					return fmt.Errorf("$.Projects[%q].Inherits[%d]", k, i, fmt.Errorf("missing Project: %q", k2))
+					return newConfigPropertyIndexError("$.Projects", k,
+						newConfigPropertyIndexError(".Inherits", i,
+							fmt.Errorf("missing Project: %q", k2)))
 				}
 			}
 		}

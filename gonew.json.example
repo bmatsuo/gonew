@@ -15,9 +15,9 @@
 			}
 		},
 		"work": {
-            "Inherits": [
-                "default"
-            ],
+			"Inherits": [
+				"default"
+			],
 			"User": {
 				"Email": "bmatsuo [at] janrain.com"
 			},
@@ -29,6 +29,9 @@
 			}
 		}
 	},
+	"ExternalTemplates": [
+
+	],
 	"Projects": {
 		"cmd": {
 			"Hooks": {
