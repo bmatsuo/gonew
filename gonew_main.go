@@ -67,7 +67,7 @@ func Debug(level int, msg string) {
 	}
 }
 
-func Verbose(msg string) {
+func Verbose(msg ...string) {
 	if DEBUG || VERBOSE {
 		fmt.Print(msg)
 	}
@@ -155,20 +155,28 @@ func FindGonew() (dir string, err error) {
 	var stat os.FileInfo
 	if filepath.Base(bindir) != "bin" {
 		err = fmt.Errorf("%s not under a GOPATH", bindir)
-	} else if stat, err = os.Stat(filepath.Join(filepath.Dir(bindir), "src")); err != nil {
-		err = fmt.Errorf("%s not under a GOPATH: %s", bindir)
-	} else if !stat.IsDir() {
-		err = fmt.Errorf("%s not under a GOPATH", bindir)
-	} else if stat, err = os.Stat(filepath.Join(filepath.Join(filepath.Dir(bindir), "src", "github.com", "bmatsuo", "gonew"))); err != nil {
-		if stat, err = os.Stat(filepath.Join(filepath.Join(filepath.Dir(bindir), "src", "gonew"))); err == nil {
-			dir = filepath.Join(filepath.Join(filepath.Dir(bindir), "src", "gonew"))
-		}
-	} else {
-		dir = filepath.Join(filepath.Join(filepath.Dir(bindir), "src", "github.com", "bmatsuo", "gonew"))
-	}
-	if err != nil {
 		return
 	}
+	gosrc := filepath.Join(filepath.Dir(bindir), "src")
+	stat, err = os.Stat(gosrc)
+	if err != nil || !stat.IsDir() {
+		err = fmt.Errorf("%s not exists", gosrc)
+		return
+	}
+
+	dirCandidates := [...]string{
+		filepath.Join(gosrc, "pkg", "github.com", "bmatsuo", "gonew"),
+		filepath.Join(gosrc, "github.com", "bmatsuo", "gonew"),
+		filepath.Join(gosrc, "gonew"),
+	}
+	for _, dir = range dirCandidates {
+		stat, err = os.Stat(dir)
+		if err == nil && stat.IsDir() {
+			Verbose("Found gonew in ", dir, "\n")
+			return
+		}
+	}
+	err = fmt.Errorf("Fail to find gonew")
 	return
 }
 
