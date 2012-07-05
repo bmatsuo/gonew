@@ -17,3 +17,15 @@ type ProjectFileConfig struct {
 	Type      string
 	Templates []string // template names
 }
+
+func (config *ProjectFileConfig) Merge(other *ProjectFileConfig) {
+	if other.Path != "" {
+		config.Path = other.Path
+	}
+	if other.Type != "" {
+		config.Type = other.Type
+		config.Templates = other.Templates
+	} else if other.Templates != nil {
+		config.Templates = other.Templates
+	}
+}

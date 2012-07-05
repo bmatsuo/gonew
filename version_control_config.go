@@ -29,3 +29,29 @@ func (config *VersionControlConfig) Validate() (err error) {
 	}
 	return
 }
+
+func (config *VersionControlConfig) Merge(other *VersionControlConfig) {
+	switch {
+	case other.Type == "":
+		fallthrough
+	case other.Type == config.Type:
+		if other.Remote == nil {
+			return
+		}
+		if config.Remote == nil {
+			config.Remote = make(map[string]interface{}, len(other.Remote))
+		}
+	default:
+		config.Type = other.Type
+		if other.Remote == nil {
+			config.Remote = nil
+			return
+		}
+		config.Remote = make(map[string]interface{}, len(other.Remote))
+	}
+	if other.Remote != nil {
+		for k := range other.Remote {
+			config.Remote[k] = other.Remote[k]
+		}
+	}
+}

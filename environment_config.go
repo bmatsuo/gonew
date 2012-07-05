@@ -11,6 +11,7 @@ package main
  */
 
 import (
+	"errors"
 	"fmt"
 	"go-validate"
 	"strings"
@@ -18,7 +19,18 @@ import (
 )
 
 // A set of uniquely named environments.
-type EnvironmentsConfig map[string]EnvironmentConfig
+type EnvironmentsConfig map[string]*EnvironmentConfig
+
+func (config EnvironmentsConfig) inheritanceGraph() configInheritanceGraph {
+	g := make(configInheritanceGraph, len(config))
+	for v := range config {
+		g[v] = make(map[string]interface{}, len(config[v].Inherits))
+		for _, w := range config[v].Inherits {
+			g[v][w] = true
+		}
+	}
+	return g
+}
 
 // Validates the following for each environment
 //		- The name must not contain spaces
@@ -53,6 +65,18 @@ func (config EnvironmentsConfig) Validate() (err error) {
 			return
 		}
 	}
+	graph := config.inheritanceGraph()
+	for k := range config {
+		err = validate.IndexFunc(k, func() (err error) {
+			if b, _ := graph.HasCycles(k); b {
+				err = errors.New("inheritance cycle")
+			}
+			return
+		})
+		if err != nil {
+			return
+		}
+	}
 	return
 }
 
@@ -60,6 +84,15 @@ func (config EnvironmentsConfig) Validate() (err error) {
 type EnvironmentUserConfig struct {
 	Name  string
 	Email string
+}
+
+func (config *EnvironmentUserConfig) Merge(other *EnvironmentUserConfig) {
+	if other.Name != "" {
+		config.Name = other.Name
+	}
+	if other.Email != "" {
+		config.Email = other.Email
+	}
 }
 
 // Project License configuration.
@@ -86,9 +119,30 @@ type EnvironmentConfig struct {
 	VersionControl *VersionControlConfig
 }
 
+// Merges other into config. Inherits are not merged, as this is used to eliminate inheritence.
+func (config *EnvironmentConfig) Merge(other *EnvironmentConfig) {
+	if other.User != nil {
+		if config.User == nil {
+			config.User = new(EnvironmentUserConfig)
+		}
+		fmt.Println("merging", config.User, "and", other.User)
+		config.User.Merge(other.User)
+		fmt.Println(config.User)
+	}
+	if other.License != "" {
+		config.License = other.License
+	}
+	if other.VersionControl != nil {
+		if config.VersionControl == nil {
+			config.VersionControl = new(VersionControlConfig)
+		}
+		config.VersionControl.Merge(other.VersionControl)
+	}
+}
+
 // Requires a User. Requires License and VersionControl to be valid
 // (see LicenseConfig.Validate, VersionControlConfig.Validate).
-func (config EnvironmentConfig) Validate() (err error) {
+func (config *EnvironmentConfig) Validate() (err error) {
 	err = validate.PropertyFunc("User", func() (err error) {
 		if config.User == nil {
 			err = fmt.Errorf("missing")

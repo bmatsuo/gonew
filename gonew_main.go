@@ -11,6 +11,7 @@ package main
 *  Usage: gonew [options]
  */
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -36,7 +37,7 @@ func ArgumentError(msg string) {
 }
 
 var (
-	usage          = `
+	usage = `
 gonew [options] cmd NAME
 gonew [options] pkg NAME
 gonew [options] lib NAME PKG
@@ -363,7 +364,20 @@ func init() {
 	}
 }
 
+func mainv2() {
+	config := new(GonewConfig2)
+	fmt.Println(config.UnmarshalFileJSON("gonew.json.example"))
+	env, _ := config.Environment("work")
+	envp, _ := json.MarshalIndent(env, "", "\t")
+	fmt.Printf("\"environment\": %s\n", envp)
+	project, _ := config.Project("cmdtest")
+	projectp, _ := json.MarshalIndent(project, "", "\t")
+	fmt.Printf("\"project\": %s\n", projectp)
+}
+
 func main() {
+	mainv2()
+	return
 	switch request := parseArgs(); request {
 	case ProjectRequest:
 		if DEBUG {

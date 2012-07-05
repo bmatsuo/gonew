@@ -20,6 +20,92 @@ import (
 	"strings"
 )
 
+type configInheritanceGraph map[string]map[string]interface{}
+
+type configInheritanceDFSLog map[string]*struct{ start, finish int }
+
+func makeConfigInheritanceDFSLog(g configInheritanceGraph) configInheritanceDFSLog {
+	log := make(configInheritanceDFSLog, len(g))
+	for v := range g {
+		log[v] = new(struct{ start, finish int })
+	}
+	return log
+}
+
+func (g configInheritanceGraph) HasCycles(start string) (bool, []string) {
+	b := false
+	dfs := &configInheritanceDFS{
+		g: g, log: makeConfigInheritanceDFSLog(g),
+		onBack: func(v, w string) error { b = true; return nil },
+	}
+	dfs.visit(1, start)
+	mergeOrder := make([]string, 0, len(dfs.finished))
+	mergeOrder = append(mergeOrder, dfs.finished...)
+	//for i := len(dfs.finished)-1; i >= 0; i-- {
+	//	mergeOrder = append(mergeOrder, dfs.finished[i])
+	//}
+	return b, mergeOrder
+}
+
+func (log configInheritanceDFSLog) State(vertex string) string {
+	switch vlog, ok := log[vertex]; {
+	case !ok:
+		return "invalid vertex"
+	case vlog.start == 0:
+		return "unvisited"
+	case vlog.finish == 0:
+		return "unfinished"
+	}
+	return "finished"
+}
+
+type configInheritanceDFS struct {
+	g        configInheritanceGraph
+	log      configInheritanceDFSLog
+	finished []string
+	started  []string
+	onBack   func(from, to string) error
+	onTree   func(from, to string) error
+	onCross  func(from, to string) error
+	onFinish func(vertex string) error
+	onStart  func(vertex string) error
+}
+
+func (dfs *configInheritanceDFS) visit(t int, v string) int {
+	dfs.log[v].start = t
+	dfs.started = append(dfs.started, v)
+	if dfs.onStart != nil {
+		dfs.onStart(v)
+	}
+
+	for w := range dfs.g[v] {
+		if dfs.log[w].start == 0 {
+			if dfs.onTree != nil {
+				dfs.onTree(v, w)
+			}
+			t = dfs.visit(t+1, w)
+			continue
+		}
+		if dfs.log[w].finish == 0 {
+			if dfs.onBack != nil {
+				dfs.onBack(v, w)
+			}
+			continue
+		}
+		if dfs.onCross != nil {
+			dfs.onCross(v, w)
+		}
+	}
+
+	t++
+	dfs.log[v].finish = t
+	dfs.finished = append(dfs.finished, v)
+	if dfs.onFinish != nil {
+		dfs.onFinish(v)
+	}
+	return t
+}
+
 type ExternalTemplateConfig string
 
 func (config ExternalTemplateConfig) Validate() (err error) {
@@ -39,6 +125,32 @@ type GonewConfig2 struct {
 	Environments      EnvironmentsConfig
 	ExternalTemplates []ExternalTemplateConfig
 	Projects          ProjectsConfig
+}
+
+func (config GonewConfig2) Environment(name string) (*EnvironmentConfig, error) {
+	if _, present := config.Environments[name]; !present {
+		return nil, errors.New("unknown environment: " + name)
+	}
+	_, mergeOrder := config.Environments.inheritanceGraph().HasCycles(name)
+
+	env := new(EnvironmentConfig)
+	for _, key := range mergeOrder {
+		env.Merge(config.Environments[key])
+	}
+	return env, nil
+}
+
+func (config GonewConfig2) Project(name string) (*ProjectConfig, error) {
+	if _, present := config.Projects[name]; !present {
+		return nil, errors.New("unknown project: " + name)
+	}
+	_, mergeOrder := config.Projects.inheritanceGraph().HasCycles(name)
+
+	env := new(ProjectConfig)
+	for _, key := range mergeOrder {
+		env.Merge(config.Projects[key])
+	}
+	return env, nil
 }
 
 func (config GonewConfig2) Validate() (err error) {

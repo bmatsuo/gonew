@@ -11,6 +11,7 @@ package main
  */
 
 import (
+	"errors"
 	"fmt"
 	"go-validate"
 	"strings"
@@ -19,6 +20,17 @@ import (
 
 // A set of uniquely named project types.
 type ProjectsConfig map[string]*ProjectConfig
+
+func (config ProjectsConfig) inheritanceGraph() configInheritanceGraph {
+	g := make(configInheritanceGraph, len(config))
+	for v := range config {
+		g[v] = make(map[string]interface{}, len(config[v].Inherits))
+		for _, w := range config[v].Inherits {
+			g[v][w] = true
+		}
+	}
+	return g
+}
 
 // Validates the following for each project
 //		- The name must not contain spaces
@@ -53,6 +65,18 @@ func (config ProjectsConfig) Validate() (err error) {
 			return
 		}
 	}
+	graph := config.inheritanceGraph()
+	for k := range config {
+		err = validate.IndexFunc(k, func() (err error) {
+			if b, _ := graph.HasCycles(k); b {
+				err = errors.New("inheritance cycle")
+			}
+			return
+		})
+		if err != nil {
+			return
+		}
+	}
 	return
 }
 
@@ -80,7 +104,38 @@ func (config *ProjectConfig) Validate() (err error) {
 	return
 }
 
+func (config *ProjectConfig) Merge(other *ProjectConfig) {
+	if other.Hooks != nil {
+		if config.Hooks == nil {
+			config.Hooks = new(ProjectHooksConfig)
+		}
+		config.Hooks.Merge(other.Hooks)
+	}
+	if other.Files != nil {
+		if config.Files == nil {
+			config.Files = make(map[string]*ProjectFileConfig, len(other.Files))
+		}
+		for name, otherFile := range other.Files {
+			file, present := config.Files[name]
+			if !present {
+				file = new(ProjectFileConfig)
+				config.Files[name] = file
+			}
+			file.Merge(otherFile)
+		}
+	}
+}
+
 type ProjectHooksConfig struct {
 	Pre  string // a hook should be more than a string
 	Post string
+}
+
+func (config *ProjectHooksConfig) Merge(other *ProjectHooksConfig) {
+	if other.Pre != "" {
+		config.Pre = other.Pre
+	}
+	if other.Post != "" {
+		config.Post = other.Post
+	}
 }

@@ -70,7 +70,6 @@
 		},
 		"cmdtest": {
 			"Inherits": [
-				"foo",
 				"cmd"
 			],
 			"Files": {
