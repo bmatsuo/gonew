@@ -160,7 +160,7 @@ func FindGonew() (dir string, err error) {
 	gosrc := filepath.Join(filepath.Dir(bindir), "src")
 	stat, err = os.Stat(gosrc)
 	if err != nil || !stat.IsDir() {
-		err = fmt.Errorf("%s not exists", gosrc)
+		err = fmt.Errorf("%s does not exist", gosrc)
 		return
 	}
 
@@ -172,11 +172,11 @@ func FindGonew() (dir string, err error) {
 	for _, dir = range dirCandidates {
 		stat, err = os.Stat(dir)
 		if err == nil && stat.IsDir() {
-			Verbose("Found gonew in ", dir, "\n")
+			Verbose("Found gonew source directory: ", dir, "\n")
 			return
 		}
 	}
-	err = fmt.Errorf("Fail to find gonew")
+	err = fmt.Errorf("Couldn't find gonew source directory")
 	return
 }
 
