@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package main
+package config
 
 /*  Filename:    gonew_config.go
  *  Author:      Bryan Matsuo <bryan.matsuo [at] gmail.com>
@@ -14,7 +14,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"go-validate"
+	"github.com/bmatsuo/go-validate"
 	"io/ioutil"
 	"os"
 	"strings"

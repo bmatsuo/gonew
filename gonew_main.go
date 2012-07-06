@@ -11,6 +11,7 @@ package main
 *  Usage: gonew [options]
  */
 import (
+	"github.com/bmatsuo/gonew/config"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -365,12 +366,12 @@ func init() {
 }
 
 func mainv2() {
-	config := new(GonewConfig2)
-	fmt.Println(config.UnmarshalFileJSON("gonew.json.example"))
-	env, _ := config.Environment("work")
+	conf := new(config.GonewConfig2)
+	fmt.Println(conf.UnmarshalFileJSON("gonew.json.example"))
+	env, _ := conf.Environment("work")
 	envp, _ := json.MarshalIndent(env, "", "\t")
 	fmt.Printf("\"environment\": %s\n", envp)
-	project, _ := config.Project("cmdtest")
+	project, _ := conf.Project("cmdtest")
 	projectp, _ := json.MarshalIndent(project, "", "\t")
 	fmt.Printf("\"project\": %s\n", projectp)
 }

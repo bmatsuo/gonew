@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package main
+package config
 
 /*  Filename:    version_control_spec.go
  *  Author:      Bryan Matsuo <bryan.matsuo [at] gmail.com>
@@ -11,7 +11,7 @@ package main
  */
 
 import (
-	"go-validate"
+	"github.com/bmatsuo/go-validate"
 )
 
 type VersionControlConfig struct {
