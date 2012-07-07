@@ -125,9 +125,7 @@ func (config *EnvironmentConfig) Merge(other *EnvironmentConfig) {
 		if config.User == nil {
 			config.User = new(EnvironmentUserConfig)
 		}
-		fmt.Println("merging", config.User, "and", other.User)
 		config.User.Merge(other.User)
-		fmt.Println(config.User)
 	}
 	if other.License != "" {
 		config.License = other.License

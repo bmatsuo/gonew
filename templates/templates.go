@@ -19,33 +19,9 @@ import (
 	"text/template"
 )
 
-// Output file creation helper. Creates any missing parent directories. Does not
-// overwrite existing files.
-func FileCreate(path string) (*os.File, error) {
-	if _, err := os.Stat(path); err == nil {
-		return nil, err
-	}
-	if err := os.MkdirAll(filepath.Dir(path), 0644); err != nil { // TODO configurable? smarter?
-		return nil, err
-	}
-	return os.Create(path)
-}
-
-// An artificial wrapper struct to make template rendering less cumbersome.
-type Environment struct{ v interface{} }
-
-// Create an Environment.
-func Env(v interface{}) Environment { return Environment{v} }
-
-// Render named templates to `out`. Halts if a rendering error is encountered.
-func (env Environment) Render(out io.Writer, ts Interface, names ...string) (err error) {
-	for _, name := range names {
-		if err = ts.Render(out, name, env); err != nil {
-			return
-		}
-	}
-	return
-}
+type SourceTemplate struct{ Name, Text string }
+type SourceFile string
+type SourceDirectory string
 
 type ErrSourceType struct{ v interface{} }
 type ErrNoTemplate string
@@ -86,8 +62,14 @@ func (ts *templates) setup() *templates {
 
 func (ts *templates) Source(src interface{}) (err error) {
 	switch src.(type) {
-	case string:
-		dir := src.(string)
+	case SourceTemplate:
+		_, err = ts.setup().t.
+			New(src.(SourceTemplate).Name).
+			Parse(src.(SourceTemplate).Text)
+	case SourceFile:
+		_, err = ts.setup().t.ParseFiles(string(src.(SourceFile)))
+	case SourceDirectory:
+		dir := string(src.(SourceDirectory))
 		if !isDir(dir) {
 			return fmt.Errorf("not a directory: %s", dir)
 		}
@@ -99,8 +81,8 @@ func (ts *templates) Source(src interface{}) (err error) {
 			return nil
 		})
 		_, err = ts.setup().t.ParseFiles(paths...)
-	case template.Template:
-		t := src.(template.Template)
+	case *template.Template:
+		t := src.(*template.Template)
 		_, err = ts.setup().t.AddParseTree(t.Name(), t.Tree)
 	default:
 		err = ErrSourceType{src}

@@ -11,10 +11,13 @@ package main
 *  Usage: gonew [options]
  */
 import (
-	"github.com/bmatsuo/gonew/config"
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/bmatsuo/gonew/config"
+	"github.com/bmatsuo/gonew/funcs"
+	"github.com/bmatsuo/gonew/templates"
+	"github.com/bmatsuo/gonew/project"
 	"log"
 	"os"
 	"os/exec"
@@ -22,6 +25,7 @@ import (
 	"runtime"
 	"strings"
 	"syscall"
+	"text/template"
 	"unicode"
 )
 
@@ -367,13 +371,51 @@ func init() {
 
 func mainv2() {
 	conf := new(config.GonewConfig2)
-	fmt.Println(conf.UnmarshalFileJSON("gonew.json.example"))
+	if err := conf.UnmarshalFileJSON("gonew.json.example"); err != nil {
+		fmt.Println(err)
+	}
 	env, _ := conf.Environment("work")
 	envp, _ := json.MarshalIndent(env, "", "\t")
 	fmt.Printf("\"environment\": %s\n", envp)
-	project, _ := conf.Project("cmdtest")
-	projectp, _ := json.MarshalIndent(project, "", "\t")
+	_project, _ := conf.Project("cmdtest")
+	projectp, _ := json.MarshalIndent(_project, "", "\t")
 	fmt.Printf("\"project\": %s\n", projectp)
+	ts := templates.New(".t")
+	if err := ts.Funcs(funcs.Funcs); err != nil {
+		fmt.Println(err)
+	}
+	ts.Funcs(template.FuncMap{
+		"name":   func() string { return "foo" },
+		"email":  func() string { return "foo@bar.com" },
+		"year":   func() string { return "2012" },
+		"date":   func() string { return "Jul 6, 2012" },
+		"import": func() string { return "import \"foo\"" },
+		"init":   func() string { return "func init() {}" },
+		"main":   func() string { return "func main() {}" },
+		"func":   func() string { return "func foo() {}" },
+	})
+	src := templates.SourceDirectory("/Users/bryan/Go/src/github.com/bmatsuo/gonew/templates")
+	if err := ts.Source(src); err != nil {
+		fmt.Println(err)
+	}
+	for i := len(conf.ExternalTemplates) - 1; i >= 0; i-- {
+		src := templates.SourceDirectory(conf.ExternalTemplates[i])
+		if err := ts.Source(src); err != nil {
+			fmt.Println(err)
+		}
+	}
+	tenv := templates.Env(project.Context(project.New("go-mp3", "mp3", env)))
+	fmt.Println(tenv.RenderTextAsString(ts, "pre_",
+		`{{.X.Time.Now "Mon Jan 2, 2006"}}: Hello, {{.Env.User.Name}}!!! :"D`))
+}
+
+type testenv struct{ Package, ProjectPrefix string }
+
+func (env testenv) Foo() map[string]interface{} {
+	return map[string]interface{}{"bar": "baz", "qux": func(x int) string {return "quux"}}
+}
+func (env testenv) Bar(x string) string {
+	return x
 }
 
 func main() {
