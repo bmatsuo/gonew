@@ -380,7 +380,8 @@ func mainv2() {
 	_project, _ := conf.Project("cmdtest")
 	projectp, _ := json.MarshalIndent(_project, "", "\t")
 	fmt.Printf("\"project\": %s\n", projectp)
-	ts := templates.New(".t")
+
+	ts := templates.New(".t2")
 	if err := ts.Funcs(funcs.Funcs); err != nil {
 		fmt.Println(err)
 	}
@@ -394,6 +395,7 @@ func mainv2() {
 		"main":   func() string { return "func main() {}" },
 		"func":   func() string { return "func foo() {}" },
 	})
+
 	src := templates.SourceDirectory("/Users/bryan/Go/src/github.com/bmatsuo/gonew/templates")
 	if err := ts.Source(src); err != nil {
 		fmt.Println(err)
@@ -404,7 +406,10 @@ func mainv2() {
 			fmt.Println(err)
 		}
 	}
+
 	tenv := templates.Env(project.Context(project.New("go-mp3", "mp3", env)))
+	tenv.Render(os.Stdout, ts, "go.cmd.t2")
+	fmt.Println()
 	fmt.Println(tenv.RenderTextAsString(ts, "pre_",
 		`{{.X.Time.Now "Mon Jan 2, 2006"}}: Hello, {{.Env.User.Name}}!!! :"D`))
 }
