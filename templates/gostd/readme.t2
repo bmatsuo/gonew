@@ -1,0 +1,41 @@
+About {{.Project.Name}}
+
+{{.Description}}
+
+Documentation
+{{ if .Project.IsCommand }}
+Usage
+
+Run {{.Project.Name}} with the command
+
+    {{.Project.Target}} [options]
+{{ end }}
+Prerequisites
+
+Install Go(http://golang.org/install.html).
+
+Installation
+
+    go get {{.Project.HostRepoString}}
+
+General Documentation
+
+Use `go doc` to vew the documentation for {{.Project.Name}}
+
+    go doc {{.Project.HostRepoString}}
+
+Or alternatively, use a godoc http server
+
+    godoc -http=:6060
+
+and view the Godoc URL http://localhost:6060/pkg/{{.Project.HostRepoString}}/.
+
+Author
+
+{{name}} <{{email}}>
+
+Copyright & License
+{{ if .Project.ReadmeIsMarkdown }}==================={{ end }}
+
+Copyright (c) {{year}}, {{name}}.
+All rights reserved.

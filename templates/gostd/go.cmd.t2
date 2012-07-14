@@ -1,0 +1,10 @@
+{{ template "go._package.t2" $ }}
+{{ template "go._head.t2" $ }}
+
+import (
+    "fmt"
+)
+
+func main() {
+    fmt.Println("Hello, {{.Env.User.Name}}!")
+}
