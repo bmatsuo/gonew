@@ -13,7 +13,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"github.com/kless/goconfig/config"
+	"github.com/robfig/config"
 	"os"
 	"path/filepath"
 	"syscall"
