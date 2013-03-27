@@ -23,6 +23,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"reflect"
 	"runtime"
 	"strings"
 	"syscall"
@@ -405,6 +406,9 @@ func mainv2() {
 		"init":   func() string { return "func init() {}" },
 		"main":   func() string { return "func main() {}" },
 		"func":   func() string { return "func foo() {}" },
+		"equal": func(v1, v2 interface{}) bool {
+			return reflect.DeepEqual(reflect.ValueOf(v1), reflect.ValueOf(v2))
+		},
 	})
 
 	src := templates.SourceDirectory("/Users/bryan/Go/src/github.com/bmatsuo/gonew/templates")
