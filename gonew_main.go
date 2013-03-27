@@ -412,14 +412,10 @@ func mainv2() {
 	})
 
 	src := templates.SourceDirectory("/Users/bryan/Go/src/github.com/bmatsuo/gonew/templates")
-	if err := ts.Source(src); err != nil {
-		fmt.Println(err)
-	}
+	checkFatal(ts.Source(src))
 	for i := len(conf.ExternalTemplates) - 1; i >= 0; i-- {
 		src := templates.SourceDirectory(conf.ExternalTemplates[i])
-		if err := ts.Source(src); err != nil {
-			fmt.Println(err)
-		}
+		checkFatal(ts.Source(src))
 	}
 
 	projectName := "go-mp3"
@@ -452,7 +448,10 @@ func mainv2() {
 
 		for _, t := range file.Templates {
 			fmt.Println(t)
-			fileTemplEnv.Render(os.Stdout, ts, t)
+			err := fileTemplEnv.Render(os.Stdout, ts, t)
+			if err != nil {
+				fmt.Println(err)
+			}
 			fmt.Println("--------------------------")
 		}
 	}
