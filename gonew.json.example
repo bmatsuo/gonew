@@ -1,4 +1,5 @@
 {
+	"BaseImportPath": "github.com/bmatsuo",
 	"Environments": {
 		"default": {
 			"User": {

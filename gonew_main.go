@@ -390,6 +390,7 @@ func mainv2() {
 	if err := conf.UnmarshalFileJSON("gonew.json.example"); err != nil {
 		fmt.Println(err)
 	}
+	project.BaseImportPath = conf.BaseImportPath
 
 	ts := templates.New(".t2")
 	if err := ts.Funcs(funcs.Funcs); err != nil {

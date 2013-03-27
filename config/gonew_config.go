@@ -122,6 +122,7 @@ func (config ExternalTemplateConfig) Validate() (err error) {
 }
 
 type GonewConfig2 struct {
+	BaseImportPath	  string
 	Environments      EnvironmentsConfig
 	ExternalTemplates []ExternalTemplateConfig
 	Projects          ProjectsConfig

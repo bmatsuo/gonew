@@ -11,9 +11,20 @@ package project
  */
 
 import (
+	"path"
+
 	"github.com/bmatsuo/gonew/config"
 	"github.com/bmatsuo/gonew/extension"
 )
+
+var BaseImportPath string
+
+func importPath(pkg string) string {
+	if BaseImportPath == "" || pkg == "" {
+		return ""
+	}
+	return path.Join(BaseImportPath, pkg)
+}
 
 func Context(filename, filetype string, p Interface) interface{} {
 	return map[string]interface{}{
@@ -23,14 +34,17 @@ func Context(filename, filetype string, p Interface) interface{} {
 		},
 		"Prefix":  p.Prefix(),
 		"Package": p.Package(),
+		"Project": p,
 		"Env":     p.Env(),
 		"X":       extension.Extensions,
 	}
 }
 
 type Interface interface {
+	Name() string
 	Prefix() string
 	Package() string
+	Import() string
 	Env() *config.EnvironmentConfig
 }
 
@@ -44,6 +58,8 @@ type project struct {
 	env  *config.EnvironmentConfig
 }
 
+func (p *project) Name() string                   { return p.name }
 func (p *project) Prefix() string                 { return "./" + p.name } // XXX could be smarter
 func (p *project) Package() string                { return p.pkg }
+func (p *project) Import() string                 { return importPath(p.Package()) }
 func (p *project) Env() *config.EnvironmentConfig { return p.env }
