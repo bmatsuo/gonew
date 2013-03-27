@@ -39,31 +39,31 @@
 			},
 			"Files": {
 				"Git-Ignore": {
-					"Path": "{{.ProjectPrefix}}/.gitignore",
+					"Path": ".gitignore",
 					"Type": "other",
 					"Templates": [
-						"other.gitignore.t"
+						"other.gitignore.t2"
 					]
 				},
 				"README": {
-					"Path": "{{.ProjectPrefix}}/README.md",
+					"Path": "README.md",
 					"Type": "readme",
 					"Templates": [
-						"README.md.t"
+						"README.md.t2"
 					]
 				},
 				"Main": {
-					"Path": "{{.ProjectPrefix}}/{{.Package}}.go",
+					"Path": "{{.Package}}.go",
 					"Type": "go",
 					"Templates": [
-						"go.cmd.t"
+						"go.cmd.t2"
 					]
 				},
 				"Options": {
-					"Path": "{{.ProjectPrefix}}/options.go",
+					"Path": "options.go",
 					"Type": "go",
 					"Templates": [
-						"go.options.t"
+						"go.options.t2"
 					]
 				}
 			}
@@ -74,10 +74,10 @@
 			],
 			"Files": {
 				"Test": {
-					"Path": "{{.ProjectPrefix}}/{{.Package}}_test.go",
+					"Path": "{{.Package}}_test.go",
 					"Type": "go",
 					"Templates": [
-						"test.t"
+						"test.t2"
 					]
 				}
 			}
@@ -88,24 +88,24 @@
 			},
 			"Files": {
 				"Git-Ignore": {
-					"Path": "{{.ProjectPrefix}}/.gitignore",
+					"Path": ".gitignore",
 					"Type": "other",
 					"Templates": [
-						"other.gitignore.t"
+						"other.gitignore.t2"
 					]
 				},
 				"README": {
-					"Path": "{{.ProjectPrefix}}/README.md",
+					"Path": "README.md",
 					"Type": "readme",
 					"Templates": [
-						"README.md.t"
+						"README.md.t2"
 					]
 				},
 				"Main": {
-					"Path": "{{.ProjectPrefix}}/{{.Package}}.go",
+					"Path": "{{.Package}}.go",
 					"Type": "go",
 					"Templates": [
-						"go.pkg.t"
+						"go.pkg.t2"
 					]
 				}
 			}
@@ -116,10 +116,10 @@
 			],
 			"Files": {
 				"Test": {
-					"Path": "{{.ProjectPrefix}}/{{.Package}}_test.go",
+					"Path": "{{.Package}}_test.go",
 					"Type": "go",
 					"Templates": [
-						"test.t"
+						"test.t2"
 					]
 				}
 			}
@@ -130,7 +130,7 @@
 					"Path": "{{.Lib}}.go",
 					"Type": "go",
 					"Templates": [
-						"go.lib.t"
+						"go.lib.t2"
 					]
 				}
 			}
@@ -144,7 +144,7 @@
 					"Path": "{{.Lib}}_test.go",
 					"Type": "go",
 					"Templates": [
-						"test.t"
+						"test.t2"
 					]
 				}
 			}
