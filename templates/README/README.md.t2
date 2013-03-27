@@ -1,0 +1,48 @@
+[install go]: http://golang.org/install.html "Install Go"
+[gopkgdoc]: http://go.pkgdoc.org/{{.Project.Import}}/ "GoPkgDoc"
+
+About
+=============
+
+{{.Description}}
+
+Documentation
+=============
+{{ if .Project.IsCommand }}
+Usage
+-----
+
+    {{.Project.Target}} [options]
+
+Options
+-------
+{{ end }}
+Prerequisites
+-------------
+
+[Install Go][].
+
+Installation
+-------------
+
+    go get {{.Project.HostRepoString}}
+
+General Documentation
+---------------------
+
+Use `go doc` to vew the documentation for {{.Project.Name}}
+
+    go doc {{.Project.Package}}{{/* FIXME */}}
+
+Or alternatively, check out [GoPkgDoc][]
+
+Author
+======
+
+{{name}} &lt;{{email}}&gt;
+
+Copyright & License
+===================
+
+Copyright (c) {{year}}, {{name}}.
+All rights reserved.
