@@ -11,13 +11,14 @@ package main
 *  Usage: gonew [options]
  */
 import (
+	"github.com/bmatsuo/gonew/config"
+	"github.com/bmatsuo/gonew/funcs"
+	"github.com/bmatsuo/gonew/project"
+	"github.com/bmatsuo/gonew/templates"
+
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/bmatsuo/gonew/config"
-	"github.com/bmatsuo/gonew/funcs"
-	"github.com/bmatsuo/gonew/templates"
-	"github.com/bmatsuo/gonew/project"
 	"log"
 	"os"
 	"os/exec"
@@ -369,17 +370,26 @@ func init() {
 	}
 }
 
+func checkFatal(err error) {
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+}
+
+func logJson(v ...interface{}) {
+	w := make([]interface{}, 0, len(v))
+	w = append(w, v[:len(v)-1]...)
+	p, _ := json.MarshalIndent(v[len(v)-1], " ", "\t")
+	w = append(w, string(p))
+	fmt.Println(w...)
+}
+
 func mainv2() {
 	conf := new(config.GonewConfig2)
 	if err := conf.UnmarshalFileJSON("gonew.json.example"); err != nil {
 		fmt.Println(err)
 	}
-	env, _ := conf.Environment("work")
-	envp, _ := json.MarshalIndent(env, "", "\t")
-	fmt.Printf("\"environment\": %s\n", envp)
-	_project, _ := conf.Project("cmdtest")
-	projectp, _ := json.MarshalIndent(_project, "", "\t")
-	fmt.Printf("\"project\": %s\n", projectp)
 
 	ts := templates.New(".t2")
 	if err := ts.Funcs(funcs.Funcs); err != nil {
@@ -407,20 +417,40 @@ func mainv2() {
 		}
 	}
 
-	tenv := templates.Env(project.Context(project.New("go-mp3", "mp3", env)))
-	tenv.Render(os.Stdout, ts, "go.cmd.t2")
-	fmt.Println()
-	fmt.Println(tenv.RenderTextAsString(ts, "pre_",
-		`{{.X.Time.Now "Mon Jan 2, 2006"}}: Hello, {{.Env.User.Name}}!!! :"D`))
-}
+	projectName := "go-mp3"
+	packageName := "mp3"
 
-type testenv struct{ Package, ProjectPrefix string }
+	env, err := conf.Environment("work")
+	checkFatal(err)
+	logJson("work:", env)
 
-func (env testenv) Foo() map[string]interface{} {
-	return map[string]interface{}{"bar": "baz", "qux": func(x int) string {return "quux"}}
-}
-func (env testenv) Bar(x string) string {
-	return x
+	proj := project.New(projectName, packageName, env)
+	projContext := project.Context("", "", proj)
+	projTemplEnv := templates.Env(projContext)
+
+	projectConfig, err := conf.Project("cmdtest")
+	checkFatal(err)
+	logJson("cmdtest:", projectConfig)
+
+	for name, file := range projectConfig.Files {
+		fmt.Println(name, file)
+		fmt.Println()
+
+		_relpath, err := projTemplEnv.RenderTextAsString(ts, "pre_", file.Path)
+		checkFatal(err)
+		relpath := string(_relpath)
+		filename := filepath.Base(relpath)
+		filetype := file.Type
+
+		fileContext := project.Context(filename, filetype, proj)
+		fileTemplEnv := templates.Env(fileContext)
+
+		for _, t := range file.Templates {
+			fmt.Println(t)
+			fileTemplEnv.Render(os.Stdout, ts, t)
+			fmt.Println("--------------------------")
+		}
+	}
 }
 
 func main() {
