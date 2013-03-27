@@ -5,5 +5,5 @@ _cgo_export.h
 _testmain.go
 _test
 _obj
-{{ if .Project.IsCommand }}bin
-{{.Project.Target}}{{ end }}
+{{ if equal .Project.Package "main" }}bin
+{{.Project.Name}}{{ end }}

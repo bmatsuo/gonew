@@ -8,11 +8,11 @@ About
 
 Documentation
 =============
-{{ if .Project.IsCommand }}
+{{ if equal .Project.Package "main" }}
 Usage
 -----
 
-    {{.Project.Target}} [options]
+    {{.Project.Name}} [options]
 
 Options
 -------
@@ -25,14 +25,14 @@ Prerequisites
 Installation
 -------------
 
-    go get {{.Project.HostRepoString}}
+    go get {{.Project.Import}}
 
 General Documentation
 ---------------------
 
 Use `go doc` to vew the documentation for {{.Project.Name}}
 
-    go doc {{.Project.Package}}{{/* FIXME */}}
+    go doc {{.Project.Import}}
 
 Or alternatively, check out [GoPkgDoc][]
 
