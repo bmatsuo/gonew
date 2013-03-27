@@ -15,12 +15,16 @@ import (
 	"github.com/bmatsuo/gonew/extension"
 )
 
-func Context(p Interface) interface{} {
+func Context(filename, filetype string, p Interface) interface{} {
 	return map[string]interface{}{
-		"Prefix": p.Prefix(),
+		"File": map[string]interface{}{
+			"Name": filename,
+			"Type": filetype,
+		},
+		"Prefix":  p.Prefix(),
 		"Package": p.Package(),
-		"Env": p.Env(),
-		"X": extension.Extensions,
+		"Env":     p.Env(),
+		"X":       extension.Extensions,
 	}
 }
 
@@ -40,6 +44,6 @@ type project struct {
 	env  *config.EnvironmentConfig
 }
 
-func (p *project) Prefix() string         { return "./" + p.name } // XXX could be smarter
-func (p *project) Package() string        { return p.pkg }
+func (p *project) Prefix() string                 { return "./" + p.name } // XXX could be smarter
+func (p *project) Package() string                { return p.pkg }
 func (p *project) Env() *config.EnvironmentConfig { return p.env }
