@@ -61,7 +61,7 @@ provided for easy pick up. Install the configuration in ~/.config/gonew.json
 and customize with your favorite text editor.
 
     mkdir -p ~/.config
-    curl https://github.com/bmatsuo/gonew/blob/v2/gonew.json.example > ~/.config/gonew.json
+    curl https://raw.github.com/bmatsuo/gonew/v2/gonew.json.example > ~/.config/gonew.json
     vim ~/gonew.json
 
 Checkout [the config package][] for configiration documentation.
