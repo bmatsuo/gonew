@@ -2,14 +2,15 @@
 [go environment]: http://golang.org/doc/install.html#environment "Go environment"
 [issues]: https://github.com/bmatsuo/gonew/issues "Github issues"
 [the config package]: https://github.com/bmatsuo/gonew/tree/master/config#readme "the config package"
-[the templates package]: https://github.com/bmatsuo/gonew/tree/master/templates "The Templates Package directory"
 
 Gonew v2
 ========
 
 This is gonew v2. It improves on gonew classic by providing a more flexible
-configuration and a vastly simpler code base. Due to the extreme changes, users
-of gonew classic should read the update guide at the end of this README.
+configuration and a vastly simpler code base. Users of Gonew classic will need
+to translate their existing configurations into the new JSON configuration.
+Read the Configuration section for more information about setting up a new
+Gonew config.
 
 About gonew
 ===========
@@ -55,7 +56,15 @@ To see command line options, run gonew with the -h flag
 Configuration
 -------------
 
-Checkout [the Config Package directory][] for configiration documentation.
+Gonew uses a JSON configuration file. There is an example Gonew configuration
+provided for easy pick up. Install the configuration in ~/.config/gonew.json
+and customize with your favorite text editor.
+
+    mkdir -p ~/.config
+    curl https://github.com/bmatsuo/gonew/blob/v2/gonew.json.example > ~/.config/gonew.json
+    vim ~/gonew.json
+
+Checkout [the config package][] for configiration documentation.
 
 Help out
 ========
