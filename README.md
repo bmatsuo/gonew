@@ -47,6 +47,13 @@ Install
 
     git clone git@github.com:bmatsuo/gonew.git
     go install gonew
+    
+**Option 3 using GVM**
+
+    gvm install go1
+    gvm use go1 
+    go get github.com/bmatsuo/gonew
+    go build -o .bin/gonew github.com/bmatsuo/gonew
 
 Examples
 --------
