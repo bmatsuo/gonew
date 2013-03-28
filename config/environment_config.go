@@ -113,6 +113,7 @@ func (config LicenseConfig) Validate() (err error) {
 
 // Specifies the environment for template generation.
 type EnvironmentConfig struct {
+	BaseImportPath string
 	Inherits       []string
 	User           *EnvironmentUserConfig
 	License        LicenseConfig

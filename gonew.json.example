@@ -1,7 +1,7 @@
 {
-	"BaseImportPath": "github.com/bmatsuo",
 	"Environments": {
 		"default": {
+			"BaseImportPath": "github.com/bmatsuo",
 			"User": {
 				"Name": "Bryan Matsuo",
 				"Email": "bryan.matsuo [at] gmail.com"
@@ -16,6 +16,7 @@
 			}
 		},
 		"work": {
+			"BaseImportPath": "github.com/bmatsuo1",
 			"Inherits": [
 				"default"
 			],

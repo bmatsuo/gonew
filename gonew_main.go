@@ -391,7 +391,6 @@ func mainv2() {
 	if err := conf.UnmarshalFileJSON("gonew.json.example"); err != nil {
 		fmt.Println(err)
 	}
-	project.BaseImportPath = conf.BaseImportPath
 
 	ts := templates.New(".t2")
 	if err := ts.Funcs(funcs.Funcs); err != nil {
@@ -424,6 +423,7 @@ func mainv2() {
 	env, err := conf.Environment("work")
 	checkFatal(err)
 	logJson("work:", env)
+	project.BaseImportPath = env.BaseImportPath
 
 	proj := project.New(projectName, packageName, env)
 	projContext := project.Context("", "", proj)
