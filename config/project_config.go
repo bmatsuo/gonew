@@ -127,15 +127,22 @@ func (config *ProjectConfig) Merge(other *ProjectConfig) {
 }
 
 type ProjectHooksConfig struct {
-	Pre  string // a hook should be more than a string
-	Post string
+	Pre, Post []*HookConfig
 }
 
 func (config *ProjectHooksConfig) Merge(other *ProjectHooksConfig) {
-	if other.Pre != "" {
-		config.Pre = other.Pre
+	if other.Pre != nil {
+		config.Pre = append(other.Pre, config.Pre...)
 	}
-	if other.Post != "" {
-		config.Post = other.Post
+	if other.Post != nil {
+		config.Post = append(other.Post, config.Post...)
 	}
+}
+
+type HookConfig struct {
+	Cwd      string
+	Commands []string
+}
+
+func (config *HookConfig) Merge(other *ProjectHooksConfig) {
 }

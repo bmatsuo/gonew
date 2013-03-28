@@ -386,6 +386,19 @@ func logJson(v ...interface{}) {
 	fmt.Println(w...)
 }
 
+func executeHooks(ts templates.Interface, tenv templates.Environment, hooks ...*config.HookConfig) {
+	for _, hook := range hooks {
+		cwd, err := tenv.RenderTextAsString(ts, "cwd_", hook.Cwd)
+		checkFatal(err)
+		fmt.Println("cd", cwd)
+		for _, _cmd := range hook.Commands {
+			cmd, err := tenv.RenderTextAsString(ts, "cmd_", _cmd)
+			checkFatal(err)
+			fmt.Println("bash", "-c", cmd)
+		}
+	}
+}
+
 func mainv2() {
 	conf := new(config.GonewConfig2)
 	if err := conf.UnmarshalFileJSON("gonew.json.example"); err != nil {
@@ -433,6 +446,11 @@ func mainv2() {
 	checkFatal(err)
 	logJson("cmdtest:", projectConfig)
 
+	if projConfig.Hooks != nil {
+		fmt.Println("PRE")
+		executeHooks(ts, projTemplEnv, projConfig.Hooks.Pre...)
+	}
+
 	for name, file := range projectConfig.Files {
 		fmt.Println(name, file)
 		fmt.Println()
@@ -454,6 +472,11 @@ func mainv2() {
 			}
 			fmt.Println("--------------------------")
 		}
+	}
+
+	if projConfig.Hooks != nil {
+		fmt.Println("POST")
+		executeHooks(ts, projTemplEnv, projConfig.Hooks.Post...)
 	}
 }
 

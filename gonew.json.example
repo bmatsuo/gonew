@@ -35,10 +35,24 @@
 
 	],
 	"Projects": {
-		"cmd": {
+		"git": {
 			"Hooks": {
-				"Post": "bash -c \"cd {{.ProjectPrefix}} && git init && git add . && git commit -m '{{.Package}} generated {{Time.Now}} by gonew v2'\""
-			},
+				"Post": [
+					{
+						"Cwd": "{{.Project.Name}}",
+						"Commands": [
+							"git init",
+							"git add .",
+							"git commit -m '{{.Project.Name}} created {{date}} by gonew'"
+						]
+					}
+				]
+			}
+		},
+		"cmd": {
+			"Inherits": [
+				"git"
+			],
 			"Files": {
 				"Git-Ignore": {
 					"Path": ".gitignore",
@@ -85,9 +99,9 @@
 			}
 		},
 		"pkg": {
-			"Hooks": {
-				"Post": "bash -c \"cd {{.ProjectPrefix}} && git init && git add . && git commit -m '{{.Package}} generated {{Time.Now}} by gonew v2'\""
-			},
+			"Inherits": [
+				"git"
+			],
 			"Files": {
 				"Git-Ignore": {
 					"Path": ".gitignore",
