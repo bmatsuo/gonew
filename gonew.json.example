@@ -55,28 +55,28 @@
 			],
 			"Files": {
 				"Git-Ignore": {
-					"Path": ".gitignore",
+					"Path": "{{.Project.Name}}/.gitignore",
 					"Type": "other",
 					"Templates": [
 						"other.gitignore.t2"
 					]
 				},
 				"README": {
-					"Path": "README.md",
+					"Path": "{{.Project.Name}}/README.md",
 					"Type": "readme",
 					"Templates": [
 						"README.md.t2"
 					]
 				},
 				"Main": {
-					"Path": "{{.Package}}.go",
+					"Path": "{{.Project.Name}}/{{.Package}}.go",
 					"Type": "go",
 					"Templates": [
 						"go.cmd.t2"
 					]
 				},
 				"Options": {
-					"Path": "options.go",
+					"Path": "{{.Project.Name}}/options.go",
 					"Type": "go",
 					"Templates": [
 						"go.options.t2"
@@ -90,7 +90,7 @@
 			],
 			"Files": {
 				"Test": {
-					"Path": "{{.Package}}_test.go",
+					"Path": "{{.Project.Name}}/{{.Package}}_test.go",
 					"Type": "go",
 					"Templates": [
 						"test.t2"
@@ -104,21 +104,21 @@
 			],
 			"Files": {
 				"Git-Ignore": {
-					"Path": ".gitignore",
+					"Path": "{{.Project.Name}}/.gitignore",
 					"Type": "other",
 					"Templates": [
 						"other.gitignore.t2"
 					]
 				},
 				"README": {
-					"Path": "README.md",
+					"Path": "{{.Project.Name}}/README.md",
 					"Type": "readme",
 					"Templates": [
 						"README.md.t2"
 					]
 				},
 				"Main": {
-					"Path": "{{.Package}}.go",
+					"Path": "{{.Project.Name}}/{{.Package}}.go",
 					"Type": "go",
 					"Templates": [
 						"go.pkg.t2"
@@ -132,7 +132,7 @@
 			],
 			"Files": {
 				"Test": {
-					"Path": "{{.Package}}_test.go",
+					"Path": "{{.Project.Name}}/{{.Package}}_test.go",
 					"Type": "go",
 					"Templates": [
 						"test.t2"
