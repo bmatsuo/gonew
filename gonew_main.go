@@ -371,6 +371,12 @@ func init() {
 	}
 }
 
+func check(err error) {
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
 func checkFatal(err error) {
 	if err != nil {
 		fmt.Println(err)
@@ -432,32 +438,36 @@ func mainv2() {
 
 	projectName := "go-mp3"
 	packageName := "mp3"
+	envName := "work"
+	projType := "cmdtest"
 
-	env, err := conf.Environment("work")
+	env, err := conf.Environment(envName)
 	checkFatal(err)
-	logJson("work:", env)
 	project.BaseImportPath = env.BaseImportPath
 
 	proj := project.New(projectName, packageName, env)
 	projContext := project.Context("", "", proj)
 	projTemplEnv := templates.Env(projContext)
 
-	projectConfig, err := conf.Project("cmdtest")
+	projConfig, err := conf.Project(projType)
 	checkFatal(err)
-	logJson("cmdtest:", projectConfig)
 
 	if projConfig.Hooks != nil {
 		fmt.Println("PRE")
 		executeHooks(ts, projTemplEnv, projConfig.Hooks.Pre...)
 	}
 
-	for name, file := range projectConfig.Files {
+	for name, file := range projConfig.Files {
 		fmt.Println(name, file)
 		fmt.Println()
 
 		_relpath, err := projTemplEnv.RenderTextAsString(ts, "pre_", file.Path)
 		checkFatal(err)
 		relpath := string(_relpath)
+		fmt.Println(relpath)
+
+		fmt.Println("--------------------------")
+
 		filename := filepath.Base(relpath)
 		filetype := file.Type
 
@@ -465,13 +475,9 @@ func mainv2() {
 		fileTemplEnv := templates.Env(fileContext)
 
 		for _, t := range file.Templates {
-			fmt.Println(t)
-			err := fileTemplEnv.Render(os.Stdout, ts, t)
-			if err != nil {
-				fmt.Println(err)
-			}
-			fmt.Println("--------------------------")
+			check(fileTemplEnv.Render(os.Stdout, ts, t))
 		}
+		fmt.Println("--------------------------")
 	}
 
 	if projConfig.Hooks != nil {
