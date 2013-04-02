@@ -116,8 +116,6 @@ type EnvironmentConfig struct {
 	BaseImportPath string
 	Inherits       []string
 	User           *EnvironmentUserConfig
-	License        LicenseConfig
-	VersionControl *VersionControlConfig
 }
 
 // Merges other into config. Inherits are not merged, as this is used to eliminate inheritence.
@@ -127,15 +125,6 @@ func (config *EnvironmentConfig) Merge(other *EnvironmentConfig) {
 			config.User = new(EnvironmentUserConfig)
 		}
 		config.User.Merge(other.User)
-	}
-	if other.License != "" {
-		config.License = other.License
-	}
-	if other.VersionControl != nil {
-		if config.VersionControl == nil {
-			config.VersionControl = new(VersionControlConfig)
-		}
-		config.VersionControl.Merge(other.VersionControl)
 	}
 }
 
@@ -152,12 +141,6 @@ func (config *EnvironmentConfig) Validate() (err error) {
 		return
 	}
 	if err = validate.Property("User", config.User); err != nil {
-		return
-	}
-	if err = validate.Property("License", config.License); err != nil {
-		return
-	}
-	if err = validate.Property("VersionControl", config.VersionControl); err != nil {
 		return
 	}
 	return nil
