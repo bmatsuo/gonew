@@ -65,13 +65,15 @@
 					"Path": "{{.Project.Name}}/README.md",
 					"Type": "readme",
 					"Templates": [
-						"README.md.t2"
+						"README.md.t2",
+						"license.newbsd.readme.t2"
 					]
 				},
 				"Main": {
 					"Path": "{{.Project.Name}}/{{.Package}}.go",
 					"Type": "go",
 					"Templates": [
+						"license.newbsd.gohead.t2",
 						"go.cmd.t2"
 					]
 				},
@@ -79,6 +81,7 @@
 					"Path": "{{.Project.Name}}/options.go",
 					"Type": "go",
 					"Templates": [
+						"license.newbsd.gohead.t2",
 						"go.options.t2"
 					]
 				}
@@ -93,6 +96,7 @@
 					"Path": "{{.Project.Name}}/{{.Package}}_test.go",
 					"Type": "go",
 					"Templates": [
+						"license.newbsd.gohead.t2",
 						"test.t2"
 					]
 				}
@@ -114,13 +118,15 @@
 					"Path": "{{.Project.Name}}/README.md",
 					"Type": "readme",
 					"Templates": [
-						"README.md.t2"
+						"README.md.t2",
+						"license.newbsd.readme.t2"
 					]
 				},
 				"Main": {
 					"Path": "{{.Project.Name}}/{{.Package}}.go",
 					"Type": "go",
 					"Templates": [
+						"license.newbsd.gohead.t2",
 						"go.pkg.t2"
 					]
 				}
@@ -135,6 +141,7 @@
 					"Path": "{{.Project.Name}}/{{.Package}}_test.go",
 					"Type": "go",
 					"Templates": [
+						"license.newbsd.gohead.t2",
 						"test.t2"
 					]
 				}
@@ -146,6 +153,7 @@
 					"Path": "{{.Project.Name}}.go",
 					"Type": "go",
 					"Templates": [
+						"license.newbsd.gohead.t2",
 						"go.lib.t2"
 					]
 				}
@@ -160,6 +168,7 @@
 					"Path": "{{.Project.Name}}_test.go",
 					"Type": "go",
 					"Templates": [
+						"license.newbsd.gohead.t2",
 						"test.t2"
 					]
 				}
