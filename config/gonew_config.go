@@ -194,14 +194,19 @@ func (config GonewConfig2) Validate() (err error) {
 	return
 }
 
-func (config *GonewConfig2) marshalJSON() ([]byte, error) { return json.Marshal(config) }
+func (config *GonewConfig2) marshalJSON(pretty bool) ([]byte, error) {
+	if pretty {
+		return json.MarshalIndent(config, "", "\t")
+	}
+	return json.Marshal(config)
+}
 func (config *GonewConfig2) MarshalFileJSON(filename string) error {
 	f, err := os.Create(filename)
 	if err != nil {
 		return err
 	}
 	defer f.Close()
-	p, err := config.marshalJSON()
+	p, err := config.marshalJSON(true)
 	if err != nil {
 		return err
 	}

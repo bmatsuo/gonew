@@ -20,6 +20,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"bufio"
 	"log"
 	"os"
 	"os/exec"
@@ -489,10 +490,54 @@ func parseOptionsV2() *options {
 
 func initConfigV2(path string) (*config.GonewConfig2, error) {
 	if path == "" {
-		path = "gonew.json.example" // FIXME
+		home := os.Getenv("HOME")
+		path = filepath.Join(home, ".config", "gonew.json")
 	}
 	conf := new(config.GonewConfig2)
-	return conf, conf.UnmarshalFileJSON(path)
+	err := conf.UnmarshalFileJSON(path)
+	if err != nil {
+		if err, ok := err.(*os.PathError); ok {
+			if err.Err == syscall.ENOENT || err.Err == os.ErrNotExist {
+				fmt.Fprintln(os.Stderr, "couldn't find config")
+
+				bufr := bufio.NewReader(os.Stdin)
+				fmt.Print("Enter your name: ")
+				p, _, err := bufr.ReadLine()
+				checkFatal(err)
+				name := strings.TrimFunc(string(p), unicode.IsSpace)
+				fmt.Print("Enter your email: ")
+				p, _, err = bufr.ReadLine()
+				checkFatal(err)
+				email := strings.TrimFunc(string(p), unicode.IsSpace)
+				fmt.Print("Base import path (e.g. github.com/bmatsuo): ")
+				p, _, err = bufr.ReadLine()
+				checkFatal(err)
+				baseImportPath := strings.TrimFunc(string(p), unicode.IsSpace)
+				// TODO locate gonew.json.example
+				examplePath := "gonew.json.example"
+				checkFatal(conf.UnmarshalFileJSON(examplePath))
+				conf.Environments = config.EnvironmentsConfig{
+					"norm": &config.EnvironmentConfig{
+						BaseImportPath: baseImportPath,
+						User: &config.EnvironmentUserConfig{
+							Name: name,
+							Email: email,
+						},
+					},
+				}
+
+				err = conf.MarshalFileJSON(path)
+				if err != nil {
+					return nil, err
+				}
+			} else {
+				return nil, err
+			}
+		} else {
+			return nil, err
+		}
+	}
+	return conf, nil
 }
 
 func mainv2() {
