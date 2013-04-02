@@ -143,7 +143,7 @@
 		"lib": {
 			"Files": {
 				"Main": {
-					"Path": "{{.Lib}}.go",
+					"Path": "{{.Project.Name}}.go",
 					"Type": "go",
 					"Templates": [
 						"go.lib.t2"
@@ -157,7 +157,7 @@
 			],
 			"Files": {
 				"Test": {
-					"Path": "{{.Lib}}_test.go",
+					"Path": "{{.Project.Name}}_test.go",
 					"Type": "go",
 					"Templates": [
 						"test.t2"

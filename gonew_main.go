@@ -452,19 +452,61 @@ func funcsV2(env *config.EnvironmentConfig) template.FuncMap {
 	}
 }
 
+type options struct {
+	env     string
+	project string
+	target  string
+	pkg     string
+	config  string
+}
+
+func parseOptionsV2() *options {
+	opts := new(options)
+	fs := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
+	fs.StringVar(&opts.env, "env", "", "specify a user environment")
+	fs.StringVar(&opts.pkg, "pkg", "", "specify a package name")
+	fs.StringVar(&opts.config, "config", "", "specify config path")
+	fs.Parse(os.Args[1:])
+
+	args := fs.Args()
+	if len(args) < 2 {
+		fmt.Fprintln(os.Stderr, "usage:", os.Args[0], "[options] project target")
+		os.Exit(1)
+	}
+	opts.project, opts.target = args[0], args[1]
+	if opts.pkg == "" {
+		opts.pkg = opts.target
+		if strings.HasPrefix(opts.pkg, "go-") {
+			opts.pkg = opts.pkg[3:]
+		}
+		if strings.HasSuffix(opts.pkg, ".go") {
+			opts.pkg = opts.pkg[:len(opts.pkg)-3]
+		}
+	}
+
+	return opts
+}
+
+func initConfigV2(path string) (*config.GonewConfig2, error) {
+	if path == "" {
+		path = "gonew.json.example" // FIXME
+	}
+	conf := new(config.GonewConfig2)
+	return conf, conf.UnmarshalFileJSON(path)
+}
+
 func mainv2() {
 
-	// fake command line options/args
-	projectName := "go-mp3"
-	packageName := "mp3"
-	envName := "work"
-	projType := "cmdtest"
+	// parse command line options/args
+	opts := parseOptionsV2()
+	projectName := opts.target
+	packageName := opts.pkg
+	envName := opts.env
+	projType := opts.project
 
 	// read the config file
-	conf := new(config.GonewConfig2)
-	if err := conf.UnmarshalFileJSON("gonew.json.example"); err != nil {
-		fmt.Println(err)
-	}
+	conf, err := initConfigV2(opts.config)
+	checkFatal(err)
 
 	// initialize project
 	env, err := conf.Environment(envName)
