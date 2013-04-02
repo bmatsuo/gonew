@@ -13,6 +13,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 	//"log"
 )
 
@@ -50,6 +51,12 @@ func (ptype ProjectType) String() string {
 
 func DefaultTarget(pname string) string {
 	// TODO strip special characters from the prjoect name.
+	if strings.HasPrefix(pname, "go-") {
+		return pname[3:]
+	}
+	if strings.HasSuffix(pname, ".go") {
+		return pname[:3]
+	}
 	return pname
 }
 
