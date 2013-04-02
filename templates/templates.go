@@ -75,7 +75,7 @@ func (ts *templates) Source(src interface{}) (err error) {
 		}
 		var paths []string
 		filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
-			if !info.IsDir() {
+			if !info.IsDir() && filepath.Ext(path) == ts.ext {
 				paths = append(paths, path)
 			}
 			return nil

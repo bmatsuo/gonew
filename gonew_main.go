@@ -12,10 +12,11 @@ package main
  */
 import (
 	"github.com/bmatsuo/gonew/config"
-	"github.com/bmatsuo/gonew/funcs"
+	//"github.com/bmatsuo/gonew/funcs"
 	"github.com/bmatsuo/gonew/project"
 	"github.com/bmatsuo/gonew/templates"
 
+	"bytes"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -28,6 +29,7 @@ import (
 	"strings"
 	"syscall"
 	"text/template"
+	"time"
 	"unicode"
 )
 
@@ -371,10 +373,11 @@ func init() {
 	}
 }
 
-func check(err error) {
+func check(err error) error {
 	if err != nil {
 		fmt.Println(err)
 	}
+	return err
 }
 
 func checkFatal(err error) {
@@ -405,30 +408,79 @@ func executeHooks(ts templates.Interface, tenv templates.Environment, hooks ...*
 	}
 }
 
+type File2 struct {
+	path    string
+	content []byte
+}
+
+func funcsV2(env *config.EnvironmentConfig) template.FuncMap {
+	return template.FuncMap{
+		"name":  func() string { return env.User.Name },
+		"email": func() string { return env.User.Email },
+
+		"year": func() string { return time.Now().Format("2006") },
+		"time": func(format ...string) string {
+			if len(format) == 0 {
+				format = append(format, time.RFC1123)
+			}
+			return time.Now().Format(format[0])
+		},
+		"date": func(format ...string) string {
+			if len(format) == 0 {
+				format = append(format, "Jan 02, 2006")
+			}
+			return time.Now().Format(format[0])
+		},
+
+		"import": func(pkgs ...string) string {
+			if len(pkgs) == 0 {
+				return `import ()`
+			}
+			if len(pkgs) == 1 {
+				return `import "` + pkgs[0] + `"`
+			}
+			s := "import (\n"
+			for _, pkg := range pkgs {
+				s += "\t" + pkg + "\n"
+			}
+			s += ")"
+			return s
+		},
+		"equal": func(v1, v2 interface{}) bool {
+			return reflect.DeepEqual(reflect.ValueOf(v1), reflect.ValueOf(v2))
+		},
+	}
+}
+
 func mainv2() {
+
+	// fake command line options/args
+	projectName := "go-mp3"
+	packageName := "mp3"
+	envName := "work"
+	projType := "cmdtest"
+
+	// read the config file
 	conf := new(config.GonewConfig2)
 	if err := conf.UnmarshalFileJSON("gonew.json.example"); err != nil {
 		fmt.Println(err)
 	}
 
-	ts := templates.New(".t2")
-	if err := ts.Funcs(funcs.Funcs); err != nil {
-		fmt.Println(err)
-	}
-	ts.Funcs(template.FuncMap{
-		"name":   func() string { return "foo" },
-		"email":  func() string { return "foo@bar.com" },
-		"year":   func() string { return "2012" },
-		"date":   func() string { return "Jul 6, 2012" },
-		"import": func() string { return "import \"foo\"" },
-		"init":   func() string { return "func init() {}" },
-		"main":   func() string { return "func main() {}" },
-		"func":   func() string { return "func foo() {}" },
-		"equal": func(v1, v2 interface{}) bool {
-			return reflect.DeepEqual(reflect.ValueOf(v1), reflect.ValueOf(v2))
-		},
-	})
+	// initialize project
+	env, err := conf.Environment(envName)
+	checkFatal(err)
+	project.BaseImportPath = env.BaseImportPath
+	proj := project.New(projectName, packageName, env)
+	projContext := project.Context("", "", proj)
+	projTemplEnv := templates.Env(projContext)
+	projConfig, err := conf.Project(projType)
+	checkFatal(err)
 
+	// initialize template environment
+	ts := templates.New(".t2")
+	checkFatal(ts.Funcs(funcsV2(env)))
+
+	// read templates
 	src := templates.SourceDirectory("/Users/bryan/Go/src/github.com/bmatsuo/gonew/templates")
 	checkFatal(ts.Source(src))
 	for i := len(conf.ExternalTemplates) - 1; i >= 0; i-- {
@@ -436,48 +488,41 @@ func mainv2() {
 		checkFatal(ts.Source(src))
 	}
 
-	projectName := "go-mp3"
-	packageName := "mp3"
-	envName := "work"
-	projType := "cmdtest"
-
-	env, err := conf.Environment(envName)
-	checkFatal(err)
-	project.BaseImportPath = env.BaseImportPath
-
-	proj := project.New(projectName, packageName, env)
-	projContext := project.Context("", "", proj)
-	projTemplEnv := templates.Env(projContext)
-
-	projConfig, err := conf.Project(projType)
-	checkFatal(err)
-
 	if projConfig.Hooks != nil {
 		fmt.Println("PRE")
 		executeHooks(ts, projTemplEnv, projConfig.Hooks.Pre...)
 	}
 
-	for name, file := range projConfig.Files {
-		fmt.Println(name, file)
-		fmt.Println()
-
+	// generate files. buffer all output then write.
+	files := make([]*File2, 0, len(projConfig.Files))
+	for _, file := range projConfig.Files {
 		_relpath, err := projTemplEnv.RenderTextAsString(ts, "pre_", file.Path)
 		checkFatal(err)
 		relpath := string(_relpath)
 		fmt.Println(relpath)
-
-		fmt.Println("--------------------------")
 
 		filename := filepath.Base(relpath)
 		filetype := file.Type
 
 		fileContext := project.Context(filename, filetype, proj)
 		fileTemplEnv := templates.Env(fileContext)
-
+		fileBuf := new(bytes.Buffer)
 		for _, t := range file.Templates {
-			check(fileTemplEnv.Render(os.Stdout, ts, t))
+			if nil != check(fileTemplEnv.Render(fileBuf, ts, t)) {
+				fileBuf = nil
+			}
 		}
-		fmt.Println("--------------------------")
+
+		if fileBuf != nil {
+			f := &File2{relpath, fileBuf.Bytes()}
+			files = append(files, f)
+		}
+	}
+	for _, file := range files {
+		dir := filepath.Dir(file.path)
+		fmt.Println("mkdir", "-p", dir)
+		fmt.Println("cat", ">", file.path)
+		fmt.Println(string(file.content))
 	}
 
 	if projConfig.Hooks != nil {
