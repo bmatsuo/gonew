@@ -552,12 +552,15 @@ func mainv2() {
 		for _, t := range file.Templates {
 			if nil != check(fileTemplEnv.Render(fileBuf, ts, t)) {
 				fileBuf = nil
+				break
 			}
 		}
 
 		if fileBuf != nil {
 			f := &File2{relpath, fileBuf.Bytes()}
 			files = append(files, f)
+		} else {
+			// TODO clean exit
 		}
 	}
 	for _, file := range files {
