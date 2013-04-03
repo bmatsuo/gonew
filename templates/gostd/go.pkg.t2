@@ -1,4 +1,3 @@
 {{ template "go._head.t2" $ }}
-
 // Package {{.Package}} does ....
 {{ template "go._package.t2" $ }}

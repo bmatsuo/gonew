@@ -1,5 +1,5 @@
-{{ template "go._package.t2" $ }}
 {{ template "go._head.t2" $ }}
+package main
 
 {{ import "fmt" }}
 
