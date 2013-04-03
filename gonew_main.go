@@ -16,11 +16,11 @@ import (
 	"github.com/bmatsuo/gonew/project"
 	"github.com/bmatsuo/gonew/templates"
 
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"flag"
 	"fmt"
-	"bufio"
 	"log"
 	"os"
 	"os/exec"
@@ -400,11 +400,17 @@ func executeHooks(ts templates.Interface, tenv templates.Environment, hooks ...*
 	for _, hook := range hooks {
 		cwd, err := tenv.RenderTextAsString(ts, "cwd_", hook.Cwd)
 		checkFatal(err)
-		fmt.Println("cd", cwd)
+		// fmt.Println("cd", cwd)
 		for _, _cmd := range hook.Commands {
 			cmd, err := tenv.RenderTextAsString(ts, "cmd_", _cmd)
 			checkFatal(err)
-			fmt.Println("bash", "-c", cmd)
+			// fmt.Println("bash", "-c", cmd)
+			shell := exec.Command("bash", "-c", cmd)
+			shell.Dir = cwd
+			shell.Stdin = os.Stdin
+			shell.Stdout = os.Stdout
+			shell.Stderr = os.Stderr
+			checkFatal(shell.Run()) // TODO clean exit
 		}
 	}
 }
@@ -520,7 +526,7 @@ func initConfigV2(path string) (*config.GonewConfig2, error) {
 					"norm": &config.EnvironmentConfig{
 						BaseImportPath: baseImportPath,
 						User: &config.EnvironmentUserConfig{
-							Name: name,
+							Name:  name,
 							Email: email,
 						},
 					},
@@ -576,7 +582,7 @@ func mainv2() {
 	}
 
 	if projConfig.Hooks != nil {
-		fmt.Println("PRE")
+		// fmt.Println("PRE")
 		executeHooks(ts, projTemplEnv, projConfig.Hooks.Pre...)
 	}
 
@@ -586,8 +592,6 @@ func mainv2() {
 		_relpath, err := projTemplEnv.RenderTextAsString(ts, "pre_", file.Path)
 		checkFatal(err)
 		relpath := string(_relpath)
-		fmt.Println(relpath)
-
 		filename := filepath.Base(relpath)
 		filetype := file.Type
 
@@ -610,13 +614,22 @@ func mainv2() {
 	}
 	for _, file := range files {
 		dir := filepath.Dir(file.path)
-		fmt.Println("mkdir", "-p", dir)
-		fmt.Println("cat", ">", file.path)
-		fmt.Println(string(file.content))
+
+		// fmt.Println("mkdir", "-p", dir)
+		err := os.MkdirAll(dir, 0755|os.ModeDir)
+		checkFatal(err) // TODO clean exit
+
+		// fmt.Println("cat", ">", file.path)
+		// fmt.Println(string(file.content))
+		handle, err := os.OpenFile(file.path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0644)
+		checkFatal(err) // TODO clean exit
+		_, err = handle.Write(file.content)
+		checkFatal(err) // TODO clean exit
+		err = handle.Close()
 	}
 
 	if projConfig.Hooks != nil {
-		fmt.Println("POST")
+		// fmt.Println("POST")
 		executeHooks(ts, projTemplEnv, projConfig.Hooks.Post...)
 	}
 }
