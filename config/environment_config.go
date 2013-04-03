@@ -120,6 +120,9 @@ type EnvironmentConfig struct {
 
 // Merges other into config. Inherits are not merged, as this is used to eliminate inheritence.
 func (config *EnvironmentConfig) Merge(other *EnvironmentConfig) {
+	if other.BaseImportPath != "" {
+		config.BaseImportPath = other.BaseImportPath
+	}
 	if other.User != nil {
 		if config.User == nil {
 			config.User = new(EnvironmentUserConfig)

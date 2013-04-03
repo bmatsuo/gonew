@@ -20,8 +20,8 @@ import (
 var BaseImportPath string
 
 func importPath(pkg string) string {
-	if BaseImportPath == "" || pkg == "" {
-		return ""
+	if BaseImportPath == "" {
+		return pkg
 	}
 	return path.Join(BaseImportPath, pkg)
 }
