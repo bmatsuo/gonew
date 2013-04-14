@@ -24,7 +24,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
-	"runtime"
 	"strings"
 	"syscall"
 	"text/template"
@@ -32,90 +31,20 @@ import (
 	"unicode"
 )
 
-var (
-	GonewRoot    string // The Gonew source directory
-	TemplateRoot string // The "templates" subdirectory of GonewRoot.
-)
-
-// Returns a path to the directory containing Gonew's source (and the templates/ directory).
-// This function first searches locates the 'gonew' executable in PATH. Then locates the directory
-// it was built from (either GOROOT or a subdirectory of GOPATH).
-func FindGonew() (dir string, err error) {
-	var bin string
-	if bin, err = exec.LookPath("gonew"); err != nil {
-		return
+// The directory containing Gonew's source code.
+var GonewRoot string // The Gonew source directory
+func FindGonew() error {
+	gopath := os.Getenv("GOPATH")
+	if gopath == "" {
+		return fmt.Errorf("GOPATH is not set")
 	}
-	var bindir string
-	if bindir, err = filepath.Abs(filepath.Dir(bin)); err != nil {
-		return
+	gopath = strings.SplitN(gopath, ":", 2)[0]
+	GonewRoot = filepath.Join(gopath, "src", "github.com", "bmatsuo", "gonew")
+	stat, err := os.Stat(GonewRoot)
+	if err == nil && !stat.IsDir() {
+		err = fmt.Errorf("file is not a directory: %s", GonewRoot)
 	}
-	var gobin string
-	var gopath string
-	for _, env := range os.Environ() {
-		if strings.HasPrefix(env, "GOBIN=") {
-			if gobin, err = filepath.Abs(env[6:]); err != nil {
-				return
-			}
-		}
-		if strings.HasPrefix(env, "GOPATH=") {
-			if gopath, err = filepath.Abs(env[7:]); err != nil {
-				return
-			}
-		}
-		if len(gobin) > 0 && len(gopath) > 0 {
-			break
-		}
-	}
-	if bindir == gobin {
-		rootdir := filepath.Join(runtime.GOROOT(), "github.com", "bmtasuo", "gonew")
-		var stat os.FileInfo
-		switch stat, err = os.Stat(rootdir); {
-		case err != nil:
-			if err != syscall.ENOENT {
-				return
-			}
-		case stat != nil:
-			dir = rootdir
-			return
-		default:
-			panic("unreachable")
-		}
-	}
-	var stat os.FileInfo
-	if filepath.Base(bindir) != "bin" {
-		err = fmt.Errorf("%s not under a GOPATH", bindir)
-		return
-	}
-	gosrc := filepath.Join(filepath.Dir(bindir), "src")
-	stat, err = os.Stat(gosrc)
-	if err != nil || !stat.IsDir() {
-		err = fmt.Errorf("%s does not exist", gosrc)
-		return
-	}
-
-	dirCandidates := [...]string{
-		filepath.Join(gosrc, "pkg", "github.com", "bmatsuo", "gonew"),
-		filepath.Join(gosrc, "github.com", "bmatsuo", "gonew"),
-		filepath.Join(gosrc, "gonew"),
-	}
-	for _, dir = range dirCandidates {
-		stat, err = os.Stat(dir)
-		if err == nil && stat.IsDir() {
-			// found
-			return
-		}
-	}
-	err = fmt.Errorf("Couldn't find gonew source directory")
-	return
-}
-
-func init() {
-	root, err := FindGonew()
-	GonewRoot = root
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "error finding gonew source directory: %v\n", err)
-		os.Exit(1)
-	}
+	return err
 }
 
 func check(err error) error {
@@ -290,7 +219,8 @@ func initConfigV2(path string) (*config.GonewConfig2, error) {
 	return conf, nil
 }
 
-func mainv2() {
+func main() {
+	checkFatal(FindGonew())
 
 	// parse command line options/args
 	opts := parseOptionsV2()
@@ -318,7 +248,7 @@ func mainv2() {
 	checkFatal(ts.Funcs(funcsV2(env)))
 
 	// read templates
-	src := templates.SourceDirectory(filepath.Join(GonewRoot,"templates"))
+	src := templates.SourceDirectory(filepath.Join(GonewRoot, "templates"))
 	checkFatal(ts.Source(src))
 	for i := len(conf.ExternalTemplates) - 1; i >= 0; i-- {
 		src := templates.SourceDirectory(conf.ExternalTemplates[i])
@@ -376,8 +306,4 @@ func mainv2() {
 		// fmt.Println("POST")
 		executeHooks(ts, projTemplEnv, projConfig.Hooks.Post...)
 	}
-}
-
-func main() {
-	mainv2()
 }
