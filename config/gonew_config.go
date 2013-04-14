@@ -106,9 +106,9 @@ func (dfs *configInheritanceDFS) visit(t int, v string) int {
 	return t
 }
 
-type ExternalTemplateConfig string
+type ExternalTemplate string
 
-func (config ExternalTemplateConfig) Validate() (err error) {
+func (config ExternalTemplate) Validate() (err error) {
 	path := string(config)
 	var info os.FileInfo
 	if !strings.HasPrefix(path, "/") {
@@ -121,39 +121,39 @@ func (config ExternalTemplateConfig) Validate() (err error) {
 	return
 }
 
-type GonewConfig2 struct {
-	Environments      EnvironmentsConfig
-	ExternalTemplates []ExternalTemplateConfig
-	Projects          ProjectsConfig
+type Gonew struct {
+	Environments      Environments
+	ExternalTemplates []ExternalTemplate
+	Projects          Projects
 }
 
-func (config GonewConfig2) Environment(name string) (*EnvironmentConfig, error) {
+func (config Gonew) Environment(name string) (*Environment, error) {
 	if _, present := config.Environments[name]; !present {
 		return nil, errors.New("unknown environment: " + name)
 	}
 	_, mergeOrder := config.Environments.inheritanceGraph().HasCycles(name)
 
-	env := new(EnvironmentConfig)
+	env := new(Environment)
 	for _, key := range mergeOrder {
 		env.Merge(config.Environments[key])
 	}
 	return env, nil
 }
 
-func (config GonewConfig2) Project(name string) (*ProjectConfig, error) {
+func (config Gonew) Project(name string) (*Project, error) {
 	if _, present := config.Projects[name]; !present {
 		return nil, errors.New("unknown project: " + name)
 	}
 	_, mergeOrder := config.Projects.inheritanceGraph().HasCycles(name)
 
-	env := new(ProjectConfig)
+	env := new(Project)
 	for _, key := range mergeOrder {
 		env.Merge(config.Projects[key])
 	}
 	return env, nil
 }
 
-func (config GonewConfig2) Validate() (err error) {
+func (config Gonew) Validate() (err error) {
 	err = validate.PropertyFunc("Environments", func() (err error) {
 		if config.Environments == nil {
 			return fmt.Errorf("missing")
@@ -194,13 +194,13 @@ func (config GonewConfig2) Validate() (err error) {
 	return
 }
 
-func (config *GonewConfig2) marshalJSON(pretty bool) ([]byte, error) {
+func (config *Gonew) marshalJSON(pretty bool) ([]byte, error) {
 	if pretty {
 		return json.MarshalIndent(config, "", "\t")
 	}
 	return json.Marshal(config)
 }
-func (config *GonewConfig2) MarshalFileJSON(filename string) error {
+func (config *Gonew) MarshalFileJSON(filename string) error {
 	f, err := os.Create(filename)
 	if err != nil {
 		return err
@@ -214,13 +214,13 @@ func (config *GonewConfig2) MarshalFileJSON(filename string) error {
 	return err
 }
 
-func (config *GonewConfig2) unmarshalJSON(p []byte) error {
+func (config *Gonew) unmarshalJSON(p []byte) error {
 	if err := json.Unmarshal(p, config); err != nil {
 		return err
 	}
 	return validate.Property("$", config)
 }
-func (config *GonewConfig2) UnmarshalFileJSON(filename string) error {
+func (config *Gonew) UnmarshalFileJSON(filename string) error {
 	f, err := os.Open(filename)
 	if err != nil {
 		return err

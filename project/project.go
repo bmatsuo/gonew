@@ -45,21 +45,21 @@ type Interface interface {
 	Prefix() string
 	Package() string
 	Import() string
-	Env() *config.EnvironmentConfig
+	Env() *config.Environment
 }
 
-func New(name, pkg string, env *config.EnvironmentConfig) Interface {
+func New(name, pkg string, env *config.Environment) Interface {
 	return &project{name, pkg, env}
 }
 
 type project struct {
 	name string
 	pkg  string
-	env  *config.EnvironmentConfig
+	env  *config.Environment
 }
 
-func (p *project) Name() string                   { return p.name }
-func (p *project) Prefix() string                 { return "./" + p.name } // XXX could be smarter
-func (p *project) Package() string                { return p.pkg }
-func (p *project) Import() string                 { return importPath(p.Package()) }
-func (p *project) Env() *config.EnvironmentConfig { return p.env }
+func (p *project) Name() string             { return p.name }
+func (p *project) Prefix() string           { return "./" + p.name } // XXX could be smarter
+func (p *project) Package() string          { return p.pkg }
+func (p *project) Import() string           { return importPath(p.Package()) }
+func (p *project) Env() *config.Environment { return p.env }

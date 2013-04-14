@@ -19,9 +19,9 @@ import (
 )
 
 // A set of uniquely named environments.
-type EnvironmentsConfig map[string]*EnvironmentConfig
+type Environments map[string]*Environment
 
-func (config EnvironmentsConfig) inheritanceGraph() configInheritanceGraph {
+func (config Environments) inheritanceGraph() configInheritanceGraph {
 	g := make(configInheritanceGraph, len(config))
 	for v := range config {
 		g[v] = make(map[string]interface{}, len(config[v].Inherits))
@@ -34,9 +34,9 @@ func (config EnvironmentsConfig) inheritanceGraph() configInheritanceGraph {
 
 // Validates the following for each environment
 //		- The name must not contain spaces
-//		- The environment must be valid (see EnvironmentConfig.Validate)
+//		- The environment must be valid (see Environment.Validate)
 //		- All inherited environments must exist.
-func (config EnvironmentsConfig) Validate() (err error) {
+func (config Environments) Validate() (err error) {
 	for k, env := range config {
 		if strings.IndexFunc(k, unicode.IsSpace) > -1 {
 			return validate.Invalid("name", k)
@@ -95,31 +95,15 @@ func (config *EnvironmentUserConfig) Merge(other *EnvironmentUserConfig) {
 	}
 }
 
-// Project License configuration.
-type LicenseConfig string
-
-// Can be "newbsd", "none", or missing.
-func (config LicenseConfig) Validate() (err error) {
-	switch config {
-	case "newbsd":
-	case "none":
-		fallthrough
-	case "":
-	default:
-		err = validate.Invalid(config)
-	}
-	return
-}
-
 // Specifies the environment for template generation.
-type EnvironmentConfig struct {
+type Environment struct {
 	BaseImportPath string
 	Inherits       []string
 	User           *EnvironmentUserConfig
 }
 
 // Merges other into config. Inherits are not merged, as this is used to eliminate inheritence.
-func (config *EnvironmentConfig) Merge(other *EnvironmentConfig) {
+func (config *Environment) Merge(other *Environment) {
 	if other.BaseImportPath != "" {
 		config.BaseImportPath = other.BaseImportPath
 	}
@@ -131,9 +115,8 @@ func (config *EnvironmentConfig) Merge(other *EnvironmentConfig) {
 	}
 }
 
-// Requires a User. Requires License and VersionControl to be valid
-// (see LicenseConfig.Validate, VersionControlConfig.Validate).
-func (config *EnvironmentConfig) Validate() (err error) {
+// Requires a User.
+func (config *Environment) Validate() (err error) {
 	err = validate.PropertyFunc("User", func() (err error) {
 		if config.User == nil {
 			err = fmt.Errorf("missing")

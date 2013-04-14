@@ -19,9 +19,9 @@ import (
 )
 
 // A set of uniquely named project types.
-type ProjectsConfig map[string]*ProjectConfig
+type Projects map[string]*Project
 
-func (config ProjectsConfig) inheritanceGraph() configInheritanceGraph {
+func (config Projects) inheritanceGraph() configInheritanceGraph {
 	g := make(configInheritanceGraph, len(config))
 	for v := range config {
 		g[v] = make(map[string]interface{}, len(config[v].Inherits))
@@ -34,9 +34,9 @@ func (config ProjectsConfig) inheritanceGraph() configInheritanceGraph {
 
 // Validates the following for each project
 //		- The name must not contain spaces
-//		- The environment must be valid (see EnvironmentConfig.Validate)
+//		- The environment must be valid (see Environment.Validate)
 //		- All inherited environments must exist.
-func (config ProjectsConfig) Validate() (err error) {
+func (config Projects) Validate() (err error) {
 	for k, project := range config {
 		if strings.IndexFunc(k, unicode.IsSpace) > -1 {
 			return validate.Invalid("name", k)
@@ -80,13 +80,13 @@ func (config ProjectsConfig) Validate() (err error) {
 	return
 }
 
-type ProjectConfig struct {
+type Project struct {
 	Inherits []string
 	Hooks    *ProjectHooksConfig
 	Files    map[string]*ProjectFileConfig
 }
 
-func (config *ProjectConfig) Validate() (err error) {
+func (config *Project) Validate() (err error) {
 	if config.Hooks == nil {
 		config.Hooks = new(ProjectHooksConfig)
 	}
@@ -104,7 +104,7 @@ func (config *ProjectConfig) Validate() (err error) {
 	return
 }
 
-func (config *ProjectConfig) Merge(other *ProjectConfig) {
+func (config *Project) Merge(other *Project) {
 	if other.Hooks != nil {
 		if config.Hooks == nil {
 			config.Hooks = new(ProjectHooksConfig)

@@ -88,12 +88,12 @@ func executeHooks(ts templates.Interface, tenv templates.Environment, hooks ...*
 	}
 }
 
-type File2 struct {
+type File struct {
 	path    string
 	content []byte
 }
 
-func funcsV2(env *config.EnvironmentConfig) template.FuncMap {
+func funcs(env *config.Environment) template.FuncMap {
 	return template.FuncMap{
 		"name":  func() string { return env.User.Name },
 		"email": func() string { return env.User.Email },
@@ -167,12 +167,12 @@ func parseOptionsV2() *options {
 	return opts
 }
 
-func initConfigV2(path string) (*config.GonewConfig2, error) {
+func initConfig(path string) (*config.Gonew, error) {
 	if path == "" {
 		home := os.Getenv("HOME")
 		path = filepath.Join(home, ".config", "gonew.json")
 	}
-	conf := new(config.GonewConfig2)
+	conf := new(config.Gonew)
 	err := conf.UnmarshalFileJSON(path)
 	if err != nil {
 		if err, ok := err.(*os.PathError); ok {
@@ -192,11 +192,10 @@ func initConfigV2(path string) (*config.GonewConfig2, error) {
 				p, _, err = bufr.ReadLine()
 				checkFatal(err)
 				baseImportPath := strings.TrimFunc(string(p), unicode.IsSpace)
-				// TODO locate gonew.json.example
-				examplePath := "gonew.json.example"
+				examplePath := filepath.Join(GonewRoot,  "gonew.json.example")
 				checkFatal(conf.UnmarshalFileJSON(examplePath))
-				conf.Environments = config.EnvironmentsConfig{
-					"norm": &config.EnvironmentConfig{
+				conf.Environments = config.Environments{
+					"norm": &config.Environment{
 						BaseImportPath: baseImportPath,
 						User: &config.EnvironmentUserConfig{
 							Name:  name,
@@ -230,7 +229,7 @@ func main() {
 	projType := opts.project
 
 	// read the config file
-	conf, err := initConfigV2(opts.config)
+	conf, err := initConfig(opts.config)
 	checkFatal(err)
 
 	// initialize project
@@ -245,7 +244,7 @@ func main() {
 
 	// initialize template environment
 	ts := templates.New(".t2")
-	checkFatal(ts.Funcs(funcsV2(env)))
+	checkFatal(ts.Funcs(funcs(env)))
 
 	// read templates
 	src := templates.SourceDirectory(filepath.Join(GonewRoot, "templates"))
@@ -261,7 +260,7 @@ func main() {
 	}
 
 	// generate files. buffer all output then write.
-	files := make([]*File2, 0, len(projConfig.Files))
+	files := make([]*File, 0, len(projConfig.Files))
 	for _, file := range projConfig.Files {
 		_relpath, err := projTemplEnv.RenderTextAsString(ts, "pre_", file.Path)
 		checkFatal(err)
@@ -280,7 +279,7 @@ func main() {
 		}
 
 		if fileBuf != nil {
-			f := &File2{relpath, fileBuf.Bytes()}
+			f := &File{relpath, fileBuf.Bytes()}
 			files = append(files, f)
 		} else {
 			// TODO clean exit
