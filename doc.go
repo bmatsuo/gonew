@@ -8,7 +8,7 @@ can optionally initialize repositories and add files to them.
 
 Usage:
 
-    gonew [options] project targec
+    gonew [options] project target
 
 Arguments:
 
