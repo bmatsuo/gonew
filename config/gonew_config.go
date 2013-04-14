@@ -122,6 +122,7 @@ func (config ExternalTemplate) Validate() (err error) {
 }
 
 type Gonew struct {
+	Default           Defaults
 	Environments      Environments
 	ExternalTemplates []ExternalTemplate
 	Projects          Projects
@@ -191,6 +192,27 @@ func (config Gonew) Validate() (err error) {
 	if err == nil {
 		err = validate.Property("Projects", config.Projects)
 	}
+
+	err = validate.PropertyFunc("Default", func() (err error) {
+		err = validate.PropertyFunc("Environment", func() (err error) {
+			if config.Default.Environment != "" {
+				_, err = config.Environment(config.Default.Environment)
+				return
+			}
+			return
+		})
+		if err != nil {
+			return
+		}
+		err = validate.PropertyFunc("Environment", func() (err error) {
+			if config.Default.Environment != "" {
+				_, err = config.Project(config.Default.Project)
+				return
+			}
+			return
+		})
+		return
+	})
 	return
 }
 
@@ -231,4 +253,9 @@ func (config *Gonew) UnmarshalFileJSON(filename string) error {
 		return err
 	}
 	return config.unmarshalJSON(p)
+}
+
+type Defaults struct {
+	Environment string
+	Project     string
 }

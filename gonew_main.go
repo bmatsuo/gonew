@@ -152,11 +152,15 @@ func parseOptions() *options {
 	fs.Parse(os.Args[1:])
 
 	args := fs.Args()
-	if len(args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage:", os.Args[0], "[options] project target")
+	if len(args) < 1 {
+		fmt.Fprintln(os.Stderr, "usage:", os.Args[0], "[options] [project] target")
 		os.Exit(1)
 	}
-	opts.project, opts.target = args[0], args[1]
+	if len(args) == 1 {
+		opts.target = args[0]
+	} else {
+		opts.project, opts.target = args[0], args[1]
+	}
 	if opts.pkg == "" {
 		opts.pkg = opts.target
 		if strings.HasPrefix(opts.pkg, "go-") {
@@ -210,7 +214,7 @@ func initConfig(path string) (conf *config.Gonew, err error) {
 		examplePath := filepath.Join(GonewRoot, "gonew.json.example")
 		checkFatal(conf.UnmarshalFileJSON(examplePath), "example config")
 		conf.Environments = config.Environments{
-			"norm": &config.Environment{
+			"default": &config.Environment{
 				BaseImportPath: baseImportPath,
 				User: &config.EnvironmentUserConfig{
 					Name:  name,
@@ -218,6 +222,7 @@ func initConfig(path string) (conf *config.Gonew, err error) {
 				},
 			},
 		}
+		conf.Default.Environment = "default"
 		err = conf.MarshalFileJSON(path)
 	}
 	return
@@ -228,14 +233,20 @@ func main() {
 
 	// parse command line options/args
 	opts := parseOptions()
-	projectName := opts.target
-	packageName := opts.pkg
-	envName := opts.env
-	projType := opts.project
-
 	// read the config file
 	conf, err := initConfig(opts.config)
 	checkFatal(err, "config")
+
+	projectName := opts.target
+	packageName := opts.pkg
+	envName := opts.env
+	if envName == "" {
+		envName = conf.Default.Environment
+	}
+	projType := opts.project
+	if projType == "" {
+		projType = conf.Default.Project
+	}
 
 	// initialize project
 	env, err := conf.Environment(envName)
