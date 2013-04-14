@@ -2,6 +2,11 @@
 [go environment]: http://golang.org/doc/install.html#environment "Go environment"
 
 [issues]: https://github.com/bmatsuo/gonew/issues "Github issues"
+[v2]: https://github.com/bmatsuo/gonew/tree/v2/ "V2"
+
+*Gonew is going through a major overhaul. [V2][] code is currently in testing
+but should be suitable for general use. Look for V2 to be merged into the master
+branch in the coming weeks*
 
 About gonew
 ===========
