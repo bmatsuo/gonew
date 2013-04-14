@@ -20,7 +20,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -34,89 +33,9 @@ import (
 )
 
 var (
-	GonewRoot    string            // The Gonew source directory
-	TemplateRoot string            // The "templates" subdirectory of GonewRoot.
-	Templates    TemplateHierarchy // The (sets of) templates used by Gonew.
+	GonewRoot    string // The Gonew source directory
+	TemplateRoot string // The "templates" subdirectory of GonewRoot.
 )
-
-func ArgumentError(msg string) {
-	fmt.Fprintf(os.Stderr, "%s\n", msg)
-	fs := setupFlags()
-	fs.Usage()
-}
-
-var (
-	usage = `
-gonew [options] cmd NAME
-gonew [options] pkg NAME
-gonew [options] lib NAME PKG
-`
-	printUsageHead = func() { fmt.Fprint(os.Stderr, usage, "\n") }
-	userepo        = true
-	norepo         = false
-	usehost        = true
-	nohost         = false
-	VERBOSE        = false
-	DEBUG          = false
-	DEBUG_LEVEL    = -1
-	name           string
-	importlist     string
-	ptype          string
-	repo           string
-	host           string
-	user           string
-	target         string
-	license        string
-	remote         string
-	help           bool
-)
-
-func Debug(level int, msg string) {
-	if DEBUG && DEBUG_LEVEL >= level {
-		log.Print(msg)
-	}
-}
-
-func Verbose(msg ...string) {
-	if DEBUG || VERBOSE {
-		fmt.Print(msg)
-	}
-}
-
-func setupFlags() *flag.FlagSet {
-	var fs = flag.NewFlagSet("gonew", flag.ExitOnError)
-	fs.StringVar(&importlist,
-		"import", "", "Packages to import in source .go files.")
-	fs.StringVar(&repo,
-		"repo", "", "Repository type (e.g. 'git').")
-	fs.StringVar(&host,
-		"host", "", "Repository host if any (e.g. 'github').")
-	fs.StringVar(&user,
-		"user", "", "Repo host username.")
-	fs.StringVar(&remote,
-		"remote", "", "Remote repository url to initialize and push to.")
-	fs.StringVar(&target,
-		"target", "", "Project name (executable/package name). Default based on NAME.")
-	fs.StringVar(&license,
-		"license", "", "Project license (e.g. 'newbsd').")
-	fs.BoolVar(&AppConfig.Markdown,
-		"markdown", false, "Markdown-enabled README.")
-	fs.BoolVar(&(AppConfig.MakeTests),
-		"test", AppConfig.MakeTests, "Produce test files with Go files.")
-	fs.BoolVar(&(nohost), "nohost", false, "Don't use repository host.")
-	fs.BoolVar(&(norepo), "norepo", false, "Don't start a repository.")
-	fs.BoolVar(&VERBOSE,
-		"v", false, "Verbose output.")
-	fs.IntVar(&DEBUG_LEVEL,
-		"debug", -1, "Change the amout of debug output.")
-	fs.BoolVar(&help,
-		"help", false, "Show this message.")
-	fs.Usage = func() {
-		printUsageHead()
-		fs.PrintDefaults()
-	}
-	return fs
-}
 
 // Returns a path to the directory containing Gonew's source (and the templates/ directory).
 // This function first searches locates the 'gonew' executable in PATH. Then locates the directory
@@ -182,7 +101,7 @@ func FindGonew() (dir string, err error) {
 	for _, dir = range dirCandidates {
 		stat, err = os.Stat(dir)
 		if err == nil && stat.IsDir() {
-			Verbose("Found gonew source directory: ", dir, "\n")
+			// found
 			return
 		}
 	}
@@ -191,26 +110,11 @@ func FindGonew() (dir string, err error) {
 }
 
 func init() {
-	var err error
-	if err = TouchConfig(); err != nil {
-		fmt.Fprint(os.Stderr, err.Error(), "\n")
-		os.Exit(1)
-	}
-	Verbose("Parsing config file.\n")
-	ReadConfig()
-
-	Verbose("Locating source directory.\n")
 	root, err := FindGonew()
+	GonewRoot = root
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error finding gonew source directory: %v\n", err)
 		os.Exit(1)
-	}
-	GonewRoot = root
-	TemplateRoot = filepath.Join(root, "templates")
-
-	Verbose("Searching for templates.\n")
-	if Templates, err = FindTemplates(); err != nil {
-		panic(err)
 	}
 }
 
@@ -414,7 +318,7 @@ func mainv2() {
 	checkFatal(ts.Funcs(funcsV2(env)))
 
 	// read templates
-	src := templates.SourceDirectory("/Users/bryan/Go/src/github.com/bmatsuo/gonew/templates")
+	src := templates.SourceDirectory(filepath.Join(GonewRoot,"templates"))
 	checkFatal(ts.Source(src))
 	for i := len(conf.ExternalTemplates) - 1; i >= 0; i-- {
 		src := templates.SourceDirectory(conf.ExternalTemplates[i])
