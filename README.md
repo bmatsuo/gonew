@@ -1,16 +1,13 @@
-[install go]: http://golang.org/doc/install.html "Install Go" 
 [go environment]: http://golang.org/doc/install.html#environment "Go environment"
+[gopkgdoc]: https://go.pkgdoc.org/github.com/bmatsuo/gonew "GoPkgDoc"
 [issues]: https://github.com/bmatsuo/gonew/issues "Github issues"
 [the config package]: https://github.com/bmatsuo/gonew/tree/v2/config#readme "the config package"
 
-Gonew v2
+Gonew V2
 ========
 
-This is gonew v2. It improves on gonew classic by providing a more flexible
-configuration and a vastly simpler code base. Users of Gonew classic will need
-to translate their existing configurations into the new JSON configuration.
-Read [the Configuration section](#Configuration) for more information about
-setting up a new Gonew config.
+This is Gonew V2. It improves on gonew classic by providing a more flexible
+configuration and a vastly simpler code base.
 
 About gonew
 ===========
@@ -20,51 +17,7 @@ Gonew is a tool for stubbing out new golang projects.
 Documentation
 =============
 
-Prerequisites
--------------
-
-[Install Go][]
-
-Install
--------
-
-    go get github.com/bmatsuo/gonew
-
-Examples
---------
-
-Create a new project "go-mp3".
-
-    $ gonew pkg go-mp3 && ls go-mp3
-    LICENSE     README.md   mp3.go      mp3_test.go
-    $
-
-While hacking furiously at `mp3.go` (and `mp3_test.go` :p), bust out a new
-library, `decode.go`, for modularity.
-
-    $ gonew lib decode mp3 && ls *.go
-    LICENSE     README.md   decoder.go  decoder_test.go mp3.go      mp3_test.go
-    $
-
-Options
--------
-
-To see command line options, run gonew with the -h flag
-
-    gonew -h
-
-Configuration
--------------
-
-Gonew uses a JSON configuration file. There is an example Gonew configuration
-provided for easy pick up. Install the configuration in ~/.config/gonew.json
-and customize with your favorite text editor.
-
-    mkdir -p ~/.config
-    curl https://raw.github.com/bmatsuo/gonew/v2/gonew.json.example > ~/.config/gonew.json
-    vim ~/gonew.json
-
-Checkout [the config package][] for configiration documentation.
+For detailed usage and configuration information, see [GoPkgDoc].
 
 Help out
 ========
