@@ -47,16 +47,19 @@ func FindGonew() error {
 	return err
 }
 
-func check(err error) error {
+func check(err error, v ...interface{}) error {
 	if err != nil {
-		fmt.Println(err)
+		if len(v) == 0 {
+			fmt.Println(err)
+		} else {
+			fmt.Printf("%s: %v", fmt.Sprint(v...), err)
+		}
 	}
 	return err
 }
 
-func checkFatal(err error) {
-	if err != nil {
-		fmt.Println(err)
+func checkFatal(err error, v ...interface{}) {
+	if check(err, v...) != nil {
 		os.Exit(1)
 	}
 }
@@ -72,18 +75,18 @@ func logJson(v ...interface{}) {
 func executeHooks(ts templates.Interface, tenv templates.Environment, hooks ...*config.HookConfig) {
 	for _, hook := range hooks {
 		cwd, err := tenv.RenderTextAsString(ts, "cwd_", hook.Cwd)
-		checkFatal(err)
+		checkFatal(err, "hook cwd template")
 		// fmt.Println("cd", cwd)
 		for _, _cmd := range hook.Commands {
 			cmd, err := tenv.RenderTextAsString(ts, "cmd_", _cmd)
-			checkFatal(err)
+			checkFatal(err, "hook template")
 			// fmt.Println("bash", "-c", cmd)
 			shell := exec.Command("bash", "-c", cmd)
 			shell.Dir = cwd
 			shell.Stdin = os.Stdin
 			shell.Stdout = os.Stdout
 			shell.Stderr = os.Stderr
-			checkFatal(shell.Run()) // TODO clean exit
+			checkFatal(shell.Run(), "hook") // TODO clean exit
 		}
 	}
 }
@@ -140,7 +143,7 @@ type options struct {
 	config  string
 }
 
-func parseOptionsV2() *options {
+func parseOptions() *options {
 	opts := new(options)
 	fs := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 	fs.StringVar(&opts.env, "env", "", "specify a user environment")
@@ -167,62 +170,64 @@ func parseOptionsV2() *options {
 	return opts
 }
 
-func initConfig(path string) (*config.Gonew, error) {
+func readLine(r *bufio.Reader) (string, error) {
+	fmt.Print("Enter your name: ")
+	p, _, err := r.ReadLine()
+	line := strings.TrimFunc(string(p), unicode.IsSpace)
+	return line, err
+}
+
+func initConfig(path string) (conf *config.Gonew, err error) {
 	if path == "" {
 		home := os.Getenv("HOME")
 		path = filepath.Join(home, ".config", "gonew.json")
 	}
-	conf := new(config.Gonew)
-	err := conf.UnmarshalFileJSON(path)
-	if err != nil {
-		if err, ok := err.(*os.PathError); ok {
-			if err.Err == syscall.ENOENT || err.Err == os.ErrNotExist {
-				fmt.Fprintln(os.Stderr, "couldn't find config")
-
-				bufr := bufio.NewReader(os.Stdin)
-				fmt.Print("Enter your name: ")
-				p, _, err := bufr.ReadLine()
-				checkFatal(err)
-				name := strings.TrimFunc(string(p), unicode.IsSpace)
-				fmt.Print("Enter your email: ")
-				p, _, err = bufr.ReadLine()
-				checkFatal(err)
-				email := strings.TrimFunc(string(p), unicode.IsSpace)
-				fmt.Print("Base import path (e.g. github.com/bmatsuo): ")
-				p, _, err = bufr.ReadLine()
-				checkFatal(err)
-				baseImportPath := strings.TrimFunc(string(p), unicode.IsSpace)
-				examplePath := filepath.Join(GonewRoot,  "gonew.json.example")
-				checkFatal(conf.UnmarshalFileJSON(examplePath))
-				conf.Environments = config.Environments{
-					"norm": &config.Environment{
-						BaseImportPath: baseImportPath,
-						User: &config.EnvironmentUserConfig{
-							Name:  name,
-							Email: email,
-						},
-					},
-				}
-
-				err = conf.MarshalFileJSON(path)
-				if err != nil {
-					return nil, err
-				}
-			} else {
-				return nil, err
-			}
-		} else {
-			return nil, err
-		}
+	conf = new(config.Gonew)
+	err = conf.UnmarshalFileJSON(path)
+	if err == nil {
+		return
 	}
-	return conf, nil
+	switch perr, ok := err.(*os.PathError); {
+	case !ok:
+		return
+	case perr.Err == syscall.ENOENT || perr.Err == os.ErrNotExist:
+		fmt.Fprintln(os.Stderr, "config not found -- generating")
+
+		var name string
+		var email string
+		var baseImportPath string
+		bufr := bufio.NewReader(os.Stdin)
+		fmt.Print("Enter your name: ")
+		name, err = readLine(bufr)
+		checkFatal(err)
+		fmt.Print("Enter your email: ")
+		email, err = readLine(bufr)
+		checkFatal(err)
+		fmt.Print("Base import path (e.g. github.com/bmatsuo): ")
+		baseImportPath, err = readLine(bufr)
+		checkFatal(err)
+
+		examplePath := filepath.Join(GonewRoot, "gonew.json.example")
+		checkFatal(conf.UnmarshalFileJSON(examplePath), "example config")
+		conf.Environments = config.Environments{
+			"norm": &config.Environment{
+				BaseImportPath: baseImportPath,
+				User: &config.EnvironmentUserConfig{
+					Name:  name,
+					Email: email,
+				},
+			},
+		}
+		err = conf.MarshalFileJSON(path)
+	}
+	return
 }
 
 func main() {
-	checkFatal(FindGonew())
+	checkFatal(FindGonew(), "root not found")
 
 	// parse command line options/args
-	opts := parseOptionsV2()
+	opts := parseOptions()
 	projectName := opts.target
 	packageName := opts.pkg
 	envName := opts.env
@@ -230,7 +235,7 @@ func main() {
 
 	// read the config file
 	conf, err := initConfig(opts.config)
-	checkFatal(err)
+	checkFatal(err, "config")
 
 	// initialize project
 	env, err := conf.Environment(envName)
@@ -244,14 +249,14 @@ func main() {
 
 	// initialize template environment
 	ts := templates.New(".t2")
-	checkFatal(ts.Funcs(funcs(env)))
+	checkFatal(ts.Funcs(funcs(env)), "templates")
 
 	// read templates
 	src := templates.SourceDirectory(filepath.Join(GonewRoot, "templates"))
-	checkFatal(ts.Source(src))
+	checkFatal(ts.Source(src), "templates")
 	for i := len(conf.ExternalTemplates) - 1; i >= 0; i-- {
 		src := templates.SourceDirectory(conf.ExternalTemplates[i])
-		checkFatal(ts.Source(src))
+		checkFatal(ts.Source(src), "external templates")
 	}
 
 	if projConfig.Hooks != nil {
@@ -261,9 +266,9 @@ func main() {
 
 	// generate files. buffer all output then write.
 	files := make([]*File, 0, len(projConfig.Files))
-	for _, file := range projConfig.Files {
+	for name, file := range projConfig.Files {
 		_relpath, err := projTemplEnv.RenderTextAsString(ts, "pre_", file.Path)
-		checkFatal(err)
+		checkFatal(err, name)
 		relpath := string(_relpath)
 		filename := filepath.Base(relpath)
 		filetype := file.Type
@@ -290,14 +295,14 @@ func main() {
 
 		// fmt.Println("mkdir", "-p", dir)
 		err := os.MkdirAll(dir, 0755|os.ModeDir)
-		checkFatal(err) // TODO clean exit
+		checkFatal(err, file) // TODO clean exit
 
 		// fmt.Println("cat", ">", file.path)
 		// fmt.Println(string(file.content))
 		handle, err := os.OpenFile(file.path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0644)
-		checkFatal(err) // TODO clean exit
+		checkFatal(err, file) // TODO clean exit
 		_, err = handle.Write(file.content)
-		checkFatal(err) // TODO clean exit
+		checkFatal(err, file) // TODO clean exit
 		err = handle.Close()
 	}
 
