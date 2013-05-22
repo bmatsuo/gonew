@@ -1,5 +1,1 @@
-/*  Filename:    {{.File.Name}}
- *  Author:      {{.Env.User.Name}} <{{.Env.User.Email}}>
- *  Created:     {{.X.Time.Now "Mon, _2 Jan 2006"}}
- {{if .File.Description}}*  Description: {{.File.Description}}
- {{end}}*/
+// Filename: {{.File.Name}} (Created: {{.X.Time.Now "Mon, _2 Jan 2006"}})
