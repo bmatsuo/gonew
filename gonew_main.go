@@ -163,12 +163,6 @@ func parseOptions() *options {
 	}
 	if opts.pkg == "" {
 		opts.pkg = opts.target
-		if strings.HasPrefix(opts.pkg, "go-") {
-			opts.pkg = opts.pkg[3:]
-		}
-		if strings.HasSuffix(opts.pkg, ".go") {
-			opts.pkg = opts.pkg[:len(opts.pkg)-3]
-		}
 	}
 
 	return opts

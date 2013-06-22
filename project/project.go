@@ -7,11 +7,12 @@ package project
 /*  Filename:    project.go
  *  Author:      Bryan Matsuo <bryan.matsuo [at] gmail.com>
  *  Created:     2012-07-06 23:08:16.03525 -0700 PDT
- *  Description: 
+ *  Description:
  */
 
 import (
 	"path"
+	"strings"
 
 	"github.com/bmatsuo/gonew/config"
 	"github.com/bmatsuo/gonew/extension"
@@ -58,8 +59,16 @@ type project struct {
 	env  *config.Environment
 }
 
-func (p *project) Name() string             { return p.name }
-func (p *project) Prefix() string           { return "./" + p.name } // XXX could be smarter
-func (p *project) Package() string          { return p.pkg }
-func (p *project) Import() string           { return importPath(p.Package()) }
+func (p *project) Name() string   { return p.name }
+func (p *project) Prefix() string { return "./" + p.name } // XXX could be smarter
+func (p *project) Package() string {
+	if strings.HasPrefix(p.pkg, "go-") {
+		return p.pkg[3:]
+	}
+	if strings.HasSuffix(p.pkg, ".go") {
+		return p.pkg[:len(p.pkg)-3]
+	}
+	return p.pkg
+}
+func (p *project) Import() string           { return importPath(p.pkg) }
 func (p *project) Env() *config.Environment { return p.env }
