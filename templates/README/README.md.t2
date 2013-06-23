@@ -1,45 +1,19 @@
-[install go]: http://golang.org/install.html "Install Go"
-[gopkgdoc]: http://go.pkgdoc.org/{{.Project.Import}}/ "GoPkgDoc"
+[godoc.org]: http://godoc.org/{{.Project.Import}}/ "godoc.org"
 
-About
-=============
-
-{{.Description}}
-
-Documentation
-=============
-{{ if equal .Project.Package "main" }}
-Usage
------
-
-    {{.Project.Name}} [options]
-
-Options
--------
-{{ end }}
-Prerequisites
--------------
-
-[Install Go][].
-
-Installation
--------------
+Install
+=======
 
     go get {{.Project.Import}}
 
-General Documentation
----------------------
+Docs
+====
 
-Use `go doc` to vew the documentation for {{.Project.Name}}
-
-    go doc {{.Project.Import}}
-
-Or alternatively, check out [GoPkgDoc][]
+On [godoc.org][]
 
 Author
 ======
 
-{{name}} &lt;{{email}}&gt;
+{{name}} [{{email}}]
 
 Copyright & License
 ===================
