@@ -1,22 +1,18 @@
-[godoc.org]: http://godoc.org/{{.Project.Import}}/ "godoc.org"
+[godoc.org]: http://godoc.org/{{.Project.Import}} "godoc.org"
 
-Install
-=======
+##Install
 
     go get {{.Project.Import}}
 
-Docs
-====
+##Docs
 
 On [godoc.org][]
 
-Author
-======
+##Author
 
 {{name}} [{{email}}]
 
-Copyright & License
-===================
+##Copyright & License
 
 Copyright (c) {{year}}, {{name}}.
 All rights reserved.

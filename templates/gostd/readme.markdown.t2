@@ -1,51 +1,20 @@
 [install go]: http://golang.org/install.html "Install Go"
-[the godoc url]: http://localhost:6060/pkg/{{.Project.ImportPath}}/ "the Godoc URL"
-
-About {{.Project.Name}}
-=============
+[godoc.org]: http://godoc.org/{{.Project.ImportPath}}/ "godoc.org"
 
 {{.Description}}
 
-Documentation
-=============
-{{ if .Project.IsCommand }}
-Usage
------
-
-Run {{.Project.Name}} with the command
-
-    {{.Project.Target}} [options]
-{{ end }}
-Prerequisites
--------------
-
-[Install Go][].
-
-Installation
--------------
+##Installation
 
     {{if .Project.VersionControl.Host}}go get {{.Project.ImportPath}}{{else}}go install{{end}}
 
-General Documentation
----------------------
+##Documentation
 
-**Option 1 (terminal)**
 
-    go doc {{.Project.ImportPath}}
+##Author
 
-**Option 2 (browser)**
+{{name}} {{if email}}-- {{email}}{{end}};
 
-    godoc -http=:6060
-
-and visit [the Godoc URL][]
-
-Author
-======
-
-{{name}} &lt;{{email}}&gt;
-
-Copyright & License
-===================
+##Copyright & License
 
 Copyright (c) {{year}}, {{name}}.
 All rights reserved.
