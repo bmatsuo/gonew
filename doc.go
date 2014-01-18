@@ -32,7 +32,7 @@ Configuration:
 Gonew is configured via a JSON file stored in ~/.config/gonew.json. An example
 can be found in gonew.json.example The configuration file specifies
 environments, projects, and the locations of externally defined templates. An
-environement hold information used in template rendering like user metadata and
+environment holds information used in template rendering like user metadata and
 import paths for created projects. A project configuration describes the files
 contained in a project and script hooks to execute on file creation.
 Environments can inherit/override other environments and projects can
