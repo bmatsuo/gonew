@@ -9,14 +9,6 @@
 			"User": {
 				"Name": "Bryan Matsuo",
 				"Email": "bryan.matsuo [at] gmail.com"
-			},
-			"License": "newbsd",
-			"VersionControl": {
-				"Type": "git",
-				"Remote": {
-					"Host": "github",
-					"User": "bmatsuo"
-				}
 			}
 		},
 		"work": {
@@ -26,12 +18,6 @@
 			],
 			"User": {
 				"Email": "bmatsuo [at] janrain.com"
-			},
-			"License": "none",
-			"VersionControl": {
-				"Remote": {
-					"User": "bmatsuo1"
-				}
 			}
 		}
 	},
@@ -64,9 +50,21 @@
 				}
 			}
 		},
+		"newbsd": {
+			"Files": {
+				"License": {
+					"Path": "{{.Project.Name}}/LICENSE",
+					"Type": "licenses",
+					"Templates": [
+						"license.newbsd.t2"
+					]
+				}
+			}
+		},
 		"cmd": {
 			"Inherits": [
 				"git",
+				"newbsd",
 				"travis"
 			],
 			"Files": {
@@ -113,6 +111,7 @@
 		"pkg": {
 			"Inherits": [
 				"git"
+				"newbsd",
 				"travis"
 			],
 			"Files": {
