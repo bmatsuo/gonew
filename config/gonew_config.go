@@ -256,6 +256,6 @@ func (config *Gonew) UnmarshalFileJSON(filename string) error {
 }
 
 type Defaults struct {
-	Environment string
-	Project     string
+	Environment string // The default environment to use from the command line
+	Project     string // The default project to use from the command line
 }

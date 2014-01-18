@@ -141,7 +141,7 @@ func (config *ProjectHooksConfig) Merge(other *ProjectHooksConfig) {
 }
 
 type HookConfig struct {
-	Cwd      string   // The working directy Cammonds should be executed from.
+	Cwd      string   // The working directory Cammonds should be executed from.
 	Commands []string // A list of commands executed in order.
 }
 
