@@ -7,7 +7,7 @@ package config
 /*  Filename:    environment_spec.go
  *  Author:      Bryan Matsuo <bryan.matsuo [at] gmail.com>
  *  Created:     2012-07-03 18:04:29.869451 -0700 PDT
- *  Description: 
+ *  Description:
  */
 
 import (
@@ -80,10 +80,10 @@ func (config Environments) Validate() (err error) {
 	return
 }
 
-// User (project author) details.
+// User (project author) details. All fields are optional.
 type EnvironmentUserConfig struct {
-	Name  string
-	Email string
+	Name  string // A real name or pseudonym
+	Email string // An email address (potentially malformed)
 }
 
 func (config *EnvironmentUserConfig) Merge(other *EnvironmentUserConfig) {
@@ -97,9 +97,9 @@ func (config *EnvironmentUserConfig) Merge(other *EnvironmentUserConfig) {
 
 // Specifies the environment for template generation.
 type Environment struct {
-	BaseImportPath string
-	Inherits       []string
-	User           *EnvironmentUserConfig
+	BaseImportPath string                 // Base import path for templates
+	Inherits       []string               // Environments to inherit configs from
+	User           *EnvironmentUserConfig // User info for templates
 }
 
 // Merges other into config. Inherits are not merged, as this is used to eliminate inheritence.

@@ -7,14 +7,14 @@ package config
 /*  Filename:    project_file_config.go
  *  Author:      Bryan Matsuo <bryan.matsuo [at] gmail.com>
  *  Created:     2012-07-03 18:13:06.081945 -0700 PDT
- *  Description: 
+ *  Description:
  */
 
 import ()
 
 type ProjectFileConfig struct {
-	Path      string // a template
-	Type      string
+	Path      string   // a template
+	Type      string   // a 'filetype' that can be used in templates
 	Templates []string // template names
 }
 

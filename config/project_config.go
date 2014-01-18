@@ -7,7 +7,7 @@ package config
 /*  Filename:    project_config.go
  *  Author:      Bryan Matsuo <bryan.matsuo [at] gmail.com>
  *  Created:     2012-07-03 18:20:32.475203 -0700 PDT
- *  Description: 
+ *  Description:
  */
 
 import (
@@ -81,9 +81,9 @@ func (config Projects) Validate() (err error) {
 }
 
 type Project struct {
-	Inherits []string
-	Hooks    *ProjectHooksConfig
-	Files    map[string]*ProjectFileConfig
+	Inherits []string                      // Projects to inherit config from
+	Hooks    *ProjectHooksConfig           // Hooks that run at specific times
+	Files    map[string]*ProjectFileConfig // Project file specifications
 }
 
 func (config *Project) Validate() (err error) {
@@ -127,7 +127,8 @@ func (config *Project) Merge(other *Project) {
 }
 
 type ProjectHooksConfig struct {
-	Pre, Post []*HookConfig
+	Pre  []*HookConfig // Hooks that run before the project is generated.
+	Post []*HookConfig // Hooks that run after the project is generated.
 }
 
 func (config *ProjectHooksConfig) Merge(other *ProjectHooksConfig) {
@@ -140,8 +141,8 @@ func (config *ProjectHooksConfig) Merge(other *ProjectHooksConfig) {
 }
 
 type HookConfig struct {
-	Cwd      string
-	Commands []string
+	Cwd      string   // The working directy Cammonds should be executed from.
+	Commands []string // A list of commands executed in order.
 }
 
 func (config *HookConfig) Merge(other *ProjectHooksConfig) {
