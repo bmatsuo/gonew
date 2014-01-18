@@ -1,9 +1,5 @@
-[install go]: http://golang.org/doc/install.html "Install Go" 
-[go environment]: http://golang.org/doc/install.html#environment "Go environment"
-
-[issues]: https://github.com/bmatsuo/gonew/issues "Github issues"
-[the templates package]: https://github.com/bmatsuo/gonew/tree/master/templates "The Templates Package directory"
-[on gopkgdoc]: http://gopkgdoc.appspot.com/pkg/github.com/bmatsuo/gonew/config "on GoPkgDoc"
+[templates]: https://github.com/bmatsuo/gonew/tree/master/templates "templates"
+[godoc.org]: http://godoc.org/github.com/bmatsuo/gonew/config "godoc.org"
 
 About gonew/config
 ==================
@@ -27,24 +23,11 @@ Templates
 Project file templates are specified in your config file. Each file specified a
 list of templates (excluding license templates) which compose the file. These
 templates are found in either one of the `"ExternalTemplates"` directories
-specified in your config file, or in [The Templates Package directory][],
+specified in your config file, or in [templates][] directory hierarchy.
 
-Version Control Systems
------------------------
-
-Specifying `"Environments[_].User.VersionControl"` in your configuration file
-doesn't cause gonew to automatically initialize repositories in project
-directories. It is mainly used for README generation templates.
-
-Gonew can be fully integrated with versioning systems by using `"Pre"` and
-`"Post"` hooks in your configuration file.
-
-Hosts
+Hooks
 -----
 
-Specifying `Environments[_].User.Host` in your configuration file doesn't cause
-gonew to automatically initialize repos on remote hosts. It is mainly used for
-README generation templates.
-
-Gonew can be fully integrated with hosts like Github and Google Code by using
+Gonew can be fully integrated with version control systems like git and
+mercurial, as well as with hosts like Github and Google Code by using
 `"Pre"` and `"Post"` hooks in your configuration file.
