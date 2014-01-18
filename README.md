@@ -5,7 +5,8 @@ Gonew V2
 ========
 
 This is Gonew V2. It improves on gonew classic by providing a more flexible
-configuration and a vastly simpler code base.
+configuration and a vastly simpler code base. If you are migrating from Gonew
+Classic, see the migration guide (MIGRATION.md).
 
 About gonew
 ===========
