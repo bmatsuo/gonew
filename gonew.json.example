@@ -1,8 +1,8 @@
 {
-    "Default": {
-        "Environment": "default",
-        "Project": "lib"
-    },
+	"Default": {
+		"Environment": "default",
+		"Project": "lib"
+	},
 	"Environments": {
 		"default": {
 			"BaseImportPath": "github.com/bmatsuo",
@@ -53,9 +53,21 @@
 				]
 			}
 		},
+		"travis": {
+			"Files": {
+				"Travis": {
+					"Path": "{{.Project.Name}}/.travis.yml",
+					"Type": "other",
+					"Templates": [
+						"travis.yml.t2"
+					]
+				}
+			}
+		},
 		"cmd": {
 			"Inherits": [
-				"git"
+				"git",
+				"travis"
 			],
 			"Files": {
 				"Git-Ignore": {
@@ -101,6 +113,7 @@
 		"pkg": {
 			"Inherits": [
 				"git"
+				"travis"
 			],
 			"Files": {
 				"Git-Ignore": {
