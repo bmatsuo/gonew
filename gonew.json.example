@@ -103,7 +103,7 @@
 					"Type": "go",
 					"Templates": [
 						"license.newbsd.gohead.t2",
-						"test.t2"
+						"go.cmdtest.t2"
 					]
 				}
 			}
@@ -150,7 +150,7 @@
 					"Type": "go",
 					"Templates": [
 						"license.newbsd.gohead.t2",
-						"test.t2"
+						"go.pkgtest.t2"
 					]
 				}
 			}
@@ -177,7 +177,7 @@
 					"Type": "go",
 					"Templates": [
 						"license.newbsd.gohead.t2",
-						"test.t2"
+						"go.pkgtest.t2"
 					]
 				}
 			}
