@@ -110,7 +110,7 @@
 		},
 		"pkg": {
 			"Inherits": [
-				"git"
+				"git",
 				"newbsd",
 				"travis"
 			],

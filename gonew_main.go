@@ -231,6 +231,7 @@ func main() {
 	conf, err := initConfig(opts.config)
 	checkFatal(err, "config")
 
+	// project metadata
 	projectName := opts.target
 	packageName := opts.pkg
 	envName := opts.env
@@ -265,7 +266,6 @@ func main() {
 	}
 
 	if projConfig.Hooks != nil {
-		// fmt.Println("PRE")
 		executeHooks(ts, projTemplEnv, projConfig.Hooks.Pre...)
 	}
 
@@ -304,7 +304,8 @@ func main() {
 
 		// fmt.Println("cat", ">", file.path)
 		// fmt.Println(string(file.content))
-		handle, err := os.OpenFile(file.path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0644)
+		writeMode := os.O_WRONLY|os.O_CREATE|os.O_EXCL // must create
+		handle, err := os.OpenFile(file.path, writeMode, 0644)
 		checkFatal(err, file) // TODO clean exit
 		_, err = handle.Write(file.content)
 		checkFatal(err, file) // TODO clean exit
