@@ -4,11 +4,9 @@
 
 package main
 
-/* 
+/*
 *  File: gonew_main.go
-*  Author: Bryan Matsuo [bmatsuo@soe.ucsc.edu] 
 *  Created: Sat Jul  2 19:17:53 PDT 2011
-*  Usage: gonew [options]
  */
 import (
 	"github.com/bmatsuo/gonew/config"
@@ -168,8 +166,8 @@ func parseOptions() *options {
 	return opts
 }
 
-func readLine(r *bufio.Reader) (string, error) {
-	fmt.Print("Enter your name: ")
+func readLine(r *bufio.Reader, prompt string) (string, error) {
+	fmt.Print(prompt)
 	p, _, err := r.ReadLine()
 	line := strings.TrimFunc(string(p), unicode.IsSpace)
 	return line, err
@@ -189,20 +187,23 @@ func initConfig(path string) (conf *config.Gonew, err error) {
 	case !ok:
 		return
 	case perr.Err == syscall.ENOENT || perr.Err == os.ErrNotExist:
-		fmt.Fprintln(os.Stderr, "config not found -- generating")
+		fmt.Fprintf(os.Stderr, "configuration not found at %q\n", path)
+		fmt.Fprintln(os.Stderr)
+		fmt.Fprintf(os.Stderr, "if you are migrating from an older version of Gonew check out the migration guide\n")
+		fmt.Fprintf(os.Stderr, "\thttps://github.com/bmatsuo/gonew/blob/v2/MIGRATION.md\n")
+		fmt.Fprintln(os.Stderr)
+		fmt.Fprintf(os.Stderr, "otherwise, please take a moment to fill in the user information below\n")
+		fmt.Fprintln(os.Stderr)
 
 		var name string
 		var email string
 		var baseImportPath string
 		bufr := bufio.NewReader(os.Stdin)
-		fmt.Print("Enter your name: ")
-		name, err = readLine(bufr)
+		name, err = readLine(bufr, "Your name: ")
 		checkFatal(err)
-		fmt.Print("Enter your email: ")
-		email, err = readLine(bufr)
+		email, err = readLine(bufr, "Your email: ")
 		checkFatal(err)
-		fmt.Print("Base import path (e.g. github.com/bmatsuo): ")
-		baseImportPath, err = readLine(bufr)
+		baseImportPath, err = readLine(bufr, "Base import path (e.g. github.com/bmatsuo): ")
 		checkFatal(err)
 
 		examplePath := filepath.Join(GonewRoot, "gonew.json.example")
@@ -304,7 +305,7 @@ func main() {
 
 		// fmt.Println("cat", ">", file.path)
 		// fmt.Println(string(file.content))
-		writeMode := os.O_WRONLY|os.O_CREATE|os.O_EXCL // must create
+		writeMode := os.O_WRONLY | os.O_CREATE | os.O_EXCL // must create
 		handle, err := os.OpenFile(file.path, writeMode, 0644)
 		checkFatal(err, file) // TODO clean exit
 		_, err = handle.Write(file.content)
