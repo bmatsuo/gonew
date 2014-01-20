@@ -1,0 +1,8 @@
+{{ template "go._head.t2" $ }}
+{{ template "go._package.t2" $ }}
+
+{{ import "testing" }}
+
+func Test{{.X.Strings.UpperCamel "testing-testing"}}(t *testing.T) {
+    t.Logf("A stub")
+}

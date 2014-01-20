@@ -1,0 +1,15 @@
+{{ template "go._head.t2" $ }}
+
+/*
+{{ .Package }} does...
+
+Usage:
+
+    {{ .Package }} [options] ARGUMENT ...
+
+Arguments:
+
+Options:
+
+*/
+package documentation

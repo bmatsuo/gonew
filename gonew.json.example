@@ -1,0 +1,186 @@
+{
+	"Default": {
+		"Environment": "default",
+		"Project": "lib"
+	},
+	"Environments": {
+		"default": {
+			"BaseImportPath": "github.com/bmatsuo",
+			"User": {
+				"Name": "Bryan Matsuo",
+				"Email": "bryan.matsuo [at] gmail.com"
+			}
+		},
+		"work": {
+			"BaseImportPath": "github.com/bmatsuo1",
+			"Inherits": [
+				"default"
+			],
+			"User": {
+				"Email": "bmatsuo [at] janrain.com"
+			}
+		}
+	},
+	"ExternalTemplates": [
+
+	],
+	"Projects": {
+		"git": {
+			"Hooks": {
+				"Post": [
+					{
+						"Cwd": "{{.Project.Name}}",
+						"Commands": [
+							"git init",
+							"git add .",
+							"git commit -m '{{.Project.Name}} created {{date}} by gonew'"
+						]
+					}
+				]
+			}
+		},
+		"travis": {
+			"Files": {
+				"Travis": {
+					"Path": "{{.Project.Name}}/.travis.yml",
+					"Type": "other",
+					"Templates": [
+						"travis.yml.t2"
+					]
+				}
+			}
+		},
+		"newbsd": {
+			"Files": {
+				"License": {
+					"Path": "{{.Project.Name}}/LICENSE",
+					"Type": "licenses",
+					"Templates": [
+						"license.newbsd.t2"
+					]
+				}
+			}
+		},
+		"cmd": {
+			"Inherits": [
+				"git",
+				"newbsd",
+				"travis"
+			],
+			"Files": {
+				"Git-Ignore": {
+					"Path": "{{.Project.Name}}/.gitignore",
+					"Type": "other",
+					"Templates": [
+						"other.gitignore.t2"
+					]
+				},
+				"README": {
+					"Path": "{{.Project.Name}}/README.md",
+					"Type": "readme",
+					"Templates": [
+						"README.md.t2",
+						"license.newbsd.readme.t2"
+					]
+				},
+				"Main": {
+					"Path": "{{.Project.Name}}/{{.Package}}.go",
+					"Type": "go",
+					"Templates": [
+						"license.newbsd.gohead.t2",
+						"go.cmd.t2"
+					]
+				}
+			}
+		},
+		"cmdtest": {
+			"Inherits": [
+				"cmd"
+			],
+			"Files": {
+				"Test": {
+					"Path": "{{.Project.Name}}/{{.Package}}_test.go",
+					"Type": "go",
+					"Templates": [
+						"license.newbsd.gohead.t2",
+						"go.cmdtest.t2"
+					]
+				}
+			}
+		},
+		"pkg": {
+			"Inherits": [
+				"git",
+				"newbsd",
+				"travis"
+			],
+			"Files": {
+				"Git-Ignore": {
+					"Path": "{{.Project.Name}}/.gitignore",
+					"Type": "other",
+					"Templates": [
+						"other.gitignore.t2"
+					]
+				},
+				"README": {
+					"Path": "{{.Project.Name}}/README.md",
+					"Type": "readme",
+					"Templates": [
+						"README.md.t2",
+						"license.newbsd.readme.t2"
+					]
+				},
+				"Main": {
+					"Path": "{{.Project.Name}}/{{.Package}}.go",
+					"Type": "go",
+					"Templates": [
+						"license.newbsd.gohead.t2",
+						"go.pkg.t2"
+					]
+				}
+			}
+		},
+		"pkgtest": {
+			"Inherits": [
+				"pkg"
+			],
+			"Files": {
+				"Test": {
+					"Path": "{{.Project.Name}}/{{.Package}}_test.go",
+					"Type": "go",
+					"Templates": [
+						"license.newbsd.gohead.t2",
+						"go.pkgtest.t2"
+					]
+				}
+			}
+		},
+		"lib": {
+			"Files": {
+				"Main": {
+					"Path": "{{.Project.Name}}.go",
+					"Type": "go",
+					"Templates": [
+						"license.newbsd.gohead.t2",
+						"go.lib.t2"
+					]
+				}
+			}
+		},
+		"libtest": {
+			"Inherits": [
+				"lib"
+			],
+			"Files": {
+				"Test": {
+					"Path": "{{.Project.Name}}_test.go",
+					"Type": "go",
+					"Templates": [
+						"license.newbsd.gohead.t2",
+						"go.pkgtest.t2"
+					]
+				}
+			}
+		}
+	}
+}
