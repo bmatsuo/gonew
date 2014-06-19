@@ -61,6 +61,17 @@
 				}
 			}
 		},
+		"mit": {
+			"Files": {
+				"License": {
+					"Path": "{{.Project.Name}}/LICENSE",
+					"Type": "licenses",
+					"Templates": [
+						"license.mit.t2"
+					]
+				}
+			}
+		},
 		"cmd": {
 			"Inherits": [
 				"git",
