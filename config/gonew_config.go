@@ -17,7 +17,6 @@ import (
 	"github.com/bmatsuo/go-validate"
 	"io/ioutil"
 	"os"
-	"strings"
 )
 
 type configInheritanceGraph map[string]map[string]interface{}
@@ -111,9 +110,7 @@ type ExternalTemplate string
 func (config ExternalTemplate) Validate() (err error) {
 	path := string(config)
 	var info os.FileInfo
-	if !strings.HasPrefix(path, "/") {
-		return errors.New("relative path " + path)
-	} else if info, err = os.Stat(path); err != nil {
+	if info, err = os.Stat(path); err != nil {
 		return
 	} else if !info.IsDir() {
 		return errors.New("not a directory " + path)
